@@ -43,7 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'nested_admin',
+    'arkav.arkavauth',
+    # 'arkav.uploader',
+    # 'arkav.competition',
+    # 'arkav.preevent',
+    # 'arkav.quiz',
+    # 'arkav.seminar',
 ]
+AUTH_USER_MODEL = 'arkavauth.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -125,7 +132,6 @@ MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'uploads/'))
 
 # Rest Framework Settings
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'CHARSET': 'utf-8',
     'DEFAULT_PERMISSION_CLASSES': [],
     'DEFAULT_RENDERER_CLASSES': [
@@ -146,6 +152,7 @@ EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
 EMAIL_USE_TLS = strtobool(os.getenv('EMAIL_USE_TLS', 'True'))
 
 DEFAULT_FROM_EMAIL = 'Arkavidia 5.0 <noreply@arkavidia.id>'
+COMPETITION_REGISTRATION_OPEN = strtobool(os.getenv('COMPETITION_REGISTRATION_OPEN', 'False'))
 CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_OPEN', 'False'))
 # Security-related settings - only enable if HTTPS is enabled
 
