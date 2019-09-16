@@ -12,9 +12,9 @@ class UserTestCase(TestCase):
         """
         User should always have different registration confirmation tokens.
         """
-        self.assertIsNotNone(self.user1.token)
-        self.assertIsNotNone(self.user2.token)
-        self.assertNotEqual(self.user1.token, self.user2.token)
+        self.assertIsNotNone(self.user1.confirmation_token)
+        self.assertIsNotNone(self.user2.confirmation_token)
+        self.assertNotEqual(self.user1.confirmation_token, self.user2.confirmation_token)
 
 
 class PasswordResetAttemptTestCase(TestCase):
