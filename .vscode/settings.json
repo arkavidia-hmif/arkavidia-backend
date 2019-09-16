@@ -2,7 +2,7 @@
     // force to use space instead of tabs
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
-    "editor.rulers": [80],
+    "editor.rulers": [120],
     "files.exclude": {
       "**/.git": true,
       "**/.svn": true,
