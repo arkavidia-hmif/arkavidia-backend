@@ -1,8 +1,7 @@
 from arkav.arkavauth.models import User
-from arkav.arkavauth.serializers import UserSerializer
+from arkav.arkavauth.models import PasswordResetAttempt
 from arkav.arkavauth.serializers import PasswordResetRequestSerializer
 from arkav.arkavauth.serializers import PasswordResetConfirmationRequestSerializer
-from arkav.arkavauth.serializers import PasswordChangeRequestSerializer
 from arkav.utils.permissions import IsNotAuthenticated
 from django.db import transaction
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -10,7 +9,6 @@ from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
@@ -18,7 +16,7 @@ from rest_framework.response import Response
 @api_view(['POST'])
 @permission_classes((IsNotAuthenticated, ))
 def password_reset_view(request):
-    request_serializer = PasswordResetAttemptRequestSerializer(data=request.data)
+    request_serializer = PasswordResetRequestSerializer(data=request.data)
     request_serializer.is_valid(raise_exception=True)
     email = request_serializer.validated_data['email'].lower()
 
@@ -28,7 +26,7 @@ def password_reset_view(request):
             # Overwrite existing password reset confirmation attempt, if present
             if hasattr(user, 'password_reset_confirmation_attempt'):
                 user.password_reset_confirmation_attempt.delete()
-            attempt = PasswordResetConfirmationAttempt.objects.create(user=user)
+            attempt = PasswordResetAttempt.objects.create(user=user)
             attempt.send_email()
 
     return Response({
@@ -50,7 +48,7 @@ def password_reset_confirmation_view(request):
     new_password = request_serializer.validated_data['new_password']
 
     with transaction.atomic():
-        attempt = PasswordResetConfirmationAttempt.objects.filter(token=token).first()
+        attempt = PasswordResetAttempt.objects.filter(token=token).first()
         if attempt is None:
             return Response({
                 'code': 'invalid_token',
