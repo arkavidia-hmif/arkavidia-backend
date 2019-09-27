@@ -1,6 +1,6 @@
+from arkav.arkavauth.models import User
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -14,13 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = (
-            'full_name', 'email',
-            'is_staff', 'is_active', 'is_email_confirmed', 'last_login', 'date_joined',
-        )
-        read_only_fields = (
-            'email', 'is_staff', 'is_active', 'is_email_confirmed', 'last_login', 'date_joined',
-        )
+        fields = ('full_name', 'email', 'is_staff', 'is_active',
+                  'is_email_confirmed', 'last_login', 'date_joined')
+        read_only_fields = ('email', 'is_staff', 'is_active',
+                            'is_email_confirmed', 'last_login', 'date_joined')
 
 
 class LoginRequestSerializer(serializers.Serializer):
