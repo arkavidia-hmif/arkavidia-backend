@@ -2,6 +2,7 @@ from arkav.arkavauth.models import User
 from arkav.arkavauth.models import PasswordResetAttempt
 from arkav.arkavauth.serializers import PasswordResetRequestSerializer
 from arkav.arkavauth.serializers import PasswordResetConfirmationRequestSerializer
+from arkav.arkavauth.services import UserService
 from arkav.utils.permissions import IsNotAuthenticated
 from django.db import transaction
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -27,7 +28,7 @@ def password_reset_view(request):
             if hasattr(user, 'password_reset_confirmation_attempt'):
                 user.password_reset_confirmation_attempt.delete()
             attempt = PasswordResetAttempt.objects.create(user=user)
-            attempt.send_email()
+            UserService().send_password_reset_email(attempt)
 
     return Response({
         'code': 'password_reset_email_sent',
