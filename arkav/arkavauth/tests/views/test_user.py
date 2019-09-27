@@ -1,8 +1,3 @@
-from arkav.arkavauth.models import PasswordResetAttempt
-from arkav.arkavauth.models import User
-from arkav.arkavauth.serializers import UserSerializer
-from django.urls import reverse
-from rest_framework import status
 from rest_framework.test import APITestCase
 
 

@@ -17,14 +17,10 @@ class UserSerializerTestCase(TestCase):
         self.assertEqual(self.user1.is_active, user_data['is_active'])
         self.assertEqual(self.user1.is_email_confirmed, user_data['is_email_confirmed'])
         self.assertEqual(self.user1.last_login, user_data['last_login'])
-        self.assertEqual(self.user1.date_joined.isoformat(), user_data['date_joined'])
+        self.assertEqual(self.user1.date_joined.astimezone().isoformat(), user_data['date_joined'])
 
     def test_serializer_write(self):
-        data = {
-            'full_name': 'abc',
-            'email': 'abc@def.ghi',
-            'is_staff': not self.user1.is_staff,
-            'is_active': not self.user1.is_active,
-            'is_email_confirmed': not self.user1.is_email_confirmed,
-        }
-        ser = UserSerializer(self.user1, )
+        '''
+        Some fields in UserSerializer should be read-only
+        '''
+        pass

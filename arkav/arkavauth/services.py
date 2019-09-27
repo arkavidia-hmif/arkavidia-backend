@@ -5,11 +5,7 @@ from django.utils import timezone
 
 class UserService:
 
-    def send_email(self, user, subject, text_template, html_template):
-        context = {
-            'user': user,
-            'token': user.token,
-        }
+    def send_email(self, user, subject, context, text_template, html_template):
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
 
@@ -27,7 +23,12 @@ class UserService:
         text_template = get_template('registration_confirmation_email.txt')
         html_template = get_template('registration_confirmation_email.html')
 
-        self.send_email('[Arkavidia] Konfirmasi Email', text_template, html_template)
+        context = {
+            'user': user,
+            'token': user.confirmation_token,
+        }
+
+        self.send_email('[Arkavidia] Konfirmasi Email', context, text_template, html_template)
         user.confirmation_email_last_sent_time = timezone.now()
         user.save()
 
@@ -36,7 +37,13 @@ class UserService:
         html_template = get_template('password_reset_confirmation_email.html')
 
         user = password_reset_attempt.user
-        self.send_email(user, '[Arkavidia] Reset Password', text_template, html_template)
+
+        context = {
+            'user': user,
+            'token': user.confirmation_token,
+        }
+
+        self.send_email(user, '[Arkavidia] Reset Password', context, text_template, html_template)
 
         password_reset_attempt.sent_time = timezone.now()
         password_reset_attempt.save()
