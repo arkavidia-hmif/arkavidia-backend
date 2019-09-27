@@ -24,7 +24,9 @@ jobs:
         pipenv install --dev
     - name: Lint with flake8
       run: |
+        pipenv shell
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
     - name: Test django
       run: |
+        pipenv shell
         python manage.py test -v 3
