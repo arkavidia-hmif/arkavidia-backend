@@ -6,9 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class User(AbstractUser):
-    """
+    '''
     User model.
-    """
+    We dont need the username. Login will use email.
+    First name and last name is joined as full name.
+    User have is_email_confirmed. The account wont be able
+    to be used if this field is false.
+    Confirmation token for the email confirmation is saved too.
+    '''
     username = None
     first_name = None
     last_name = None
@@ -25,9 +30,9 @@ class User(AbstractUser):
 
 
 class PasswordResetAttempt(models.Model):
-    """
+    '''
     An attempt to confirm password reset using email.
-    """
+    '''
     user = models.OneToOneField(to=User, related_name='password_reset_attempt', on_delete=models.CASCADE)
     token = models.CharField(max_length=30, default=generate_random_token, unique=True)
     sent_time = models.DateTimeField(null=True, blank=True)
