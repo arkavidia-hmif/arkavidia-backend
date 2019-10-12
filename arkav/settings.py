@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'nested_admin',
     'arkav.arkavauth',
     # 'arkav.uploader',
-    # 'arkav.competition',
+    'arkav.competition',
     # 'arkav.preevent',
     # 'arkav.quiz',
     # 'arkav.seminar',
