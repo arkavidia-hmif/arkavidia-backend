@@ -36,11 +36,12 @@ class RegisterTeamTestCase(APITestCase):
 
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
         self.assertEqual(Team.objects.count(), 1)
-        self.assertEqual(Team.objects.first().name, self.team_name)
-        self.assertEqual(Team.objects.first().team_members.count(), 1)
-        self.assertEqual(Team.objects.first().team_members.first().user.email, self.user1.email)
+
+        team1 = Team.objects.first()
+        self.assertEqual(team1.name, self.team_name)
+        self.assertEqual(team1.team_members.count(), 1)
+        self.assertEqual(team1.team_members.first().user.email, self.user1.email)
 
     def test_register_team_unauthorized(self):
         '''
