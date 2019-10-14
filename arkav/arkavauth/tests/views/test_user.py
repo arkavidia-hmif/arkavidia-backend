@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
 
+
 class PasswordChangeTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
@@ -34,7 +35,6 @@ class PasswordChangeTestCase(APITestCase):
     def test_password_change_invalid_old_password(self):
         '''
         If the old password is wrong, the password won't be changed
-
         '''
         url = reverse('auth-change-password')
         self.client.force_authenticate(user=self.user1)
