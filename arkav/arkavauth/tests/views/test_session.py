@@ -4,6 +4,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+
 class SessionTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
@@ -25,5 +26,5 @@ class SessionTestCase(APITestCase):
         If the user is not logged in, will get 403
         '''
         url = reverse('auth-current-session')
-        res = self.client.get(url, format='json')   
+        res = self.client.get(url, format='json')
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)

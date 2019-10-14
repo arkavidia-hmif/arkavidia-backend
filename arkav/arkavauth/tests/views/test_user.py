@@ -46,7 +46,6 @@ class PasswordChangeTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(res.data['code'], 'password_change_failed')
         self.assertEqual(res.data['detail'], 'Wrong old password.')
-        
         failedLogin = self.client.login(username='yonas@gmail.com', password='wrong_password')
         self.assertFalse(failedLogin)
         failedLogin = self.client.login(username='yonas@gmail.com', password='new_password')
@@ -86,7 +85,7 @@ class EditUserTestCase(APITestCase):
         data = {
             'full_name': 'Jones',
             'email': 'jones@gmail.com',
-            'is_staff': True, 
+            'is_staff': True,
             'is_active': False,
             'is_email_confirmed': False
         }
@@ -96,3 +95,4 @@ class EditUserTestCase(APITestCase):
         self.assertNotEqual(fullnameBefore, fullnameAfter)
         self.assertEqual(fullnameAfter, 'Jones')
         self.assertEqual(emailBefore, emailAfter)
+        self.assertEqual(emailAfter, 'yonas@gmail.com')
