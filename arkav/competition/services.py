@@ -1,7 +1,6 @@
 from arkav.competition.models import TaskResponse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
-from django.utils import timezone
 
 
 class TeamService:
