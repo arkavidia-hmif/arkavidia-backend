@@ -9,6 +9,5 @@
       "**/.hg": true,
       "**/CVS": true,
       "**/.DS_Store": true
-    },
-    "python.pythonPath": "C:\\Users\\HP\\.virtualenvs\\ARKAV_BACKEND-jEFfs5rm\\Scripts\\python.exe"
+    }
 }
