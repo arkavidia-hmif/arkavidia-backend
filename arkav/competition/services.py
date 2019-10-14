@@ -58,5 +58,4 @@ class TeamMemberService:
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         mail.send()
-        team_member.email_last_sent_at = timezone.now()
         team_member.save()
