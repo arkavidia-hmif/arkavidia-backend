@@ -24,7 +24,7 @@ class PasswordChangeTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['code'], 'password_change_succesful')
+        self.assertEqual(res.data['code'], 'password_change_successful')
         self.assertEqual(res.data['detail'], 'Your password has been changed.')
 
         failedLogin = self.client.login(username='yonas@gmail.com', password='password')
