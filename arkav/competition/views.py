@@ -34,7 +34,6 @@ class RegisterTeamView(views.APIView):
         request_serializer.is_valid(raise_exception=True)
         competition = request_serializer.validated_data['competition_id']
         team_name = request_serializer.validated_data['name']
-        team_category = request_serializer.validated_data['category']
         team_institution = request_serializer.validated_data['institution']
 
         # Only register if registration is open for this competition
@@ -52,7 +51,6 @@ class RegisterTeamView(views.APIView):
                 new_team = Team.objects.create(
                     competition=competition,
                     name=team_name,
-                    category=team_category,
                     institution=team_institution,
                     team_leader=request.user
                 )
