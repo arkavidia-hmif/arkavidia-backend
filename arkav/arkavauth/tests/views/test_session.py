@@ -10,7 +10,6 @@ class SessionTestCase(APITestCase):
         self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
                                               full_name='Yonas Adiel',
                                               is_email_confirmed=True)
-        self.user2 = User.objects.create_user('nella@gmail.com', 'password')
 
     def test_session(self):
         '''

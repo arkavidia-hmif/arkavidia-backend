@@ -30,7 +30,7 @@ def password_change_view(request):
     request.user.save()
 
     return Response({
-        'code': 'password_change_',
+        'code': 'password_change_successful',
         'detail': 'Your password has been changed.'
     })
 
