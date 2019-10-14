@@ -12,7 +12,6 @@ from arkav.competition.services import TaskResponseService
 from arkav.competition.services import TeamService
 from arkav.competition.services import TeamMemberService
 from django.core.exceptions import SuspiciousOperation
-from django.db import transaction
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics, views
 from rest_framework.response import Response
