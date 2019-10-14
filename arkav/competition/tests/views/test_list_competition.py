@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class CompetitionTestCase(APITestCase):
+class ListCompetitionTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
 
