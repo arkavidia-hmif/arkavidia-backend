@@ -84,7 +84,11 @@ class AddTeamMemberView(views.APIView):
         email = request_serializer.validated_data['email'].lower()
 
         with transaction.atomic():
-            team = get_object_or_404(Team.objects.all(), id=self.kwargs['team_id'])
+            team = get_object_or_404(
+                Team.objects.all(),
+                id=self.kwargs['team_id'],
+                team_members__user=self.request.user
+            )
             self.check_object_permissions(self.request, team)
 
             # Check whether registration is open for this competition
