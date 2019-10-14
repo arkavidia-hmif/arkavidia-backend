@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class ListCompetitionTestCase(APITestCase):
+class ListCompetitionsTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
 
@@ -14,7 +14,7 @@ class ListCompetitionTestCase(APITestCase):
         self.competition_ctf = Competition.objects.create(name='Capture the Flag', max_team_members=3)
         self.competition_without_stages = Competition.objects.create(name='Empty')
 
-    def test_list_competition(self):
+    def test_list_competitions(self):
         '''
         List of competitions will be returned
         '''
@@ -29,7 +29,7 @@ class ListCompetitionTestCase(APITestCase):
             competition = Competition.objects.get(id=res_competition['id'])
             self.assertDictEqual(res_competition, CompetitionSerializer(competition).data)
 
-    def test_list_competition_unauthorized(self):
+    def test_list_competitions_unauthorized(self):
         '''
         If the user hasnt logged in, the result will be 403
         '''
