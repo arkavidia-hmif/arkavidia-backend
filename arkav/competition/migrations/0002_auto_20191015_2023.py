@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
                 ('message', models.CharField(max_length=1000)),
                 ('date_sent', models.DateTimeField(default=datetime.datetime.now)),
                 ('user', models.ForeignKey(
-                    on_delete=django.db.models.deletion.CASCADE, 
-                    related_name='announcements', 
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='announcements',
                     to=settings.AUTH_USER_MODEL)),
             ],
         ),
