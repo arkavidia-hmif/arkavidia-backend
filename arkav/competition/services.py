@@ -1,3 +1,4 @@
+from arkav.competition.models import Announcement
 from arkav.competition.models import TaskResponse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
@@ -60,3 +61,9 @@ class TeamMemberService:
         mail.send()
         team_member.email_last_sent_at = timezone.now()
         team_member.save()
+
+
+class AnnouncementService():
+
+    def send_announcement(self, user, message):
+        Announcement.objects.create(message=message, user=user)
