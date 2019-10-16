@@ -12,16 +12,20 @@ from rest_framework.test import APITestCase
 
 class SubmitTaskTestCase(APITestCase):
     def setUp(self):
-        self.competition_ctf = Competition.objects.create(name='Capture the Flag', max_team_members=3)
-        self.ctf_stage_registration = self.competition_ctf.stages.create(name='CTF Registration', order=1)
+        self.competition_ctf = Competition.objects.create(
+            name='Capture the Flag', max_team_members=3)
+        self.ctf_stage_registration = self.competition_ctf.stages.create(
+            name='CTF Registration', order=1)
 
         self.user1 = User.objects.create_user(email='user1')
         self.user2 = User.objects.create_user(email='user2')
 
-        self.ctf_team1 = Team.objects.create(name='ctf1', competition=self.competition_ctf, team_leader=self.user1)
+        self.ctf_team1 = Team.objects.create(
+            name='ctf1', competition=self.competition_ctf, team_leader=self.user1)
         TeamMember.objects.create(team=self.ctf_team1, user=self.user1)
 
-        self.ctf_team2 = Team.objects.create(name='ctf2', competition=self.competition_ctf, team_leader=self.user2)
+        self.ctf_team2 = Team.objects.create(
+            name='ctf2', competition=self.competition_ctf, team_leader=self.user2)
         TeamMember.objects.create(team=self.ctf_team2, user=self.user2)
 
         self.category_documents = TaskCategory.objects.create(name='Documents')
@@ -39,9 +43,8 @@ class SubmitTaskTestCase(APITestCase):
         '''
         Submitting at other task
         '''
-        url = reverse('competition-team-task-detail', 
-                kwargs={'team_id': self.ctf_team1.pk, 
-                'task_id': self.ctf_upload_ktm_task.pk})
+        url = reverse('competition-team-task-detail',
+            kwargs={'team_id': self.ctf_team1.pk, 'task_id': self.ctf_upload_ktm_task.pk})
         self.client.force_authenticate(self.user2)
         data = {
             'response': 'Upload KTM'
