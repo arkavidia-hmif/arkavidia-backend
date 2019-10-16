@@ -43,7 +43,8 @@ class SubmitTaskTestCase(APITestCase):
         '''
         Submitting at other task
         '''
-        url = reverse('competition-team-task-detail',
+        url = reverse(
+            'competition-team-task-detail', 
             kwargs={'team_id': self.ctf_team1.pk, 'task_id': self.ctf_upload_ktm_task.pk})
         self.client.force_authenticate(self.user2)
         data = {
