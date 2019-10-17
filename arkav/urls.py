@@ -8,7 +8,7 @@ urlpatterns = [
 
     # API routes
     path('api/auth/', include('arkav.arkavauth.urls')),
-    # path('api/upload/', include('arkav.uploader.urls')),
+    path('api/uploader/', include('arkav.uploader.urls')),
     path('api/competitions/', include('arkav.competition.urls')),
     # path('api/preevent/', include('arkav.preevent.urls')),
     # path('api/quiz/', include('arkav.quiz.urls')),
