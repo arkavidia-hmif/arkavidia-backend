@@ -3,8 +3,8 @@ from arkav.competition.models import TaskResponse
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import User
-from django.core.exceptions import SuspiciousOperation
 from django.core.mail import EmailMultiAlternatives
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
@@ -53,17 +53,17 @@ class TeamService:
 
         # Only register if registration is open for this competition
         if not competition.is_registration_open:
-            raise SuspiciousOperation({
-                'code': 'competition_registration_closed',
-                'detail': 'The competition you are trying to register to is not open for registration.'
-            })
+            raise ValidationError(
+                'The competition you are trying to register to is not open for registration.',
+                code='competition_registration_closed',
+            )
 
         # A user can't register in a competition if he/she already participated in the same competition
         if TeamMember.objects.filter(team__competition=competition, user=user).exists():
-            raise SuspiciousOperation({
-                'code': 'competition_already_registered',
-                'detail': 'One user can only participate in one team per competition.'
-            })
+            raise ValidationError(
+                'One user can only participate in one team per competition.',
+                code='competition_already_registered',
+            )
 
         # Create a new team led by the current user
         new_team = Team.objects.create(
@@ -118,24 +118,24 @@ class TeamMemberService:
 
         # Check whether registration is open for this competition
         if not team.competition.is_registration_open:
-            raise SuspiciousOperation({
-                'code': 'competition_registration_closed',
-                'detail': 'The competition you are trying to register to is not open for registration.'
-            })
+            raise ValidationError(
+                'The competition you are trying to register to is not open for registration.',
+                code='competition_registration_closed',
+            )
 
         # Check whether team is still participating in the competition
         if not team.is_participating:
-            raise SuspiciousOperation({
-                'code': 'team_not_participating',
-                'detail': 'Your team is no longer participating in this competition.'
-            })
+            raise ValidationError(
+                'Your team is no longer participating in this competition.',
+                code='team_not_participating',
+            )
 
         # Check whether this team is full
         if team.team_members.count() >= team.competition.max_team_members:
-            raise SuspiciousOperation({
-                'code': 'team_full',
-                'detail': 'You have exceeded the maximum team members limit.'
-            })
+            raise ValidationError(
+                'You have exceeded the maximum team members limit.',
+                code='team_full',
+            )
 
         try:
             member_user = User.objects.get(email=email)
@@ -170,10 +170,10 @@ class TaskResponseService:
         )
 
         if not team.is_participating:
-            raise SuspiciousOperation({
-                'code': 'team_not_participating',
-                'detail': 'Your team is no longer participating in this competition.'
-            })
+            raise ValidationError(
+                'Your team is no longer participating in this competition.',
+                code='team_not_participating',
+            )
 
         # A team can only respond to tasks in the currently active stage
         task = get_object_or_404(
