@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'nested_admin',
     'arkav.arkavauth',
+    'arkav.announcement',
     # 'arkav.uploader',
     'arkav.competition',
     # 'arkav.preevent',
