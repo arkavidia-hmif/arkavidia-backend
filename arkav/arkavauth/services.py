@@ -16,7 +16,6 @@ class UserService:
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         mail.send()
-        user.email_last_sent_at = timezone.now()
         user.save()
 
     def send_registration_confirmation_email(self, user):

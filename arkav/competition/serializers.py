@@ -44,10 +44,10 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
         fields = (
-            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'email_last_sent_at', 'created_at'
+            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'created_at'
         )
         read_only_fields = (
-            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'email_last_sent_at', 'created_at'
+            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'created_at'
         )
 
 
