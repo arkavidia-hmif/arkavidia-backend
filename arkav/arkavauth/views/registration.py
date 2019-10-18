@@ -30,7 +30,7 @@ def registration_view(request):
         UserService().send_email(user)
 
     return Response({
-        'code': 'registration_succesful',
+        'code': 'registration_successful',
         'detail': 'Email confirmation link has been sent to your email.'
     })
 
@@ -56,6 +56,6 @@ def registration_confirmation_view(request):
             user.save()
 
     return Response({
-        'code': 'registration_confirmation_succesful',
-        'detail': 'Your email has been succesfully confirmed.'
+        'code': 'registration_confirmation_successful',
+        'detail': 'Your email has been successfully confirmed.'
     })
