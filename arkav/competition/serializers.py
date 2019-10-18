@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from arkav.arkavauth.models import User
-from arkav.competition.models import Announcement
 from arkav.competition.models import Competition
 from arkav.competition.models import Stage
 from arkav.competition.models import Task
@@ -106,11 +105,3 @@ class RegisterTeamRequestSerializer(serializers.Serializer):
 class AddTeamMemberRequestSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=75)
     email = serializers.EmailField()
-
-
-class AnnouncementSerializer(serializers.Serializer):
-
-    class Meta:
-        model = Announcement
-        fields = ('user', 'message', 'date_sent')
-        read_only_fields = ('user', 'message', 'date_sent')

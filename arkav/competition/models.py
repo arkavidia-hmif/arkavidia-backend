@@ -3,7 +3,6 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from datetime import datetime
 
 
 @receiver(post_save, sender=User)
@@ -233,9 +232,3 @@ class TaskResponse(models.Model):
     class Meta:
         unique_together = (('task', 'team'),)  # Each team can only have at most 1 task response per task
         get_latest_by = 'created_at'
-
-
-class Announcement(models.Model):
-    user = models.ForeignKey(to=User, related_name='announcements', on_delete=models.CASCADE)
-    message = models.CharField(max_length=1000)
-    date_sent = models.DateTimeField(default=datetime.now)

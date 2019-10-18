@@ -1,12 +1,10 @@
 from arkav.arkavauth.models import User
-from arkav.competition.models import Announcement
 from arkav.competition.models import Competition
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import Task
 from arkav.competition.models import TaskResponse
 from arkav.competition.serializers import AddTeamMemberRequestSerializer
-from arkav.competition.serializers import AnnouncementSerializer
 from arkav.competition.serializers import CompetitionSerializer
 from arkav.competition.serializers import RegisterTeamRequestSerializer
 from arkav.competition.serializers import TeamSerializer
@@ -229,12 +227,3 @@ class SubmitTaskResponseView(views.APIView):
                 'code': 'team_not_participating',
                 'detail': 'Your team is no longer participating in this competition.'
             }, status=status.HTTP_400_BAD_REQUEST)
-
-
-class ListAnnouncementsView(views.APIView):
-    serializer_class = AnnouncementSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def get_queryset(self):
-        # User should only be able to see teams in which he/she is a member
-        return Announcement.objects.filter(user=self.request.user)
