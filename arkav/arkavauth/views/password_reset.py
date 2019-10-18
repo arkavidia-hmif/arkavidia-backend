@@ -70,6 +70,6 @@ def password_reset_confirmation_view(request):
         attempt.save()
 
     return Response({
-        'code': 'password_reset_succesful',
-        'detail': 'Your password has been succesfully reset.'
+        'code': 'password_reset_successful',
+        'detail': 'Your password has been successfully reset.'
     })

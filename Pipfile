@@ -4,20 +4,21 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django = "*"
-djangorestframework = "*"
-djangorestframework-camel-case = "*"
-django-nested-admin = "*"
-dj-database-url = "*"
-requests = "*"
-gunicorn = "*"
+"boto3" = "==1.9.248"
+django = "==2.2.6"
+djangorestframework = "==3.10.3"
+djangorestframework-camel-case = "==1.1.1"
+django-nested-admin = "==3.2.4"
+django-storages = "==1.7.2"
+dj-database-url = "==0.5.0"
+gunicorn = "==19.9.0"
+requests = "==2.22.0"
 
 [dev-packages]
-factory-boy = "*"
-"flake8" = "*"
-"pep8" = "*"
-pylint = "*"
-pylint-django = "*"
+"flake8" = "==3.7.8"
+"pep8" = "==1.7.1"
+pylint = "==2.4.2"
+pylint-django = "==2.0.11"
 
 [requires]
 python_version = "3.6"
