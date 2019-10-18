@@ -7,18 +7,18 @@ from rest_framework.test import APITestCase
 
 class SessionTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
-                                              full_name='Yonas Adiel',
-                                              is_email_confirmed=True)
+        self.user = User.objects.create_user('yonas@gmail.com', 'password',
+                                             full_name='Yonas Adiel',
+                                             is_email_confirmed=True)
 
     def test_session(self):
         '''
         Will get user session
         '''
         url = reverse('auth-current-session')
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user)
         res = self.client.get(url, format='json')
-        self.assertEqual(res.data, UserSerializer(self.user1).data)
+        self.assertEqual(res.data, UserSerializer(self.user).data)
 
     def test_session_not_logged_in(self):
         '''

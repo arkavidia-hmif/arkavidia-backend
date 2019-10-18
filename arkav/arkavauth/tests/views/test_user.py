@@ -6,16 +6,16 @@ from rest_framework.test import APITestCase
 
 class PasswordChangeTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
-                                              full_name='Yonas Adiel',
-                                              is_email_confirmed=True)
+        self.user = User.objects.create_user('yonas@gmail.com', 'password',
+                                             full_name='Yonas Adiel',
+                                             is_email_confirmed=True)
 
     def test_password_change(self):
         '''
         Password will be changed
         '''
         url = reverse('auth-change-password')
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user)
         data = {
             'password': 'password',
             'new_password': 'new_password',
@@ -23,7 +23,6 @@ class PasswordChangeTestCase(APITestCase):
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data['code'], 'password_change_successful')
-        self.assertEqual(res.data['detail'], 'Your password has been changed.')
         failedLogin = self.client.login(username='yonas@gmail.com', password='password')
         self.assertFalse(failedLogin)
         successLogin = self.client.login(username='yonas@gmail.com', password='new_password')
@@ -34,7 +33,7 @@ class PasswordChangeTestCase(APITestCase):
         If the old password is wrong, the password won't be changed
         '''
         url = reverse('auth-change-password')
-        self.client.force_authenticate(user=self.user1)
+        self.client.force_authenticate(user=self.user)
         data = {
             'password': 'wrong_password',
             'new_password': 'new_password',
@@ -42,7 +41,6 @@ class PasswordChangeTestCase(APITestCase):
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(res.data['code'], 'password_change_failed')
-        self.assertEqual(res.data['detail'], 'Wrong old password.')
         failedLogin = self.client.login(username='yonas@gmail.com', password='wrong_password')
         self.assertFalse(failedLogin)
         failedLogin = self.client.login(username='yonas@gmail.com', password='new_password')
@@ -65,9 +63,9 @@ class PasswordChangeTestCase(APITestCase):
 
 class EditUserTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user('yonas@gmail.com', 'password',
-                                              full_name='Yonas Adiel',
-                                              is_email_confirmed=True)
+        self.user = User.objects.create_user('yonas@gmail.com', 'password',
+                                             full_name='Yonas Adiel',
+                                             is_email_confirmed=True)
 
     def test_edit_user(self):
         '''
@@ -75,9 +73,9 @@ class EditUserTestCase(APITestCase):
         the on that is read only on serializer
         '''
         url = reverse('auth-edit-user')
-        self.client.force_authenticate(user=self.user1)
-        fullnameBefore = self.user1.full_name
-        emailBefore = self.user1.email
+        self.client.force_authenticate(user=self.user)
+        fullnameBefore = self.user.full_name
+        emailBefore = self.user.email
         data = {
             'full_name': 'Jones',
             'email': 'jones@gmail.com',
