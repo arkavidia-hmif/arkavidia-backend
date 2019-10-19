@@ -1,7 +1,16 @@
-FROM python:3.7-slim
+FROM python:3.6-slim
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+WORKDIR /code
+COPY ./arkav/ /code/arkav
+COPY ./manage.py /code/
+COPY ./start.sh /code/
+COPY ./Pipfile /code/
+COPY ./Pipfile.lock /code/
+
 RUN pip install pipenv
-RUN pipenv install
+RUN pipenv install --system
+
+CMD ["/code/start.sh"]
