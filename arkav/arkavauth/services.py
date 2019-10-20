@@ -27,7 +27,7 @@ class UserService:
             'token': user.confirmation_token,
         }
 
-        self.send_email('[Arkavidia] Konfirmasi Email', context, text_template, html_template)
+        self.send_email('[Arkavidia] Konfirmasi Email', user, context, text_template, html_template)
         user.confirmation_email_last_sent_time = timezone.now()
         user.save()
 
