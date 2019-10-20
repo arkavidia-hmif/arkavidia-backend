@@ -4,11 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 WORKDIR /code
-COPY ./arkav/ /code/arkav
-COPY ./manage.py /code/
-COPY ./start.sh /code/
-COPY ./Pipfile /code/
-COPY ./Pipfile.lock /code/
+COPY . /code
 
 RUN pip install pipenv
 RUN pipenv install --system
