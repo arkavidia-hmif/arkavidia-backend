@@ -56,6 +56,9 @@ class LoginView(GenericAPIView):
 class LogoutView(GenericAPIView):
     permission_classes = (IsAuthenticated, )
 
+    def get_serializer_class(self):
+        return None
+
     @swagger_auto_schema(operation_summary='Logout')
     @method_decorator(ensure_csrf_cookie)
     def post(self, request):
