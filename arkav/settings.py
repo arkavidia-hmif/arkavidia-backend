@@ -9,10 +9,10 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 '''
-
+from corsheaders.defaults import default_headers
+from distutils.util import strtobool
 import os
 import dj_database_url
-from distutils.util import strtobool
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -171,8 +171,10 @@ SESSION_COOKIE_SECURE = strtobool(os.getenv('SESSION_COOKIE_SECURE', 'False'))
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = DEBUG
 CORS_ORIGIN_WHITELIST = [
-    'http://arkavidia.id',
-    'http://api.arkavidia.id',
     'https://arkavidia.id',
-    'https://api.arkavidia.id',
+    'https://www.arkavidia.id',
+    'https://preview.arkavidia.id',
+]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'set-cookie',
 ]
