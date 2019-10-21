@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
-] if not DEBUG else ['*']
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -167,3 +167,12 @@ CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_
 
 CSRF_COOKIE_SECURE = strtobool(os.getenv('CSRF_COOKIE_SECURE', 'False'))
 SESSION_COOKIE_SECURE = strtobool(os.getenv('SESSION_COOKIE_SECURE', 'False'))
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = DEBUG
+CORS_ORIGIN_WHITELIST = [
+    'http://arkavidia.id',
+    'http://api.arkavidia.id',
+    'https://arkavidia.id',
+    'https://api.arkavidia.id',
+]
