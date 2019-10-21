@@ -8,6 +8,7 @@ from arkav.arkavauth.services import UserService
 from arkav.arkavauth.views.openapi.registration import registration_responses
 from arkav.arkavauth.views.openapi.registration import registration_confirmation_responses
 from arkav.utils.permissions import IsNotAuthenticated
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -24,7 +25,6 @@ class RegistrationView(GenericAPIView):
 
     @swagger_auto_schema(responses=registration_responses, operation_summary='Registration')
     @method_decorator(ensure_csrf_cookie)
-    @method_decorator(sensitive_post_parameters('password'))
     def post(self, request):
         request_serializer = self.serializer_class(data=request.data)
         request_serializer.is_valid(raise_exception=True)
@@ -40,7 +40,7 @@ class RegistrationView(GenericAPIView):
 
         return Response({
             'code': K_REGISTRATION_SUCCESSFUL,
-            'detail': 'Email confirmation link has been sent to your email.'
+            'detail': 'Email confirmation link has been sent to your email.',
         })
 
 
@@ -63,7 +63,7 @@ class RegistrationConfirmationView(GenericAPIView):
                     'detail': 'Invalid token.'
                 }, status=status.HTTP_400_BAD_REQUEST)
 
-            if not user.is_confirmed:
+            if not user.is_email_confirmed:
                 user.is_email_confirmed = True
                 user.save()
 

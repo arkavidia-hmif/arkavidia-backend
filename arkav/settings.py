@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
-] if DEBUG else ['*']
+] if not DEBUG else ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -148,7 +148,7 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
         'rest_framework.parsers.FormParser',
     ],
-    # 'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'arkav.utils.exceptions.exception_handler_with_code',
 }
 
 # Email settings

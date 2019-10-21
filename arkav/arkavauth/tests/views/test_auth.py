@@ -53,4 +53,11 @@ class LoginTestCase(APITestCase):
         '''
         User won't be able to login if the user has already login (403)
         '''
-        pass
+        url = reverse('auth-login')
+        data = {
+            'email': 'YONAS@GMAIL.COM',
+            'password': 'password',
+        }
+        self.client.force_authenticate(self.user1)
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
