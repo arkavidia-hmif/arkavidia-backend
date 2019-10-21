@@ -29,6 +29,7 @@ DEBUG = os.getenv('DEBUG') != 'False'
 
 ALLOWED_HOSTS = [
     'dashboard.arkavidia.id',
+    'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
 ]

@@ -1,5 +1,5 @@
 #!/bin/sh
 
 /code/manage.py migrate
-cd /code
-gunicorn arkav.wsgi
+/code/manage.py collectstatic
+gunicorn --pythonpath backend arkav.wsgi --bind 0.0.0.0:8000
