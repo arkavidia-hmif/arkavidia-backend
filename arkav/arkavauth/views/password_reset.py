@@ -16,8 +16,6 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.debug import sensitive_post_parameters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.decorators import permission_classes
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 
@@ -56,7 +54,8 @@ class PasswordResetConfirmationView(GenericAPIView):
     serializer_class = PasswordResetConfirmationRequestSerializer
     permission_classes = (IsNotAuthenticated, )
 
-    @swagger_auto_schema(responses=password_reset_confirmation_responses, operation_summary='Password Reset Confirmation')
+    @swagger_auto_schema(responses=password_reset_confirmation_responses,
+                         operation_summary='Password Reset Confirmation')
     @method_decorator(ensure_csrf_cookie)
     @method_decorator(sensitive_post_parameters('new_password'))
     def post(self, request):
