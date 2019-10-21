@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'nested_admin',
+    'corsheaders',
     'arkav.arkavauth',
     'arkav.announcement',
     # 'arkav.uploader',
@@ -57,6 +58,7 @@ AUTH_USER_MODEL = 'arkavauth.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

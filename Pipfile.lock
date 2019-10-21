@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "2160b2c1491dbe4e8508eb7cc2af498e9f2a23a0904f19739e83f500a29d0f66"
+            "sha256": "a5b387391793f5080a000e824192d1f933631df6ee4175d016fa8357a7f7e2f6"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -74,6 +74,14 @@
             ],
             "index": "pypi",
             "version": "==2.2.6"
+        },
+        "django-cors-headers": {
+            "hashes": [
+                "sha256:5762ec9c2d59f38c76828dc1d4308baca4bc0d3e1d6f217683e7a24a1c4611a3",
+                "sha256:ee02f4b699e9b6645602a46d0adb430ee940a1bf8df64f77e516f8d7711fee60"
+            ],
+            "index": "pypi",
+            "version": "==3.1.1"
         },
         "django-nested-admin": {
             "hashes": [
