@@ -9,10 +9,11 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 '''
-
-import os
-import dj_database_url
+from corsheaders.defaults import default_headers
+from datetime import timedelta
 from distutils.util import strtobool
+import dj_database_url
+import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -29,6 +30,7 @@ DEBUG = os.getenv('DEBUG') != 'False'
 
 ALLOWED_HOSTS = [
     'dashboard.arkavidia.id',
+    'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
 ]
@@ -43,11 +45,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework.authtoken',
+    'drf_yasg',
     'nested_admin',
+<<<<<<< HEAD
     'storages',
 
     'arkav.arkavauth',
     'arkav.uploader',
+=======
+    'corsheaders',
+    'arkav.arkavauth',
+    'arkav.announcement',
+    # 'arkav.uploader',
+>>>>>>> develop
     'arkav.competition',
     # 'arkav.preevent',
     # 'arkav.quiz',
@@ -57,6 +68,8 @@ AUTH_USER_MODEL = 'arkavauth.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -128,9 +141,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(BASE_DIR, 'static/'))
-
-# Uploaded File
-# Uploader will upload file to here
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'IUY7TYGU876R5E4SXRCV')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '9UAHUGDYQDNKKMKOIU8Y76T#$t%tFVWQ24T3tFWE')
@@ -151,6 +162,9 @@ DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 # Rest Framework Settings
 REST_FRAMEWORK = {
     'CHARSET': 'utf-8',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
     'DEFAULT_PERMISSION_CLASSES': [],
     'DEFAULT_RENDERER_CLASSES': [
         'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
@@ -160,6 +174,33 @@ REST_FRAMEWORK = {
         'djangorestframework_camel_case.parser.CamelCaseJSONParser',
         'rest_framework.parsers.FormParser',
     ],
+    'EXCEPTION_HANDLER': 'arkav.utils.exceptions.exception_handler_with_code',
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUDIENCE': None,
+    'ISSUER': None,
+
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'email',
+    'USER_ID_CLAIM': 'email',
+
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'type',
+
+    'JTI_CLAIM': 'jti',
+
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(days=1),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
 # Email settings
@@ -176,3 +217,51 @@ CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_
 
 CSRF_COOKIE_SECURE = strtobool(os.getenv('CSRF_COOKIE_SECURE', 'False'))
 SESSION_COOKIE_SECURE = strtobool(os.getenv('SESSION_COOKIE_SECURE', 'False'))
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_ALLOW_ALL = DEBUG
+CORS_ORIGIN_WHITELIST = [
+    'https://arkavidia.id',
+    'https://www.arkavidia.id',
+    'https://preview.arkavidia.id',
+]
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'set-cookie',
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'fileError': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': './arkav-error.log' if DEBUG else '/arkavlog/error.log',
+            'formatter': 'simple',
+        },
+        'fileInfo': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './arkav-info.log' if DEBUG else '/arkavlog/info.log',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'arkav': {
+            'handlers': ['fileInfo', 'fileError'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['fileInfo', 'fileError'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

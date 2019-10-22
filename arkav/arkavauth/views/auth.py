@@ -1,62 +1,31 @@
-from arkav.arkavauth.serializers import UserSerializer
 from arkav.arkavauth.serializers import LoginRequestSerializer
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
-from django.contrib.auth import logout
+from arkav.arkavauth.views.openapi.auth import login_responses
+from arkav.utils.exceptions import ArkavAPIException
+from arkav.utils.permissions import IsNotAuthenticated
+from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.debug import sensitive_post_parameters
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
-@ensure_csrf_cookie
-@api_view(['GET'])
-@permission_classes((IsAuthenticated, ))
-def get_current_session_view(request):
-    response_serializer = UserSerializer(request.user)
-    return Response(data=response_serializer.data)
+class LoginView(TokenObtainPairView):
+    permission_classes = (IsNotAuthenticated, )
+    serializer_class = LoginRequestSerializer
 
+    @swagger_auto_schema(responses=login_responses, operation_summary='Login')
+    @method_decorator(ensure_csrf_cookie)
+    def post(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
 
-@ensure_csrf_cookie
-@sensitive_post_parameters('password')
-@api_view(['POST'])
-def login_view(request):
-    request_serializer = LoginRequestSerializer(data=request.data)
-    request_serializer.is_valid(raise_exception=True)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        except ArkavAPIException as e:
+            return e.as_response()
 
-    user = authenticate(
-        email=request_serializer.validated_data['email'].lower(),
-        password=request_serializer.validated_data['password'],
-    )
-    if user is None:
-        return Response(
-            {
-                'code': 'login_failed',
-                'detail': 'Wrong email or password.',
-            },
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
-
-    if not user.is_email_confirmed:
-        return Response(
-            {
-                'code': 'account_email_not_confirmed',
-                'detail': 'Account email hasn\'t been confirmed. Check inbox for confirmation email.',
-            },
-            status=status.HTTP_401_UNAUTHORIZED,
-        )
-
-    login(request, user)
-    response_serializer = UserSerializer(request.user)
-    return Response(data=response_serializer.data)
-
-
-@ensure_csrf_cookie
-@api_view(['POST'])
-@permission_classes((IsAuthenticated, ))
-def logout_view(request):
-    logout(request)
-    return Response()
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)

@@ -1,9 +1,10 @@
 .DS_Store
 .env
 .tmp_commits_squashed
-*.pyc
 db.sqlite3
 static
 venv
 .vscode
-*.log
+.github
+.git
+.gitignore
