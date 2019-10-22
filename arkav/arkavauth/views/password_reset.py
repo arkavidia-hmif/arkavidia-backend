@@ -34,9 +34,9 @@ class PasswordResetView(GenericAPIView):
         with transaction.atomic():
             user = User.objects.filter(email=email).first()
             if user is not None:
-                # Overwrite existing password reset confirmation attempt, if present
-                if hasattr(user, 'password_reset_confirmation_attempt'):
-                    user.password_reset_confirmation_attempt.delete()
+                # Overwrite existing password reset attempt, if present
+                if hasattr(user, 'password_reset_attempt'):
+                    user.password_reset_attempt.delete()
                 attempt = PasswordResetAttempt.objects.create(user=user)
                 UserService().send_password_reset_email(attempt)
 
