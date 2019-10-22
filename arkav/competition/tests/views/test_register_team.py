@@ -45,7 +45,7 @@ class RegisterTeamTestCase(APITestCase):
 
     def test_register_team_unauthorized(self):
         '''
-        If user isn't logged in, returns 403
+        If user isn't logged in, returns 401
         '''
         url = reverse('competition-team-register')
 
@@ -56,7 +56,7 @@ class RegisterTeamTestCase(APITestCase):
         }
 
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_register_team_already_registered(self):
         '''

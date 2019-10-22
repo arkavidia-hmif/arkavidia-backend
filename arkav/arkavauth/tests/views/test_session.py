@@ -20,10 +20,10 @@ class SessionTestCase(APITestCase):
         res = self.client.get(url, format='json')
         self.assertEqual(res.data, UserSerializer(self.user).data)
 
-    def test_session_not_logged_in(self):
+    def test_session_unauthorized(self):
         '''
-        If the user is not logged in, will get 403
+        If the user is not logged in, will get 401
         '''
         url = reverse('auth-current-session')
         res = self.client.get(url, format='json')
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

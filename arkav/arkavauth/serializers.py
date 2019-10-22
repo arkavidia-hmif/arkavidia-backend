@@ -1,6 +1,12 @@
+from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
+from arkav.arkavauth.constants import K_LOGIN_FAILED
 from arkav.arkavauth.models import User
+from arkav.utils.exceptions import ArkavAPIException
+from rest_framework import exceptions
 from rest_framework import serializers
+from rest_framework import status
 from rest_framework.validators import UniqueValidator
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,9 +26,33 @@ class UserSerializer(serializers.ModelSerializer):
                             'is_email_confirmed', 'last_login', 'date_joined')
 
 
-class LoginRequestSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-    password = serializers.CharField()
+class LoginRequestSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['name'] = user.full_name
+
+        return token
+
+    def validate(self, attrs):
+        try:
+            data = super().validate(attrs)
+        except exceptions.AuthenticationFailed:
+            raise ArkavAPIException(
+                detail='Wrong email / password',
+                code=K_LOGIN_FAILED,
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        if (not self.user.is_email_confirmed):
+            raise ArkavAPIException(
+                detail='User email is not confirmed',
+                code=K_ACCOUNT_EMAIL_NOT_CONFIRMED,
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        return data
 
 
 class RegistrationRequestSerializer(serializers.Serializer):

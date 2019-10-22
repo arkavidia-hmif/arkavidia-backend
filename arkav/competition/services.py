@@ -3,12 +3,13 @@ from arkav.competition.models import TaskResponse
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import User
+from arkav.utils.exceptions import ArkavAPIException
 from django.core.mail import EmailMultiAlternatives
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.utils import timezone
+from rest_framework import status
 
 
 class TeamService:
@@ -40,7 +41,7 @@ class TeamService:
         mail = EmailMultiAlternatives(
             subject='Reminder Lomba Arkavidia 5.0',
             body=mail_text_message,
-            to=addresses
+            to=addresses,
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         mail.send()
@@ -53,16 +54,18 @@ class TeamService:
 
         # Only register if registration is open for this competition
         if not competition.is_registration_open:
-            raise ValidationError(
-                'The competition you are trying to register to is not open for registration.',
+            raise ArkavAPIException(
+                detail='The competition you are trying to register to is not open for registration.',
                 code='competition_registration_closed',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # A user can't register in a competition if he/she already participated in the same competition
         if TeamMember.objects.filter(team__competition=competition, user=user).exists():
-            raise ValidationError(
-                'One user can only participate in one team per competition.',
+            raise ArkavAPIException(
+                detail='One user can only participate in one team per competition.',
                 code='competition_already_registered',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # Create a new team led by the current user
@@ -70,7 +73,7 @@ class TeamService:
             competition=competition,
             name=team_name,
             institution=team_institution,
-            team_leader=user
+            team_leader=user,
         )
 
         # Add the current user as team member
@@ -113,28 +116,31 @@ class TeamMemberService:
         team = get_object_or_404(
             Team.objects.all(),
             id=team_id,
-            team_members__user=user
+            team_members__user=user,
         )
 
         # Check whether registration is open for this competition
         if not team.competition.is_registration_open:
-            raise ValidationError(
-                'The competition you are trying to register to is not open for registration.',
+            raise ArkavAPIException(
+                detail='The competition you are trying to register to is not open for registration.',
                 code='competition_registration_closed',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check whether team is still participating in the competition
         if not team.is_participating:
-            raise ValidationError(
-                'Your team is no longer participating in this competition.',
+            raise ArkavAPIException(
+                detail='Your team is no longer participating in this competition.',
                 code='team_not_participating',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check whether this team is full
         if team.team_members.count() >= team.competition.max_team_members:
-            raise ValidationError(
-                'You have exceeded the maximum team members limit.',
+            raise ArkavAPIException(
+                detail='You have exceeded the maximum team members limit.',
                 code='team_full',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         try:
@@ -144,14 +150,14 @@ class TeamMemberService:
                 team=team,
                 user=member_user,
                 invitation_full_name=member_user.full_name,
-                invitation_email=member_user.email
+                invitation_email=member_user.email,
             )
         except User.DoesNotExist:
             # The user specified by the email is not present, send invitation
             new_team_member = TeamMember.objects.create(
                 team=team,
                 invitation_full_name=full_name,
-                invitation_email=email
+                invitation_email=email,
             )
 
         self.send_invitation_email(new_team_member)
@@ -166,13 +172,14 @@ class TaskResponseService:
         team = get_object_or_404(
             Team.objects.all(),
             id=team_id,
-            team_members__user=user
+            team_members__user=user,
         )
 
         if not team.is_participating:
-            raise ValidationError(
-                'Your team is no longer participating in this competition.',
+            raise ArkavAPIException(
+                detail='Your team is no longer participating in this competition.',
                 code='team_not_participating',
+                status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # A team can only respond to tasks in the currently active stage
@@ -199,7 +206,7 @@ class TaskResponseService:
                 'response': response,
                 'status': task_response_status,
                 'last_submitted_at': timezone.now(),
-            }
+            },
         )
 
         return new_task_response[0]

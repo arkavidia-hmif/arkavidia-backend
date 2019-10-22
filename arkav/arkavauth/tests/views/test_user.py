@@ -1,3 +1,5 @@
+from arkav.arkavauth.constants import K_PASSWORD_CHANGE_FAILED
+from arkav.arkavauth.constants import K_PASSWORD_CHANGE_SUCCESSFUL
 from arkav.arkavauth.models import User
 from django.urls import reverse
 from rest_framework import status
@@ -22,7 +24,7 @@ class PasswordChangeTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data['code'], 'password_change_successful')
+        self.assertEqual(res.data['code'], K_PASSWORD_CHANGE_SUCCESSFUL)
         failedLogin = self.client.login(username='yonas@gmail.com', password='password')
         self.assertFalse(failedLogin)
         successLogin = self.client.login(username='yonas@gmail.com', password='new_password')
@@ -40,7 +42,7 @@ class PasswordChangeTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(res.data['code'], 'password_change_failed')
+        self.assertEqual(res.data['code'], K_PASSWORD_CHANGE_FAILED)
         failedLogin = self.client.login(username='yonas@gmail.com', password='wrong_password')
         self.assertFalse(failedLogin)
         failedLogin = self.client.login(username='yonas@gmail.com', password='new_password')
@@ -48,7 +50,7 @@ class PasswordChangeTestCase(APITestCase):
         successLogin = self.client.login(username='yonas@gmail.com', password='password')
         self.assertTrue(successLogin)
 
-    def test_password_change_not_logged_in(self):
+    def test_password_change_unauthorized(self):
         '''
         If the user hasnt been login, it wont be processed
         '''
@@ -58,7 +60,7 @@ class PasswordChangeTestCase(APITestCase):
             'new_password': 'new_password',
         }
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class EditUserTestCase(APITestCase):
@@ -84,8 +86,52 @@ class EditUserTestCase(APITestCase):
             'is_email_confirmed': False,
         }
         res = self.client.patch(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         fullnameAfter = res.data['full_name']
         emailAfter = res.data['email']
         self.assertNotEqual(fullnameBefore, fullnameAfter)
         self.assertEqual(fullnameAfter, data['full_name'])
         self.assertEqual(emailBefore, emailAfter)
+        self.assertFalse(self.user.is_staff)
+        self.assertTrue(self.user.is_active)
+        self.assertTrue(self.user.is_email_confirmed)
+
+    def test_edit_user_unauthorized(self):
+        '''
+        Will return 401 if user hasnt logged in
+        '''
+        url = reverse('auth-edit-user')
+        fullnameBefore = self.user.full_name
+        emailBefore = self.user.email
+        data = {
+            'full_name': 'Jones',
+            'email': 'jones@gmail.com',
+            'is_staff': True,
+            'is_active': False,
+            'is_email_confirmed': False,
+        }
+        res = self.client.patch(url, data=data, format='json')
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(fullnameBefore, self.user.full_name)
+        self.assertEqual(emailBefore, self.user.email)
+
+    def test_edit_user_wrong_user(self):
+        '''
+        Trying to edit other user is equally trying to edit email.
+        '''
+        user = User.objects.create_user(email='jones@gmail.com', full_name='Jones')
+        url = reverse('auth-edit-user')
+        fullnameBefore = self.user.full_name
+        emailBefore = self.user.email
+        self.client.force_authenticate(self.user)
+        data = {
+            'full_name': 'Jones Napoleon',
+            'email': user.email,
+        }
+        res = self.client.patch(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        user.refresh_from_db()
+        self.user.refresh_from_db()
+        self.assertEqual(user.full_name, 'Jones')
+        self.assertEqual(self.user.full_name, data['full_name'])

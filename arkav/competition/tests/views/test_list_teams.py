@@ -46,8 +46,8 @@ class ListTeamsTestCase(APITestCase):
 
     def test_list_teams_unauthorized(self):
         '''
-        If the user isn't logged in, returns 403
+        If the user isn't logged in, returns 401
         '''
         url = reverse('competition-team-list')
         res = self.client.get(url)
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

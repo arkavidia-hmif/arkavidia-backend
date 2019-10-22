@@ -11,11 +11,8 @@ from rest_framework.test import APITestCase
 class AddTeamMemberTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
-
-        self.competition_open = Competition.objects.create(
-            name='Open Competition', max_team_members=100)
-        Stage.objects.create(competition=self.competition_open,
-                             name='Open Competition Stage')
+        self.competition_open = Competition.objects.create(name='Open Competition', max_team_members=100)
+        Stage.objects.create(competition=self.competition_open, name='Open Competition Stage')
 
         self.team1 = Team.objects.create(
             competition=self.competition_open,
@@ -75,7 +72,7 @@ class AddTeamMemberTestCase(APITestCase):
 
     def test_add_team_member_unauthorized(self):
         '''
-        If user isn't logged in, returns 403
+        If user isn't logged in, returns 401
         '''
         url = reverse('competition-team-member-list', kwargs={'team_id': self.team1.pk})
 
@@ -85,7 +82,7 @@ class AddTeamMemberTestCase(APITestCase):
         }
 
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_add_team_member_registration_closed(self):
         '''

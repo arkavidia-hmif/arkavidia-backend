@@ -8,7 +8,6 @@ from arkav.arkavauth.services import UserService
 from arkav.arkavauth.views.openapi.registration import registration_responses
 from arkav.arkavauth.views.openapi.registration import registration_confirmation_responses
 from arkav.utils.permissions import IsNotAuthenticated
-from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie

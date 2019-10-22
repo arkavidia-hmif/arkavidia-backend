@@ -11,7 +11,7 @@ from arkav.competition.serializers import TaskResponseSerializer
 from arkav.competition.services import TaskResponseService
 from arkav.competition.services import TeamService
 from arkav.competition.services import TeamMemberService
-from django.core.exceptions import ValidationError
+from arkav.utils.exceptions import ArkavAPIException
 from django.shortcuts import get_object_or_404
 from rest_framework import status, generics, views
 from rest_framework.response import Response
@@ -34,11 +34,8 @@ class RegisterTeamView(views.APIView):
             new_team = TeamService().create_team(request_serializer.validated_data, request.user)
             response_serializer = TeamSerializer(new_team)
             return Response(data=response_serializer.data)
-        except ValidationError as e:
-            return Response(data={
-                'code': e.code,
-                'detail': e.message,
-            }, status=status.HTTP_400_BAD_REQUEST)
+        except ArkavAPIException as e:
+            return e.as_response()
 
 
 class AddTeamMemberView(views.APIView):
@@ -55,11 +52,8 @@ class AddTeamMemberView(views.APIView):
             )
             response_serializer = TeamMemberSerializer(new_team_member)
             return Response(data=response_serializer.data)
-        except ValidationError as e:
-            return Response(data={
-                'code': e.code,
-                'detail': e.message,
-            }, status=status.HTTP_400_BAD_REQUEST)
+        except ArkavAPIException as e:
+            return e.as_response()
 
 
 class ListTeamsView(generics.ListAPIView):
@@ -126,8 +120,5 @@ class SubmitTaskResponseView(views.APIView):
             )
             response_serializer = TaskResponseSerializer(task_response_status)
             return Response(data=response_serializer.data)
-        except ValidationError as e:
-            return Response(data={
-                'code': e.code,
-                'detail': e.message,
-            }, status=status.HTTP_400_BAD_REQUEST)
+        except ArkavAPIException as e:
+            return e.as_response()

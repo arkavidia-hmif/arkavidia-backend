@@ -1,8 +1,9 @@
 from arkav.arkavauth.constants import K_LOGIN_FAILED
 from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
-from arkav.arkavauth.serializers import UserSerializer
 from arkav.arkavauth.serializers import LoginRequestSerializer
+from arkav.arkavauth.serializers import UserSerializer
 from arkav.arkavauth.views.openapi.auth import login_responses
+from arkav.utils.exceptions import ArkavAPIException
 from arkav.utils.permissions import IsNotAuthenticated
 from django.contrib.auth import authenticate
 from django.contrib.auth import login
@@ -10,47 +11,33 @@ from django.contrib.auth import logout
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import exceptions
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken
+from rest_framework_simplejwt.exceptions import TokenError
 
 
-class LoginView(GenericAPIView):
-    serializer_class = LoginRequestSerializer
+class LoginView(TokenObtainPairView):
     permission_classes = (IsNotAuthenticated, )
+    serializer_class = LoginRequestSerializer
 
     @swagger_auto_schema(responses=login_responses, operation_summary='Login')
     @method_decorator(ensure_csrf_cookie)
     def post(self, request, format=None):
-        request_serializer = self.serializer_class(data=request.data)
-        request_serializer.is_valid(raise_exception=True)
+        serializer = self.get_serializer(data=request.data)
 
-        user = authenticate(
-            email=request_serializer.validated_data['email'].lower(),
-            password=request_serializer.validated_data['password'],
-        )
-        if user is None:
-            return Response(
-                {
-                    'code': K_LOGIN_FAILED,
-                    'detail': 'Wrong email or password.',
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
+        try:
+            valid = serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        except ArkavAPIException as e:
+            return e.as_response()
 
-        if not user.is_email_confirmed:
-            return Response(
-                {
-                    'code': K_ACCOUNT_EMAIL_NOT_CONFIRMED,
-                    'detail': 'Account email hasn\'t been confirmed. Check inbox for confirmation email.',
-                },
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
-        login(request, user)
-        response_serializer = UserSerializer(request.user)
-        return Response(data=response_serializer.data)
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class LogoutView(GenericAPIView):

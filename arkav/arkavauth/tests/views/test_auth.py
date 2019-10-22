@@ -1,3 +1,5 @@
+from arkav.arkavauth.constants import K_LOGIN_FAILED
+from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.models import User
 from arkav.arkavauth.serializers import UserSerializer
 from django.urls import reverse
@@ -15,14 +17,15 @@ class LoginTestCase(APITestCase):
     def test_login(self):
         url = reverse('auth-login')
         data = {
-            'email': 'YONAS@GMAIL.COM',
+            'email': 'yonas@gmail.com',
             'password': 'password',
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         self.user1.refresh_from_db()
-        self.assertDictEqual(res.data, UserSerializer(self.user1).data)
+        self.assertIn('access', res.data)
+        self.assertIn('refresh', res.data)
 
     def test_login_wrong_password(self):
         url = reverse('auth-login')
@@ -32,8 +35,7 @@ class LoginTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-        self.assertEqual(res.data['code'], 'login_failed')
+        self.assertEqual(res.data['code'], K_LOGIN_FAILED)
 
     def test_login_not_confirmed(self):
         '''
@@ -46,8 +48,7 @@ class LoginTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-
-        self.assertEqual(res.data['code'], 'account_email_not_confirmed')
+        self.assertEqual(res.data['code'], K_ACCOUNT_EMAIL_NOT_CONFIRMED)
 
     def test_login_already_login(self):
         '''
