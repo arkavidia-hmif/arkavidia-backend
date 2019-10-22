@@ -1,5 +1,4 @@
 from arkav.arkavauth.views.auth import LoginView
-from arkav.arkavauth.views.auth import LogoutView
 from arkav.arkavauth.views.password_reset import PasswordResetConfirmationView
 from arkav.arkavauth.views.password_reset import PasswordResetView
 from arkav.arkavauth.views.registration import RegistrationConfirmationView
@@ -12,7 +11,6 @@ from django.urls import path
 urlpatterns = [
     path('', SessionView.as_view(), name='auth-current-session'),
     path('login/', LoginView.as_view(), name='auth-login'),
-    path('logout/', LogoutView.as_view(), name='auth-logout'),
     path('register/', RegistrationView.as_view(), name='auth-register'),
     path('confirm-registration/', RegistrationConfirmationView.as_view(), name='auth-register-confirmation'),
     path('password-reset/', PasswordResetView.as_view(), name='auth-password-reset'),

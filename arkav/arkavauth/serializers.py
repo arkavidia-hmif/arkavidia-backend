@@ -12,18 +12,18 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length=75)
     email = serializers.EmailField(read_only=True)
-    is_staff = serializers.BooleanField(read_only=True)
-    is_active = serializers.BooleanField(read_only=True)
-    is_email_confirmed = serializers.BooleanField(read_only=True)
-    last_login = serializers.DateTimeField(read_only=True)
     date_joined = serializers.DateTimeField(read_only=True)
+    current_education = serializers.CharField(max_length=10)
+    institution = serializers.CharField(max_length=75)
+    phone_number = serializers.CharField(max_length=20)
+    birth_date = serializers.DateField()
+    address = serializers.CharField(max_length=300)
 
     class Meta:
         model = User
-        fields = ('full_name', 'email', 'is_staff', 'is_active',
-                  'is_email_confirmed', 'last_login', 'date_joined')
-        read_only_fields = ('email', 'is_staff', 'is_active',
-                            'is_email_confirmed', 'last_login', 'date_joined')
+        fields = ('full_name', 'email', 'date_joined', 'current_education', 'institution',
+                  'phone_number', 'birth_date', 'address')
+        read_only_fields = ('email', 'date_joined')
 
 
 class LoginRequestSerializer(TokenObtainPairSerializer):

@@ -84,6 +84,11 @@ class EditUserTestCase(APITestCase):
             'is_staff': True,
             'is_active': False,
             'is_email_confirmed': False,
+            'currentEducation': 'SCHOOL',
+            'institution': 'SMA 3 Bandung',
+            'phoneNumber': '0877012345678',
+            'birthDate': '1998-10-11',
+            'address': 'Jl. Ganesa 10',
         }
         res = self.client.patch(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -95,6 +100,11 @@ class EditUserTestCase(APITestCase):
         self.assertFalse(self.user.is_staff)
         self.assertTrue(self.user.is_active)
         self.assertTrue(self.user.is_email_confirmed)
+        self.assertEqual(self.user.current_education, data['currentEducation'])
+        self.assertEqual(self.user.institution, data['institution'])
+        self.assertEqual(self.user.phone_number, data['phoneNumber'])
+        self.assertEqual(str(self.user.birth_date), data['birthDate'])
+        self.assertEqual(self.user.address, data['address'])
 
     def test_edit_user_unauthorized(self):
         '''
