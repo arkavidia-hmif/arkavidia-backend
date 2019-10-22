@@ -11,9 +11,9 @@ from arkav.arkavauth.views.openapi.password_reset import password_reset_response
 from arkav.arkavauth.views.openapi.password_reset import password_reset_confirmation_responses
 from arkav.utils.permissions import IsNotAuthenticated
 from django.db import transaction
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.views.decorators.debug import sensitive_post_parameters
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
@@ -57,7 +57,6 @@ class PasswordResetConfirmationView(GenericAPIView):
     @swagger_auto_schema(responses=password_reset_confirmation_responses,
                          operation_summary='Password Reset Confirmation')
     @method_decorator(ensure_csrf_cookie)
-    @method_decorator(sensitive_post_parameters('new_password'))
     def post(self, request):
         request_serializer = self.serializer_class(data=request.data)
         request_serializer.is_valid(raise_exception=True)
@@ -73,7 +72,7 @@ class PasswordResetConfirmationView(GenericAPIView):
                         'detail': 'Invalid token.',
                     }, status=status.HTTP_400_BAD_REQUEST)
 
-            if attempt.is_confirmed:
+            if attempt.is_used:
                 return Response(
                     {
                         'code': K_TOKEN_USED,
@@ -84,7 +83,7 @@ class PasswordResetConfirmationView(GenericAPIView):
             # Also confirm this user's email, for backward compatibility
             attempt.user.is_email_confirmed = True
             attempt.user.save()
-            attempt.is_confirmed = True
+            attempt.used_time = timezone.now()
             attempt.save()
 
         return Response({
