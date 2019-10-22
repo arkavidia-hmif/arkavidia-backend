@@ -122,8 +122,6 @@ class EditUserTestCase(APITestCase):
         '''
         user = User.objects.create_user(email='jones@gmail.com', full_name='Jones')
         url = reverse('auth-edit-user')
-        fullnameBefore = self.user.full_name
-        emailBefore = self.user.email
         self.client.force_authenticate(self.user)
         data = {
             'full_name': 'Jones Napoleon',

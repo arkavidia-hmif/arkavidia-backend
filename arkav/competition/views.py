@@ -13,7 +13,8 @@ from arkav.competition.services import TeamService
 from arkav.competition.services import TeamMemberService
 from arkav.utils.exceptions import ArkavAPIException
 from django.shortcuts import get_object_or_404
-from rest_framework import status, generics, views
+from rest_framework import generics
+from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 

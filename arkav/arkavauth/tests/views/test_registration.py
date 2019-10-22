@@ -2,7 +2,6 @@ from arkav.arkavauth.constants import K_INVALID_TOKEN
 from arkav.arkavauth.constants import K_REGISTRATION_SUCCESSFUL
 from arkav.arkavauth.constants import K_REGISTRATION_CONFIRMATION_SUCCESSFUL
 from arkav.arkavauth.models import User
-from arkav.arkavauth.serializers import UserSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase

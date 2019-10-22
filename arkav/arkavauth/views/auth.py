@@ -1,17 +1,11 @@
-from arkav.arkavauth.constants import K_LOGIN_FAILED
-from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.serializers import LoginRequestSerializer
-from arkav.arkavauth.serializers import UserSerializer
 from arkav.arkavauth.views.openapi.auth import login_responses
 from arkav.utils.exceptions import ArkavAPIException
 from arkav.utils.permissions import IsNotAuthenticated
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
 from django.contrib.auth import logout
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_yasg.utils import swagger_auto_schema
-from rest_framework import exceptions
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -31,7 +25,7 @@ class LoginView(TokenObtainPairView):
         serializer = self.get_serializer(data=request.data)
 
         try:
-            valid = serializer.is_valid(raise_exception=True)
+            serializer.is_valid(raise_exception=True)
         except TokenError as e:
             raise InvalidToken(e.args[0])
         except ArkavAPIException as e:

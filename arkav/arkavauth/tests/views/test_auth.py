@@ -1,7 +1,6 @@
 from arkav.arkavauth.constants import K_LOGIN_FAILED
 from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.models import User
-from arkav.arkavauth.serializers import UserSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
