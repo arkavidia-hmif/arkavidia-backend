@@ -1,4 +1,5 @@
 from arkav.arkavauth.serializers import LoginRequestSerializer
+from arkav.arkavauth.serializers import LoginResponseSerializer
 from arkav.arkavauth.views.openapi.auth import login_responses
 from arkav.utils.exceptions import ArkavAPIException
 from arkav.utils.permissions import IsNotAuthenticated
@@ -28,4 +29,5 @@ class LoginView(TokenObtainPairView):
         except ArkavAPIException as e:
             return e.as_response()
 
-        return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        data = serializer.validated_data
+        return Response(LoginResponseSerializer(data).data, status=status.HTTP_200_OK)

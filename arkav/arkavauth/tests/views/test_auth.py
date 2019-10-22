@@ -1,6 +1,7 @@
 from arkav.arkavauth.constants import K_LOGIN_FAILED
 from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.models import User
+from arkav.arkavauth.serializers import UserSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -23,8 +24,9 @@ class LoginTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         self.user1.refresh_from_db()
-        self.assertIn('access', res.data)
-        self.assertIn('refresh', res.data)
+        self.assertIn('exp', res.data)
+        self.assertIn('token', res.data)
+        self.assertDictEqual(res.data['user'], UserSerializer(self.user1).data)
 
     def test_login_wrong_password(self):
         url = reverse('auth-login')

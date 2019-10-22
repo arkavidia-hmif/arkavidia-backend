@@ -6,7 +6,8 @@ from rest_framework import exceptions
 from rest_framework import serializers
 from rest_framework import status
 from rest_framework.validators import UniqueValidator
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,11 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('email', 'date_joined')
 
 
-class LoginRequestSerializer(TokenObtainPairSerializer):
-
+class LoginRequestSerializer(TokenObtainSerializer):
     @classmethod
     def get_token(cls, user):
-        token = super().get_token(user)
+        token = RefreshToken.for_user(user)
         token['name'] = user.full_name
 
         return token
@@ -38,6 +38,8 @@ class LoginRequestSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         try:
             data = super().validate(attrs)
+            refresh = self.get_token(self.user)
+            data['token'] = str(refresh.access_token)
         except exceptions.AuthenticationFailed:
             raise ArkavAPIException(
                 detail='Wrong email / password',
@@ -52,7 +54,16 @@ class LoginRequestSerializer(TokenObtainPairSerializer):
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
 
+        data['user'] = UserSerializer(self.user).data
+        data['exp'] = refresh.payload['exp']
+
         return data
+
+
+class LoginResponseSerializer(serializers.Serializer):
+    user = UserSerializer()
+    exp = serializers.IntegerField(label='token expiry time')
+    token = serializers.CharField(max_length=200)
 
 
 class RegistrationRequestSerializer(serializers.Serializer):

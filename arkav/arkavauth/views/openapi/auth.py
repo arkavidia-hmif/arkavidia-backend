@@ -1,11 +1,11 @@
 from arkav.arkavauth.constants import K_LOGIN_FAILED
 from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
-from arkav.arkavauth.serializers import UserSerializer
+from arkav.arkavauth.serializers import LoginResponseSerializer
 from arkav.utils.openapi import generic_response_schema
 from drf_yasg import openapi
 
 login_responses = {
-    200: UserSerializer(),
+    200: LoginResponseSerializer(),
     401: openapi.Response(description='Unauthorized', content={
         'application/json': {
             'schema': generic_response_schema,
