@@ -209,3 +209,40 @@ CORS_ORIGIN_WHITELIST = [
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'set-cookie',
 ]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'fileError': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': './arkav-error.log' if DEBUG else '/arkavlog/error.log',
+            'formatter': 'simple',
+        },
+        'fileInfo': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': './arkav-info.log' if DEBUG else '/arkavlog/info.log',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'arkav': {
+            'handlers': ['fileInfo', 'fileError'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['fileInfo', 'fileError'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

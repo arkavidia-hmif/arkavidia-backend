@@ -1,6 +1,10 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils import timezone
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -15,7 +19,10 @@ class UserService:
             to=[user.email],
         )
         mail.attach_alternative(mail_html_message, 'text/html')
-        mail.send()
+        try:
+            mail.send()
+        except Exception:
+            logger.error('Error mailing {} with subject {}'.format(user.email, subject))
         user.save()
 
     def send_registration_confirmation_email(self, user):
