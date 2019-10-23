@@ -202,13 +202,26 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
 EMAIL_USE_TLS = strtobool(os.getenv('EMAIL_USE_TLS', 'True'))
 
-DEFAULT_FROM_EMAIL = 'Arkavidia 5.0 <noreply@arkavidia.id>'
+DEFAULT_FROM_EMAIL = 'Arkavidia 6.0 <noreply@arkavidia.id>'
 COMPETITION_REGISTRATION_OPEN = strtobool(os.getenv('COMPETITION_REGISTRATION_OPEN', 'False'))
 CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_OPEN', 'False'))
-# Security-related settings - only enable if HTTPS is enabled
 
+# Security-related settings - only enable if HTTPS is enabled
 CSRF_COOKIE_SECURE = strtobool(os.getenv('CSRF_COOKIE_SECURE', 'False'))
 SESSION_COOKIE_SECURE = strtobool(os.getenv('SESSION_COOKIE_SECURE', 'False'))
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        },
+    },
+}
+REDOC_SETTINGS = {
+    'PATH_IN_MIDDLE': True,
+}
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = DEBUG

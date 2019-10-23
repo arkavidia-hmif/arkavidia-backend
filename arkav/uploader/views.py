@@ -1,36 +1,38 @@
 from arkav.uploader.models import UploadedFile
 from arkav.uploader.serializers import UploadedFileSerializer
+from arkav.uploader.serializers import UploadFileRequestSerializer
 from arkav.uploader.services import UploadedFileService
-from django import forms
-from django.views.decorators.http import require_POST
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
-class UploadFileForm(forms.Form):
-    file = forms.FileField()
-    description = forms.CharField(max_length=200, required=False)
+upload_responses = {
+    200: UploadedFileSerializer(),
+}
 
 
-@login_required
-@require_POST
-def upload_file_view(request):
-    '''
-    Handle file upload (Django request, not using DRF).
-    '''
-    form = UploadFileForm(request.POST, request.FILES)
-    if form.is_valid():
-        uploaded_file = UploadedFileService().save_file(request.user, form.cleaned_data['file'],
-                                                        form.cleaned_data['description'])
-        return Response(UploadedFileSerializer(uploaded_file).data)
-    else:
-        return Response({
-            'errors': form.errors,
-        }, status=status.HTTP_400_BAD_REQUEST)
+class UploadFileView(generics.GenericAPIView):
+    serializer_class = UploadFileRequestSerializer
+    parser_classes = (MultiPartParser,)
+    permission_classes = (IsAuthenticated,)
+
+    @swagger_auto_schema(responses=upload_responses, operation_summary='Upload File')
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            uploaded_file = UploadedFileService().save_file(request.user, serializer.validated_data['file'],
+                                                            serializer.validated_data['description'])
+            return Response(UploadedFileSerializer(uploaded_file).data)
+        else:
+            return Response({
+                'code': 'file_error',
+                'detail': serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RetrieveUploadedFileView(generics.RetrieveAPIView):
@@ -47,3 +49,7 @@ class RetrieveUploadedFileView(generics.RetrieveAPIView):
         )
         self.check_object_permissions(self.request, instance)
         return instance
+
+    @swagger_auto_schema(operation_summary='Retrieve File')
+    def get(self, request, **kwargs):
+        return super().get(request, **kwargs)

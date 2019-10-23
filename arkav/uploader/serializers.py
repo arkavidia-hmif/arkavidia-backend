@@ -12,3 +12,8 @@ class UploadedFileSerializer(serializers.ModelSerializer):
                   'description', 'uploaded_by', 'uploaded_at', 'file_link')
         read_only_fields = ('id', 'original_filename', 'file_size',
                             'description', 'uploaded_by', 'uploaded_at', 'file_link')
+
+
+class UploadFileRequestSerializer(serializers.Serializer):
+    file = serializers.FileField()
+    description = serializers.CharField(max_length=200, required=False)
