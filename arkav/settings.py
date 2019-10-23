@@ -43,14 +43,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
     'nested_admin',
+    'storages',
     'corsheaders',
+
     'arkav.arkavauth',
+    'arkav.uploader',
     'arkav.announcement',
-    # 'arkav.uploader',
     'arkav.competition',
     # 'arkav.preevent',
     # 'arkav.quiz',
@@ -133,12 +136,20 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.getenv('STATIC_ROOT', os.path.join(BASE_DIR, 'static/'))
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# File uploads will be stored in this directory
-
-MEDIA_ROOT = os.getenv('MEDIA_ROOT', os.path.join(BASE_DIR, 'uploads/'))
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID', 'aoutbdiawdnamoidaoob')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY', '86vr6ab7dya7gn8oappe3e03aonta8m9u10papmhuzg')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'arkavidia')
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'sgp1')
+AWS_S3_ENDPOINT_URL = 'https://{}.{}.digitaloceanspaces.com'.format(AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME)
+AWS_S3_CUSTOM_DOMAIN = '{}.{}.digitaloceanspaces.com'.format(AWS_STORAGE_BUCKET_NAME, AWS_S3_REGION_NAME)
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_DEFAULT_ACL = 'public-read-write'
+AWS_LOCATION = 'uploaded-files'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Rest Framework Settings
 REST_FRAMEWORK = {
