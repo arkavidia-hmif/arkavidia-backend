@@ -22,5 +22,5 @@ class UploadedFile(models.Model):
     def file_link(self):
         _, file_extension = os.path.splitext(self.original_filename)
         link = '{}/{}/{}/{}{}'.format(settings.AWS_S3_ENDPOINT_URL, settings.AWS_STORAGE_BUCKET_NAME,
-                                    settings.AWS_LOCATION, self.id, file_extension)
+                                      settings.AWS_LOCATION, self.id, file_extension)
         return link
