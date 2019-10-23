@@ -46,7 +46,7 @@ class UserService:
 
         context = {
             'user': user,
-            'token': user.confirmation_token,
+            'token': password_reset_attempt.token,
         }
 
         self.send_email(user, '[Arkavidia] Reset Password', context, text_template, html_template)

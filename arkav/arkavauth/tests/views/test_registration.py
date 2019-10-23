@@ -1,4 +1,5 @@
 from arkav.arkavauth.constants import K_INVALID_TOKEN
+from arkav.arkavauth.constants import K_REGISTRATION_FAILED_EMAIL_USED
 from arkav.arkavauth.constants import K_REGISTRATION_SUCCESSFUL
 from arkav.arkavauth.constants import K_REGISTRATION_CONFIRMATION_SUCCESSFUL
 from arkav.arkavauth.models import User
@@ -43,6 +44,7 @@ class RegistrationTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['code'], K_REGISTRATION_FAILED_EMAIL_USED)
 
     def test_registration_already_login(self):
         '''

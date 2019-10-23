@@ -1,4 +1,5 @@
 from arkav.arkavauth.constants import K_INVALID_TOKEN
+from arkav.arkavauth.constants import K_REGISTRATION_FAILED_EMAIL_USED
 from arkav.arkavauth.constants import K_REGISTRATION_SUCCESSFUL
 from arkav.arkavauth.constants import K_REGISTRATION_CONFIRMATION_SUCCESSFUL
 from arkav.arkavauth.models import User
@@ -15,6 +16,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
 
 
 class RegistrationView(GenericAPIView):
@@ -25,7 +27,15 @@ class RegistrationView(GenericAPIView):
     @method_decorator(ensure_csrf_cookie)
     def post(self, request):
         request_serializer = self.serializer_class(data=request.data)
-        request_serializer.is_valid(raise_exception=True)
+        try:
+            request_serializer.is_valid(raise_exception=True)
+        except ValidationError as e:
+            if 'email' in e.detail and e.detail['email'][0].code == 'unique':
+                return Response({
+                    'code': K_REGISTRATION_FAILED_EMAIL_USED,
+                    'detail': 'Account with specified email is already registered.',
+                }, status=status.HTTP_400_BAD_REQUEST)
+            raise e
 
         with transaction.atomic():
             user = User.objects.create_user(
@@ -33,7 +43,6 @@ class RegistrationView(GenericAPIView):
                 password=request_serializer.validated_data['password'],
                 full_name=request_serializer.validated_data['full_name'],
             )
-
             UserService().send_registration_confirmation_email(user)
 
         return Response({

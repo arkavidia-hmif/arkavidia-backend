@@ -10,6 +10,7 @@ K_TOKEN_USED = 'token_used'
 
 # registration
 K_REGISTRATION_SUCCESSFUL = 'registration_successful'
+K_REGISTRATION_FAILED_EMAIL_USED = 'registration_failed_email_used'
 K_REGISTRATION_CONFIRMATION_SUCCESSFUL = 'registration_confirmation_successful'
 
 # user
