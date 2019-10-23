@@ -29,11 +29,13 @@ class RegistrationView(GenericAPIView):
         request_serializer = self.serializer_class(data=request.data)
         try:
             request_serializer.is_valid(raise_exception=True)
-        except ValidationError:
-            return Response({
-                'code': K_REGISTRATION_FAILED_EMAIL_USED,
-                'detail': 'Account with specified email is already registered.',
-            }, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            if 'email' in e.detail and e.detail['email'][0].code == 'unique':
+                return Response({
+                    'code': K_REGISTRATION_FAILED_EMAIL_USED,
+                    'detail': 'Account with specified email is already registered.',
+                }, status=status.HTTP_400_BAD_REQUEST)
+            raise e
 
         with transaction.atomic():
             user = User.objects.create_user(
