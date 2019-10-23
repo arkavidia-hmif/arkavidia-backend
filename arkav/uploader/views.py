@@ -28,7 +28,6 @@ def upload_file_view(request):
                                                         form.cleaned_data['description'])
         return Response(UploadedFileSerializer(uploaded_file).data)
     else:
-        print(form.errors)
         return Response({
             'errors': form.errors,
         }, status=status.HTTP_400_BAD_REQUEST)
