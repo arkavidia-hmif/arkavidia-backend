@@ -13,9 +13,9 @@ class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('id', 'name', 'max_team_members', 'min_team_members',
+        fields = ('id', 'name', 'slug', 'max_team_members', 'min_team_members',
                   'is_registration_open', 'view_icon')
-        read_only_fields = ('id', 'name', 'max_team_members', 'min_team_members',
+        read_only_fields = ('id', 'name', 'slug', 'max_team_members', 'min_team_members',
                             'is_registration_open', 'view_icon')
 
 

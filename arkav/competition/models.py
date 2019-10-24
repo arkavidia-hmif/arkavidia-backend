@@ -24,6 +24,7 @@ def handle_user_post_save(sender, instance, created, **kwargs):
 
 class Competition(models.Model):
     name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50)
     max_team_members = models.IntegerField(default=1)
     min_team_members = models.IntegerField(default=1)
     is_registration_open = models.BooleanField(default=True)
