@@ -56,8 +56,8 @@ class TaskResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TaskResponse
-        fields = ('task_id', 'response', 'status', 'last_submitted_at')
-        read_only_fields = ('task_id', 'status', 'last_submitted_at')
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at')
 
 
 class TeamSerializer(serializers.ModelSerializer):

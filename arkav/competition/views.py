@@ -78,7 +78,7 @@ class ListTeamsView(generics.ListAPIView):
 
     @swagger_auto_schema(operation_summary='Team List')
     def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
@@ -96,19 +96,19 @@ class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(operation_summary='Team Detail')
     def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Update (Patch)')
     def patch(self, request, *args, **kwargs):
-        super().patch(request, *args, **kwargs)
+        return super().patch(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Update (Put)')
     def put(self, request, *args, **kwargs):
-        super().put(request, *args, **kwargs)
+        return super().put(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Delete')
     def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyTeamMemberView(generics.RetrieveUpdateDestroyAPIView):
@@ -138,19 +138,19 @@ class RetrieveUpdateDestroyTeamMemberView(generics.RetrieveUpdateDestroyAPIView)
 
     @swagger_auto_schema(operation_summary='Team Member Detail')
     def get(self, request, *args, **kwargs):
-        super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Member Update (Patch)')
     def patch(self, request, *args, **kwargs):
-        super().patch(request, *args, **kwargs)
+        return super().patch(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Member Update (Put)')
     def put(self, request, *args, **kwargs):
-        super().put(request, *args, **kwargs)
+        return super().put(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_summary='Team Member Delete')
     def delete(self, request, *args, **kwargs):
-        super().delete(request, *args, **kwargs)
+        return super().delete(request, *args, **kwargs)
 
 
 class SubmitTaskResponseView(views.APIView):
