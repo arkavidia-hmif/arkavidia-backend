@@ -13,6 +13,7 @@ from arkav.competition.services import TeamService
 from arkav.competition.services import TeamMemberService
 from arkav.utils.exceptions import ArkavAPIException
 from django.shortcuts import get_object_or_404
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import views
 from rest_framework.response import Response
@@ -24,10 +25,17 @@ class ListCompetitionsView(generics.ListAPIView):
     serializer_class = CompetitionSerializer
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_summary='Competition List')
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
 
 class RegisterTeamView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_summary='Team Registration',
+                         request_body=RegisterTeamRequestSerializer,
+                         responses={200: TeamSerializer()})
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = RegisterTeamRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
@@ -42,6 +50,9 @@ class RegisterTeamView(views.APIView):
 class AddTeamMemberView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_summary='Add Team Member',
+                         request_body=AddTeamMemberRequestSerializer,
+                         responses={200: TeamMemberSerializer()})
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = AddTeamMemberRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
@@ -65,6 +76,10 @@ class ListTeamsView(generics.ListAPIView):
         # User should only be able to see teams in which he/she is a member
         return Team.objects.filter(team_members__user=self.request.user)
 
+    @swagger_auto_schema(operation_summary='Team List')
+    def get(self, request, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+
 
 class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
     lookup_url_kwarg = 'team_id'
@@ -78,6 +93,22 @@ class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
             return self.request.user.teams.all()
         else:
             return self.request.user.teams.filter(competition__is_registration_open=True, is_participating=True)
+
+    @swagger_auto_schema(operation_summary='Team Detail')
+    def get(self, request, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Update (Patch)')
+    def patch(self, request, *args, **kwargs):
+        super().patch(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Update (Put)')
+    def put(self, request, *args, **kwargs):
+        super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Delete')
+    def delete(self, request, *args, **kwargs):
+        super().delete(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyTeamMemberView(generics.RetrieveUpdateDestroyAPIView):
@@ -105,10 +136,29 @@ class RetrieveUpdateDestroyTeamMemberView(generics.RetrieveUpdateDestroyAPIView)
         self.check_object_permissions(self.request, instance)
         return instance
 
+    @swagger_auto_schema(operation_summary='Team Member Detail')
+    def get(self, request, *args, **kwargs):
+        super().get(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Member Update (Patch)')
+    def patch(self, request, *args, **kwargs):
+        super().patch(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Member Update (Put)')
+    def put(self, request, *args, **kwargs):
+        super().put(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_summary='Team Member Delete')
+    def delete(self, request, *args, **kwargs):
+        super().delete(request, *args, **kwargs)
+
 
 class SubmitTaskResponseView(views.APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(operation_summary='Submit Task Response',
+                         request_body=TaskResponseSerializer,
+                         responses={200: TaskResponseSerializer()})
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = TaskResponseSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
