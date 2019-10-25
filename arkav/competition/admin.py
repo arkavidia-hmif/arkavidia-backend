@@ -1,6 +1,15 @@
 from django.contrib import admin
+from django.http import HttpResponseRedirect
+from django.template.response import TemplateResponse
+from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from arkav.competition.admin_forms import AcceptTaskResponseActionForm
+from arkav.competition.admin_forms import RejectTaskResponseActionForm
+from arkav.competition.admin_inlines import StageInline
+from arkav.competition.admin_inlines import TaskInline
+from arkav.competition.admin_inlines import TeamMemberInline
+from arkav.competition.admin_inlines import TaskResponseInline
 from arkav.competition.models import Competition
 from arkav.competition.models import Stage
 from arkav.competition.models import Task
@@ -8,32 +17,14 @@ from arkav.competition.models import TaskCategory
 from arkav.competition.models import TaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
-from arkav.competition.models import TeamMember
-from arkav.competition.services import TeamMemberService
-import re
 
 
-def send_reminder(adminModel, request, queryset):
+def send_reminder(modeladmin, request, queryset):
     for item in queryset:
         item.send_reminder()
 
 
 send_reminder.short_description = 'Send reminder email'
-
-
-def resend_invitation_email(modeladmin, request, queryset):
-    for obj in queryset:
-        TeamMemberService().send_invitation_email(obj)
-
-
-resend_invitation_email.short_description = 'Resend the invitation email of the selected members with the same token.'
-
-
-class StageInline(admin.TabularInline):
-    model = Stage
-    fields = ['name', 'order']
-    extra = 1
-    show_change_link = True
 
 
 @admin.register(Competition)
@@ -42,13 +33,6 @@ class CompetitionAdmin(admin.ModelAdmin):
     list_display_links = ['id', 'name']
     list_filter = ['is_registration_open']
     inlines = [StageInline]
-
-
-class TaskInline(admin.TabularInline):
-    model = Task
-    fields = ['name', 'stage', 'category', 'widget', 'requires_validation']
-    extra = 1
-    show_change_link = True
 
 
 @admin.register(Stage)
@@ -70,46 +54,86 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(TaskResponse)
 class TaskResponseAdmin(admin.ModelAdmin):
-    list_display = ['id', 'team', 'task', 'status', 'last_submitted_at']
-    list_display_links = ['id']
+    list_display = ['team', 'task', 'status', 'open_response', 'accept_reject']
+    list_display_links = ['team']
     list_filter = ['status', 'task__category']
     search_fields = ['team', 'task']
     autocomplete_fields = ['team', 'task']
 
+    def open_response(self, obj):
+        response, is_link = obj.response_or_link
+        if is_link:
+            return format_html('<a href="{}">Open</a>'.format(response))
+        return response
 
-class TaskResponseInline(admin.TabularInline):
-    model = TaskResponse
-    fields = ['team', 'task', 'status', 'response', 'file_link', 'last_submitted_at']
-    readonly_fields = ['file_link', 'last_submitted_at']
-    autocomplete_fields = ['team', 'task']
-    extra = 1
+    open_response.short_description = 'Content'
 
-    def file_link(self, instance):
-        uuidv4_regex = r'[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12}'
-        if re.match(uuidv4_regex, str(instance.response)) is not None:
-            link = reverse('download', kwargs={'file_id': str(instance.response)})
-            return format_html('<a href="{}">Open file</a>', link)
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:task_response_id>/accept/',
+                self.admin_site.admin_view(self.accept_task_response),
+                name='competition-taskresponse-accept',
+            ),
+            path(
+                '<int:task_response_id>/reject/',
+                self.admin_site.admin_view(self.reject_task_response),
+                name='competition-taskresponse-reject',
+            ),
+        ]
+        return custom_urls + urls
+
+    def accept_reject(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Accept</a>&nbsp;'
+            '<a class="button" href="{}">Reject</a>',
+            reverse('admin:competition-taskresponse-accept', args=[obj.pk]),
+            reverse('admin:competition-taskresponse-reject', args=[obj.pk]),
+        )
+
+    accept_reject.short_description = 'Accept / Reject'
+    accept_reject.allow_tags = True
+
+    def accept_task_response(self, request, task_response_id, *args, **kwargs):
+        return self.process_task_response(
+            request=request,
+            task_response_id=task_response_id,
+            action_form=AcceptTaskResponseActionForm,
+            action_title='Accept',
+        )
+
+    def reject_task_response(self, request, task_response_id, *args, **kwargs):
+        return self.process_task_response(
+            request=request,
+            task_response_id=task_response_id,
+            action_form=RejectTaskResponseActionForm,
+            action_title='Reject',
+        )
+
+    def process_task_response(self, request, task_response_id, action_form, action_title):
+        task_response = self.get_object(request, task_response_id)
+
+        if request.method != 'POST':
+            form = action_form()
         else:
-            return ''
+            form = action_form(request.POST)
+            if form.is_valid():
+                form.save(task_response, request.user)
+                self.message_user(request, 'Success')
+                url = reverse(
+                    'admin:competition_taskresponse_changelist',
+                    current_app=self.admin_site.name,
+                )
+                return HttpResponseRedirect(url)
 
+        context = self.admin_site.each_context(request)
+        context['opts'] = self.model._meta
+        context['form'] = form
+        context['task_response'] = task_response
+        context['title'] = action_title
 
-class TeamMemberInline(admin.TabularInline):
-    model = TeamMember
-    fields = [
-        'user', 'has_user_account', 'is_leader',
-        'invitation_full_name', 'invitation_email', 'created_at'
-    ]
-    readonly_fields = ['has_user_account', 'is_leader', 'created_at']
-    actions = [resend_invitation_email]
-    extra = 1
-
-    def has_user_account(self, obj):
-        return obj.has_account
-    has_user_account.boolean = True
-
-    def is_leader(self, obj):
-        return obj.is_team_leader
-    is_leader.boolean = True
+        return TemplateResponse(request, 'admin_task_response.html', context)
 
 
 @admin.register(Team)

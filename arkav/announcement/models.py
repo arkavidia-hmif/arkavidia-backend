@@ -6,6 +6,10 @@ class Announcement(models.Model):
     """
     Announcement for competition related
     """
-    user = models.ForeignKey(to=User, related_name='announcements', on_delete=models.CASCADE)
+    user = models.ManyToManyField(to=User, related_name='announcements')
+    title = models.CharField(max_length=100, blank=True)
     message = models.TextField()
     date_sent = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

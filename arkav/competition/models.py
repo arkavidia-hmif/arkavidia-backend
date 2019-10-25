@@ -1,8 +1,10 @@
 from arkav.arkavauth.models import User
+from arkav.uploader.models import UploadedFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import uuid
 
 
 @receiver(post_save, sender=User)
@@ -87,7 +89,7 @@ class Task(models.Model):
     requires_validation = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return '{} - {}'.format(self.stage.competition.name, self.name)
 
 
 class Team(models.Model):
@@ -110,7 +112,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return '{:03d} - {}'.format(self.id, self.name)
 
     @property
     def has_completed_active_stage(self):
@@ -200,6 +202,7 @@ class TaskResponse(models.Model):
     A TaskResponse will be created when a response is submitted for a task.
     Each team can only have at most 1 task response per task;
     resubmissions will update the existing TaskResponse and reset its state to awaiting_validation.
+    If a task response is rejected, the reason should be detailed on reason.
     '''
     AWAITING_VALIDATION = 'awaiting_validation'
     COMPLETED = 'completed'
@@ -213,11 +216,26 @@ class TaskResponse(models.Model):
     task = models.ForeignKey(to=Task, related_name='task_responses', on_delete=models.PROTECT)
     team = models.ForeignKey(to=Team, related_name='task_responses', on_delete=models.CASCADE)
     response = models.TextField()
+    reason = models.TextField(blank=True, default='')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     last_submitted_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return '%s - %s' % (self.task.name, self.team.name)
+
+    @property
+    def response_or_link(self):
+        '''
+        Return file link if response is valid uuid of an UploadedFile and is it a link
+        '''
+        try:
+            uuid_response = uuid.UUID(self.response)
+            response_file = UploadedFile.objects.filter(id=str(uuid_response)).first()
+            if response_file is not None:
+                return (response_file.file_link, True)
+            return (self.response, False)
+        except ValueError:
+            return (self.response, False)
 
     def save(self, *args, **kwargs):
         # If this response's task's requires_validation is True,
