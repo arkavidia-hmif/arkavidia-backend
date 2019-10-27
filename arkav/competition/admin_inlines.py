@@ -1,12 +1,10 @@
 from django.contrib import admin
-from django.urls import reverse
 from django.utils.html import format_html
 from arkav.competition.models import Stage
 from arkav.competition.models import Task
 from arkav.competition.models import TaskResponse
 from arkav.competition.models import TeamMember
 from arkav.competition.services import TeamMemberService
-import re
 
 
 def resend_invitation_email(modeladmin, request, queryset):

@@ -12,12 +12,10 @@ class RegisterTeamTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
 
-        self.competition_open = Competition.objects.create(
-            name='Open Competition')
-        Stage.objects.create(competition=self.competition_open,
-                             name='Open Competition Stage')
-        self.competition_closed = Competition.objects.create(
-            name='Closed Competition', is_registration_open=False)
+        self.competition_open = Competition.objects.create(name='Open Competition')
+        self.competition_closed = Competition.objects.create(name='Closed Competition', is_registration_open=False)
+        Stage.objects.create(competition=self.competition_open, name='Open Competition Stage')
+        Stage.objects.create(competition=self.competition_closed, name='Closed Competition Stage')
         self.team_name = 'Team Name'
         self.team_institution = 'Team Institution'
 
@@ -31,7 +29,7 @@ class RegisterTeamTestCase(APITestCase):
         data = {
             'competition_id': self.competition_open.pk,
             'name': self.team_name,
-            'institution': self.team_institution
+            'institution': self.team_institution,
         }
 
         res = self.client.post(url, data=data, format='json')
@@ -52,7 +50,7 @@ class RegisterTeamTestCase(APITestCase):
         data = {
             'competition_id': self.competition_open.pk,
             'name': self.team_name,
-            'institution': self.team_institution
+            'institution': self.team_institution,
         }
 
         res = self.client.post(url, data=data, format='json')
@@ -70,7 +68,7 @@ class RegisterTeamTestCase(APITestCase):
             competition=self.competition_open,
             name=self.team_name,
             institution=self.team_institution,
-            team_leader=self.user1
+            team_leader=self.user1,
         )
 
         # Add the current user as team member
@@ -84,7 +82,7 @@ class RegisterTeamTestCase(APITestCase):
         data = {
             'competition_id': self.competition_open.pk,
             'name': self.team_name,
-            'institution': self.team_institution
+            'institution': self.team_institution,
         }
 
         res = self.client.post(url, data=data, format='json')
@@ -100,7 +98,30 @@ class RegisterTeamTestCase(APITestCase):
         data = {
             'competition_id': self.competition_closed.pk,
             'name': self.team_name,
-            'institution': self.team_institution
+            'institution': self.team_institution,
+        }
+
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_team_already_lead_other_team(self):
+        '''
+        If user has already lead other team, it will return 400
+        '''
+        url = reverse('competition-team-register')
+        self.client.force_authenticate(self.user1)
+
+        Team.objects.create(
+            competition=self.competition_closed,
+            name='abc',
+            institution='ABC',
+            team_leader=self.user1,
+        )
+
+        data = {
+            'competition_id': self.competition_open.pk,
+            'name': self.team_name,
+            'institution': self.team_institution,
         }
 
         res = self.client.post(url, data=data, format='json')

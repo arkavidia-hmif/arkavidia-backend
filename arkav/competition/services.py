@@ -68,21 +68,28 @@ class TeamService:
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Create a new team led by the current user
-        new_team = Team.objects.create(
-            competition=competition,
-            name=team_name,
-            institution=team_institution,
-            team_leader=user,
-        )
+        try:
+            # Create a new team led by the current user
+            new_team = Team.objects.create(
+                competition=competition,
+                name=team_name,
+                institution=team_institution,
+                team_leader=user,
+            )
 
-        # Add the current user as team member
-        TeamMember.objects.create(
-            team=new_team,
-            user=user,
-            invitation_full_name=user.full_name,
-            invitation_email=user.email,
-        )
+            # Add the current user as team member
+            TeamMember.objects.create(
+                team=new_team,
+                user=user,
+                invitation_full_name=user.full_name,
+                invitation_email=user.email,
+            )
+        except ValueError as e:
+            raise ArkavAPIException(
+                detail=str(e),
+                code='create_team_fail',
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
 
         return new_team
 
