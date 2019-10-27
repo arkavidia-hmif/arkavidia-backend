@@ -1,6 +1,7 @@
 from arkav.arkavauth.constants import K_PASSWORD_CHANGE_FAILED
 from arkav.arkavauth.constants import K_PASSWORD_CHANGE_SUCCESSFUL
 from arkav.arkavauth.models import User
+from datetime import date
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -105,6 +106,47 @@ class EditUserTestCase(APITestCase):
         self.assertEqual(self.user.phone_number, data['phoneNumber'])
         self.assertEqual(str(self.user.birth_date), data['birthDate'])
         self.assertEqual(self.user.address, data['address'])
+
+    def test_edit_user_minimum(self):
+        '''
+        Not all fields should be included
+        '''
+        self.user.current_education = 'COLLEGE'
+        self.user.institution = 'ABC'
+        self.user.phone_number = '087xxxxxxx'
+        self.user.birth_date = date.today()
+        self.user.address = 'abcdef'
+        url = reverse('auth-edit-user')
+        self.client.force_authenticate(user=self.user)
+        fullnameBefore = self.user.full_name
+        emailBefore = self.user.email
+        data = {
+            'full_name': 'Jones',
+            'email': 'jones@gmail.com',
+            'is_staff': True,
+            'is_active': False,
+            'is_email_confirmed': False,
+            'currentEducation': None,
+            'institution': None,
+            'phoneNumber': None,
+            'birthDate': None,
+            'address': None,
+        }
+        res = self.client.patch(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        fullnameAfter = res.data['full_name']
+        emailAfter = res.data['email']
+        self.assertNotEqual(fullnameBefore, fullnameAfter)
+        self.assertEqual(fullnameAfter, data['full_name'])
+        self.assertEqual(emailBefore, emailAfter)
+        self.assertFalse(self.user.is_staff)
+        self.assertTrue(self.user.is_active)
+        self.assertTrue(self.user.is_email_confirmed)
+        self.assertIsNone(self.user.current_education)
+        self.assertIsNone(self.user.institution)
+        self.assertIsNone(self.user.phone_number)
+        self.assertIsNone(self.user.birth_date)
+        self.assertIsNone(self.user.address)
 
     def test_edit_user_unauthorized(self):
         '''
