@@ -3,5 +3,7 @@
 .tmp_commits_squashed
 *.pyc
 db.sqlite3
-staticfiles
+static
 venv
+.vscode
+*.log
