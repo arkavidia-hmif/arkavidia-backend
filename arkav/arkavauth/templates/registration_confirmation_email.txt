@@ -4,4 +4,4 @@ Terima kasih sudah mendaftar!
 Akses link ini untuk mengaktifkan akun Anda: https://www.arkavidia.id/email/confirm/{{ token }}
 
 --
-Tim Arkavidia 5.0
+Arkavidia 6.0
