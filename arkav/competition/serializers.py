@@ -7,6 +7,9 @@ from arkav.competition.models import Task
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import TaskResponse
+from django.template import engines
+
+django_engine = engines['django']
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
@@ -94,6 +97,20 @@ class TeamDetailsSerializer(serializers.ModelSerializer):
             'id', 'competition', 'category', 'is_participating', 'team_members',
             'active_stage_id', 'stages', 'task_responses', 'created_at'
         )
+
+    def to_representation(self, instance):
+        '''
+        Render task widget parameter as template
+        '''
+        team_data = super().to_representation(instance)
+        for stage in team_data['stages']:
+            for task in stage['tasks']:
+                template_string = django_engine.from_string(task['widget_parameters'])
+                task['widget_parameters'] = template_string.render(context={
+                    'team': instance,
+                    'team_number': '{:03d}'.format(instance.id + 100)
+                })
+        return team_data
 
 
 class RegisterTeamRequestSerializer(serializers.Serializer):

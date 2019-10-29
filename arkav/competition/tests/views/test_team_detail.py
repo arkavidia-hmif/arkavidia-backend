@@ -6,7 +6,6 @@ from arkav.competition.models import TaskCategory
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
-from arkav.competition.serializers import TeamSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -58,12 +57,11 @@ class TeamListTestCase(APITestCase):
         Detail of a team will be returned
         Widget parameters of a task will be rendered as template
         '''
-        url = reverse('competition-team-detail', kwargs={ 'team_id': self.team.id })
+        url = reverse('competition-team-detail', kwargs={'team_id': self.team.id})
         self.client.force_authenticate(self.user1)
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        res_teams = res.data
         self.assertEqual(len(res.data['stages']), 1)
         self.assertEqual(len(res.data['stages'][0]['tasks']), 3)
         self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters'], 'Halo, Team 1!')
