@@ -21,21 +21,27 @@ class TeamListTestCase(APITestCase):
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 1'),
             category=TaskCategory.objects.create(name='category 1'),
-            widget_parameters='Halo, {{ team.name }}!',
+            widget_parameters={
+                'description': 'Halo, {{ team.name }}!'
+            }
         )
         self.task = Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 2'),
             category=TaskCategory.objects.create(name='category 2'),
-            widget_parameters='Tanpa template',
+            widget_parameters={
+                'description': 'Tanpa template'
+            }
         )
         self.task = Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 3'),
             category=TaskCategory.objects.create(name='category 3'),
-            widget_parameters='{{ team_number }}',
+            widget_parameters={
+                'description': '{{ team_number }}'
+            }
         )
 
         self.team = Team.objects.create(
