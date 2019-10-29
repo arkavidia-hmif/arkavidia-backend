@@ -13,11 +13,14 @@ from arkav.competition.services import TeamService
 from arkav.competition.services import TeamMemberService
 from arkav.utils.exceptions import ArkavAPIException
 from django.shortcuts import get_object_or_404
+from django.template import engines
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+
+django_engine = engines['django']
 
 
 class ListCompetitionsView(generics.ListAPIView):
@@ -93,6 +96,20 @@ class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
             return self.request.user.teams.all()
         else:
             return self.request.user.teams.filter(competition__is_registration_open=True, is_participating=True)
+
+    def retrieve(self, request, *args, **kwargs):
+        team = self.get_object()
+        serializer = self.get_serializer(team)
+        team_data = serializer.data
+        for stage in team_data['stages']:
+            for task in stage['tasks']:
+                template_string = django_engine.from_string(task['widget_parameters'])
+                task['widget_parameters'] = template_string.render(context={
+                    'team': team,
+                    'team_number': '{:03d}'.format(team.id + 100)
+                })
+
+        return Response(team_data)
 
     @swagger_auto_schema(operation_summary='Team Detail')
     def get(self, request, *args, **kwargs):
