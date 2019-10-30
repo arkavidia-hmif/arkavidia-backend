@@ -104,7 +104,7 @@ class Team(models.Model):
     '''
     competition = models.ForeignKey(to=Competition, related_name='teams', on_delete=models.PROTECT)
     name = models.CharField(max_length=50, unique=True)
-    institution = models.CharField(max_length=50)
+    institution = models.CharField(max_length=100)
     members = models.ManyToManyField(to=User, related_name='teams', through='TeamMember')
     team_leader = models.ForeignKey(to=User, related_name='led_teams', on_delete=models.PROTECT)
     active_stage = models.ForeignKey(to=Stage, related_name='active_teams', on_delete=models.PROTECT)
