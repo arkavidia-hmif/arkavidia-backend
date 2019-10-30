@@ -106,7 +106,7 @@ class TeamDetailsSerializer(serializers.ModelSerializer):
         for stage in team_data['stages']:
             for task in stage['tasks']:
                 template_string = django_engine.from_string(task['widget_parameters']['description'])
-                task['widget_parameters'] = template_string.render(context={
+                task['widget_parameters']['description'] = template_string.render(context={
                     'team': instance,
                     'team_number': '{:03d}'.format(instance.id + 100)
                 })

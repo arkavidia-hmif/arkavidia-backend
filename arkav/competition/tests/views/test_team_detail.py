@@ -16,31 +16,36 @@ class TeamListTestCase(APITestCase):
         self.user1 = User.objects.create_user(email='user')
         self.competition = Competition.objects.create(name='Competition 1')
         self.stage = Stage.objects.create(competition=self.competition, name='Stage 1')
-        self.task = Task.objects.create(
+
+        Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 1'),
             category=TaskCategory.objects.create(name='category 1'),
             widget_parameters={
-                'description': 'Halo, {{ team.name }}!'
+                'description': 'Halo, {{ team.name }}!',
+                'original': 'Halo, {{ team.name }}!',
             }
         )
-        self.task = Task.objects.create(
+        Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 2'),
             category=TaskCategory.objects.create(name='category 2'),
             widget_parameters={
-                'description': 'Tanpa template'
+                'description': 'Tanpa template',
+                'original': 'Tanpa template',
             }
         )
-        self.task = Task.objects.create(
+
+        Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 3'),
             category=TaskCategory.objects.create(name='category 3'),
             widget_parameters={
-                'description': '{{ team_number }}'
+                'description': '{{ team_number }}',
+                'original': '{{ team_number }}',
             }
         )
 
@@ -70,6 +75,9 @@ class TeamListTestCase(APITestCase):
 
         self.assertEqual(len(res.data['stages']), 1)
         self.assertEqual(len(res.data['stages'][0]['tasks']), 3)
-        self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters'], 'Halo, Team 1!')
-        self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters'], 'Tanpa template')
-        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters'], '101')  # 100 + team id
+        self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['description'], 'Halo, Team 1!')
+        self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['original'], 'Halo, {{ team.name }}!')
+        self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['description'], 'Tanpa template')
+        self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
+        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], '101')  # 100 + team id
+        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['original'], '{{ team_number }}')
