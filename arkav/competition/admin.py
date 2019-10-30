@@ -15,6 +15,7 @@ from arkav.competition.models import Stage
 from arkav.competition.models import Task
 from arkav.competition.models import TaskCategory
 from arkav.competition.models import TaskResponse
+from arkav.competition.models import UserTaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 
@@ -46,14 +47,13 @@ class StageAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'stage', 'category', 'widget', 'requires_validation']
+    list_display = ['id', 'name', 'stage', 'category', 'widget', 'requires_validation', 'is_user_task']
     list_display_links = ['id', 'name']
     list_filter = ['category', 'widget', 'stage__competition', 'stage']
     search_fields = ['name']
 
 
-@admin.register(TaskResponse)
-class TaskResponseAdmin(admin.ModelAdmin):
+class AbstractTaskResponseAdmin(admin.ModelAdmin):
     list_display = ['team', 'task', 'status', 'open_response', 'accept_reject']
     list_display_links = ['team']
     list_filter = ['status', 'task__category']
@@ -134,6 +134,16 @@ class TaskResponseAdmin(admin.ModelAdmin):
         context['title'] = action_title
 
         return TemplateResponse(request, 'admin_task_response.html', context)
+
+
+@admin.register(TaskResponse)
+class TaskResponseAdmin(AbstractTaskResponseAdmin):
+    pass
+
+
+@admin.register(UserTaskResponse)
+class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
+    pass
 
 
 @admin.register(Team)
