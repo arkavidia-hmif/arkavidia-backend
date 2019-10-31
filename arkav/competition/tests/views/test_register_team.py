@@ -11,6 +11,7 @@ from rest_framework.test import APITestCase
 class RegisterTeamTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
+        self.user2 = User.objects.create_user(email='user2')
 
         self.competition_open = Competition.objects.create(name='Open Competition')
         self.competition_closed = Competition.objects.create(name='Closed Competition', is_registration_open=False)
@@ -126,3 +127,27 @@ class RegisterTeamTestCase(APITestCase):
 
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_team_name_already_taken(self):
+        '''
+        Per competition, team name should be only used one times.
+        '''
+        url = reverse('competition-team-register')
+        self.client.force_authenticate(self.user1)
+
+        Team.objects.create(
+            competition=self.competition_open,
+            name='abc',
+            institution='ABC',
+            team_leader=self.user2,
+        )
+
+        data = {
+            'competition_id': self.competition_open.pk,
+            'name': 'abc',
+            'institution': 'ABC',
+        }
+
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.data['code'], 'team_name_is_used')

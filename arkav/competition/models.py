@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import jsonfield
 import uuid
 
 
@@ -85,7 +86,7 @@ class Task(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(to=TaskCategory, related_name='tasks', on_delete=models.PROTECT)
     widget = models.ForeignKey(to=TaskWidget, related_name='tasks', on_delete=models.PROTECT)
-    widget_parameters = models.TextField()
+    widget_parameters = jsonfield.JSONField(null=True)
     requires_validation = models.BooleanField(default=False)
     is_user_task = models.BooleanField(default=False)
 
@@ -105,7 +106,7 @@ class Team(models.Model):
     '''
     competition = models.ForeignKey(to=Competition, related_name='teams', on_delete=models.PROTECT)
     name = models.CharField(max_length=50, unique=True)
-    institution = models.CharField(max_length=50)
+    institution = models.CharField(max_length=100)
     members = models.ManyToManyField(to=User, related_name='teams', through='TeamMember')
     team_leader = models.ForeignKey(to=User, related_name='led_teams', on_delete=models.PROTECT)
     active_stage = models.ForeignKey(to=Stage, related_name='active_teams', on_delete=models.PROTECT)

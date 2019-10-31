@@ -31,7 +31,7 @@ class User(AbstractUser):
     confirmation_email_last_sent_time = models.DateTimeField(null=True, blank=True)
 
     current_education = models.CharField(max_length=10, choices=EDUCATION_CHOICES, null=True, default=None)
-    institution = models.CharField(max_length=75, null=True, blank=True, default=None)
+    institution = models.CharField(max_length=100, null=True, blank=True, default=None)
     phone_number = models.CharField(max_length=20, null=True, default=None)
     birth_date = models.DateField(null=True, default=None)
     address = models.TextField(null=True, default=None)
