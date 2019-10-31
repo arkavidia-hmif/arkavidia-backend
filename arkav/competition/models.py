@@ -88,6 +88,7 @@ class Task(models.Model):
     widget = models.ForeignKey(to=TaskWidget, related_name='tasks', on_delete=models.PROTECT)
     widget_parameters = jsonfield.JSONField(null=True)
     requires_validation = models.BooleanField(default=False)
+    is_user_task = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} - {}'.format(self.stage.competition.name, self.name)
@@ -197,7 +198,7 @@ class TeamMember(models.Model):
         get_latest_by = 'created_at'
 
 
-class TaskResponse(models.Model):
+class AbstractTaskResponse(models.Model):
     '''
     A response to a task, e.g. proof of payment image, uploaded proposal.
     A TaskResponse will be created when a response is submitted for a task.
@@ -247,8 +248,29 @@ class TaskResponse(models.Model):
             else:
                 self.status = self.COMPLETED
 
-        super(TaskResponse, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = (('task', 'team'),)  # Each team can only have at most 1 task response per task
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
+        get_latest_by = 'created_at'
+        abstract = True
+
+
+class TaskResponse(AbstractTaskResponse):
+
+    class Meta:
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
+        get_latest_by = 'created_at'
+
+
+class UserTaskResponse(AbstractTaskResponse):
+    user = models.ForeignKey(to=User, related_name='user_task_responses', on_delete=models.CASCADE)
+    task = models.ForeignKey(to=Task, related_name='user_task_responses', on_delete=models.PROTECT)
+    team = models.ForeignKey(to=Team, related_name='user_task_responses', on_delete=models.CASCADE)
+
+    class Meta:
+        # Each user in team can only have at most 1 task response per task
+        unique_together = (('task', 'team', 'user'),)
         get_latest_by = 'created_at'

@@ -28,8 +28,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
-        read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
+        fields = ('id', 'name', 'category', 'widget', 'widget_parameters', 'is_user_task')
+        read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters', 'is_user_task')
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -56,11 +56,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 class TaskResponseSerializer(serializers.ModelSerializer):
     task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all(), required=False)
 
     class Meta:
         model = TaskResponse
-        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at')
-        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at')
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id')
 
 
 class TeamSerializer(serializers.ModelSerializer):

@@ -1,8 +1,10 @@
+from arkav.arkavauth.models import User
+from arkav.competition.models import AbstractTaskResponse
 from arkav.competition.models import Task
 from arkav.competition.models import TaskResponse
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
-from arkav.competition.models import User
+from arkav.competition.models import UserTaskResponse
 from arkav.utils.exceptions import ArkavAPIException
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
@@ -202,18 +204,32 @@ class TaskResponseService:
         # according to the whether this task requires validation,
         # and also updating its last_submitted_at.
         if task.requires_validation:
-            task_response_status = TaskResponse.AWAITING_VALIDATION
+            task_response_status = AbstractTaskResponse.AWAITING_VALIDATION
         else:
-            task_response_status = TaskResponse.COMPLETED
+            task_response_status = AbstractTaskResponse.COMPLETED
 
-        new_task_response = TaskResponse.objects.update_or_create(
-            task=task,
-            team=team,
-            defaults={
-                'response': response,
-                'status': task_response_status,
-                'last_submitted_at': timezone.now(),
-            },
-        )
+        new_task_response = None
+        if task.is_user_task:
+            task_user = task_response_data['user'] if 'user' in task_response_data else user
+            new_task_response, created = UserTaskResponse.objects.update_or_create(
+                task=task,
+                team=team,
+                user=task_user,
+                defaults={
+                    'response': response,
+                    'status': task_response_status,
+                    'last_submitted_at': timezone.now(),
+                },
+            )
+        else:
+            new_task_response, created = TaskResponse.objects.update_or_create(
+                task=task,
+                team=team,
+                defaults={
+                    'response': response,
+                    'status': task_response_status,
+                    'last_submitted_at': timezone.now(),
+                },
+            )
 
-        return new_task_response[0]
+        return new_task_response
