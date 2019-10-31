@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
-]
+] if not DEBUG else ['*']
 
 # Application definition
 INSTALLED_APPS = [
