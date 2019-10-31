@@ -1,9 +1,9 @@
-from arkav.competition.models import Task
 from django.db import migrations
 import jsonfield.fields
 
 
-def forward_func(apps, schema_editor):
+def move_widget_parameters_to_json_forward(apps, schema_editor):
+    Task = apps.get_model('competition', 'Task')
     for task in Task.objects.all():
         task.widget_parameters_json = {
             'description': task.widget_parameters
@@ -11,9 +11,10 @@ def forward_func(apps, schema_editor):
         task.save()
 
 
-def reverse_func(apps, schema_editor):
+def move_widget_parameters_to_json_reverse(apps, schema_editor):
+    Task = apps.get_model('competition', 'Task')
     for task in Task.objects.all():
-        task.widget_parameters = task.widget_parameters_json['description']
+        task.widget_parameters = task.widget_parameters_json.get('description', '')
         task.save()
 
 
@@ -29,7 +30,7 @@ class Migration(migrations.Migration):
             name='widget_parameters_json',
             field=jsonfield.fields.JSONField(null=True),
         ),
-        migrations.RunPython(forward_func, reverse_func),
+        migrations.RunPython(move_widget_parameters_to_json_forward, move_widget_parameters_to_json_reverse),
         migrations.RemoveField(
             model_name='task',
             name='widget_parameters',
