@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import jsonfield
 import uuid
 
 
@@ -85,7 +86,7 @@ class Task(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(to=TaskCategory, related_name='tasks', on_delete=models.PROTECT)
     widget = models.ForeignKey(to=TaskWidget, related_name='tasks', on_delete=models.PROTECT)
-    widget_parameters = models.TextField()
+    widget_parameters = jsonfield.JSONField(null=True)
     requires_validation = models.BooleanField(default=False)
 
     def __str__(self):
