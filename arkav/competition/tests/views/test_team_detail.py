@@ -6,6 +6,8 @@ from arkav.competition.models import TaskCategory
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
+from arkav.competition.models import TaskResponse
+from arkav.competition.models import UserTaskResponse
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -13,11 +15,12 @@ from rest_framework.test import APITestCase
 
 class TeamListTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(email='user')
+        self.user1 = User.objects.create_user(email='user1')
+        self.user2 = User.objects.create_user(email='user2')
         self.competition = Competition.objects.create(name='Competition 1')
         self.stage = Stage.objects.create(competition=self.competition, name='Stage 1')
 
-        Task.objects.create(
+        self.task1 = Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 1'),
@@ -27,18 +30,18 @@ class TeamListTestCase(APITestCase):
                 'original': 'Halo, {{ team.name }}!',
             }
         )
-        Task.objects.create(
+        self.task2 = Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 2'),
             category=TaskCategory.objects.create(name='category 2'),
+            is_user_task=True,
             widget_parameters={
                 'description': 'Tanpa template',
                 'original': 'Tanpa template',
             }
         )
-
-        Task.objects.create(
+        self.task3 = Task.objects.create(
             name='abc',
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 3'),
@@ -63,6 +66,10 @@ class TeamListTestCase(APITestCase):
             invitation_email=self.user1.email,
         )
 
+        TaskResponse.objects.create(team=self.team, task=self.task1, response='abc')
+        UserTaskResponse.objects.create(team=self.team, task=self.task2, user=self.user1, response='def')
+        UserTaskResponse.objects.create(team=self.team, task=self.task2, user=self.user2, response='ghi')
+
     def test_team_detail(self):
         '''
         Detail of a team will be returned
@@ -81,3 +88,13 @@ class TeamListTestCase(APITestCase):
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], '101')  # 100 + team id
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['original'], '{{ team_number }}')
+
+        self.assertIn('task_responses', res.data)
+        self.assertIn('user_task_responses', res.data)
+        self.assertEqual(len(res.data['task_responses']), 1)
+        self.assertEqual(len(res.data['user_task_responses']), 2)
+        self.assertEqual(res.data['task_responses'][0]['task_id'], self.task1.id)
+        self.assertEqual(res.data['user_task_responses'][0]['task_id'], self.task2.id)
+        self.assertEqual(res.data['user_task_responses'][1]['task_id'], self.task2.id)
+        self.assertEqual(res.data['user_task_responses'][0]['user_id'], self.user1.id)
+        self.assertEqual(res.data['user_task_responses'][1]['user_id'], self.user2.id)

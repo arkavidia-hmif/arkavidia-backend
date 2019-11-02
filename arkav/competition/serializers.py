@@ -7,6 +7,7 @@ from arkav.competition.models import Task
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import TaskResponse
+from arkav.competition.models import UserTaskResponse
 from django.template import engines
 
 django_engine = engines['django']
@@ -64,6 +65,16 @@ class TaskResponseSerializer(serializers.ModelSerializer):
         read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id')
 
 
+class UserTaskResponseSerializer(serializers.ModelSerializer):
+    task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all())
+
+    class Meta:
+        model = UserTaskResponse
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id')
+
+
 class TeamSerializer(serializers.ModelSerializer):
     competition = CompetitionSerializer(read_only=True)
     category = serializers.SlugRelatedField(slug_field='name', read_only=True)
@@ -86,17 +97,18 @@ class TeamDetailsSerializer(serializers.ModelSerializer):
     active_stage_id = serializers.PrimaryKeyRelatedField(source='active_stage', read_only=True)
     stages = StageSerializer(source='visible_stages', many=True, read_only=True)
     task_responses = TaskResponseSerializer(many=True, read_only=True)
+    user_task_responses = UserTaskResponseSerializer(many=True, read_only=True)
 
     class Meta:
         model = Team
         fields = (
             'id', 'competition', 'category', 'name', 'team_leader_email', 'institution',
-            'is_participating', 'team_members', 'active_stage_id', 'stages', 'task_responses',
-            'created_at'
+            'is_participating', 'team_members', 'active_stage_id', 'stages',
+            'task_responses', 'user_task_responses', 'created_at'
         )
         read_only_fields = (
             'id', 'competition', 'category', 'is_participating', 'team_members',
-            'active_stage_id', 'stages', 'task_responses', 'created_at'
+            'active_stage_id', 'stages', 'task_responses', 'user_task_responses', 'created_at'
         )
 
     def to_representation(self, instance):
