@@ -70,26 +70,28 @@ class AbstractTaskResponseAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        model_name = self.model._meta.model_name
         custom_urls = [
             path(
                 '<int:task_response_id>/accept/',
                 self.admin_site.admin_view(self.accept_task_response),
-                name='competition-taskresponse-accept',
+                name='competition-{}-accept'.format(model_name),
             ),
             path(
                 '<int:task_response_id>/reject/',
                 self.admin_site.admin_view(self.reject_task_response),
-                name='competition-taskresponse-reject',
+                name='competition-{}-reject'.format(model_name),
             ),
         ]
         return custom_urls + urls
 
     def accept_reject(self, obj):
+        model_name = self.model._meta.model_name
         return format_html(
             '<a class="button" href="{}">Accept</a>&nbsp;'
             '<a class="button" href="{}">Reject</a>',
-            reverse('admin:competition-taskresponse-accept', args=[obj.pk]),
-            reverse('admin:competition-taskresponse-reject', args=[obj.pk]),
+            reverse('admin:competition-{}-accept'.format(model_name), args=[obj.pk]),
+            reverse('admin:competition-{}-reject'.format(model_name), args=[obj.pk]),
         )
 
     accept_reject.short_description = 'Accept / Reject'
