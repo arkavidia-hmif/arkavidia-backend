@@ -183,6 +183,11 @@ class TaskResponseService:
             id=team_id,
             team_members__user=user,
         )
+        team_member = get_object_or_404(
+            TeamMember.objects.all(),
+            team_id=team_id,
+            user=user,
+        )
 
         if not team.is_participating:
             raise ArkavAPIException(
@@ -210,11 +215,11 @@ class TaskResponseService:
 
         new_task_response = None
         if task.is_user_task:
-            task_user = task_response_data['user'] if 'user' in task_response_data else user
+            task_team_member = task_response_data.get('team_member', team_member)
             new_task_response, created = UserTaskResponse.objects.update_or_create(
                 task=task,
                 team=team,
-                user=task_user,
+                team_member=task_team_member,
                 defaults={
                     'response': response,
                     'status': task_response_status,

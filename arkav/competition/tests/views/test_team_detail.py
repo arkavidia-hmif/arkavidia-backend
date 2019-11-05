@@ -59,16 +59,22 @@ class TeamListTestCase(APITestCase):
             team_leader=self.user1,
         )
 
-        TeamMember.objects.create(
+        self.team_member1 = TeamMember.objects.create(
             team=self.team,
             user=self.user1,
             invitation_full_name=self.user1.full_name,
             invitation_email=self.user1.email,
         )
+        self.team_member2 = TeamMember.objects.create(
+            team=self.team,
+            user=self.user2,
+            invitation_full_name=self.user2.full_name,
+            invitation_email=self.user2.email,
+        )
 
         TaskResponse.objects.create(team=self.team, task=self.task1, response='abc')
-        UserTaskResponse.objects.create(team=self.team, task=self.task2, user=self.user1, response='def')
-        UserTaskResponse.objects.create(team=self.team, task=self.task2, user=self.user2, response='ghi')
+        UserTaskResponse.objects.create(team=self.team, task=self.task2, team_member=self.team_member1, response='def')
+        UserTaskResponse.objects.create(team=self.team, task=self.task2, team_member=self.team_member2, response='ghi')
 
     def test_team_detail(self):
         '''
