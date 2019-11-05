@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.template.defaultfilters import escape
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
@@ -54,11 +55,20 @@ class TaskAdmin(admin.ModelAdmin):
 
 
 class AbstractTaskResponseAdmin(admin.ModelAdmin):
-    list_display = ['team', 'task', 'status', 'open_response', 'accept_reject']
-    list_display_links = ['team']
+    list_display = ['team_link', 'task', 'status', 'open_response', 'accept_reject']
+    list_display_links = ['task']
     list_filter = ['status', 'task__category']
     search_fields = ['team', 'task']
     autocomplete_fields = ['team', 'task']
+
+    def team_link(self, obj):
+        return format_html(
+            '<a href="{}">{}</a>'.format(reverse('admin:competition_team_change',
+                                                 args=(obj.team.id,)),
+                                         escape(obj.team))
+        )
+
+    team_link.short_description = 'Team'
 
     def open_response(self, obj):
         response, is_link = obj.response_or_link
