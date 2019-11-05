@@ -155,7 +155,7 @@ class TaskResponseAdmin(AbstractTaskResponseAdmin):
 
 @admin.register(UserTaskResponse)
 class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
-    pass
+    list_display = ['team_link', 'task', 'team_member', 'status', 'open_response', 'accept_reject']
 
 
 @admin.register(Team)
