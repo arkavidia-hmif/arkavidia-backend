@@ -266,11 +266,12 @@ class TaskResponse(AbstractTaskResponse):
 
 
 class UserTaskResponse(AbstractTaskResponse):
-    user = models.ForeignKey(to=User, related_name='user_task_responses', on_delete=models.CASCADE)
+    team_member = models.ForeignKey(to=TeamMember, related_name='user_task_responses',
+                                    on_delete=models.CASCADE, null=True)
     task = models.ForeignKey(to=Task, related_name='user_task_responses', on_delete=models.PROTECT)
     team = models.ForeignKey(to=Team, related_name='user_task_responses', on_delete=models.CASCADE)
 
     class Meta:
         # Each user in team can only have at most 1 task response per task
-        unique_together = (('task', 'team', 'user'),)
+        unique_together = (('task', 'team', 'team_member'),)
         get_latest_by = 'created_at'

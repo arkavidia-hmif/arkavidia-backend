@@ -57,22 +57,26 @@ class TeamMemberSerializer(serializers.ModelSerializer):
 
 class TaskResponseSerializer(serializers.ModelSerializer):
     task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all(), required=False)
+    user_id = serializers.PrimaryKeyRelatedField(source='team_member',
+                                                 queryset=TeamMember.objects.all(), required=False)
+    team_member_id = serializers.PrimaryKeyRelatedField(source='team_member',
+                                                        queryset=TeamMember.objects.all(), required=False)
 
     class Meta:
         model = TaskResponse
-        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id')
-        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id')
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
 
 
 class UserTaskResponseSerializer(serializers.ModelSerializer):
     task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
-    user_id = serializers.PrimaryKeyRelatedField(source='user', queryset=User.objects.all())
+    user_id = serializers.PrimaryKeyRelatedField(source='team_member', queryset=TeamMember.objects.all())
+    team_member_id = serializers.PrimaryKeyRelatedField(source='team_member', queryset=TeamMember.objects.all())
 
     class Meta:
         model = UserTaskResponse
-        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id')
-        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id')
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
 
 
 class TeamSerializer(serializers.ModelSerializer):

@@ -72,11 +72,12 @@ class SubmitUserTaskTestCase(APITestCase):
 
         self.user1 = User.objects.create_user(email='user1')
         self.user2 = User.objects.create_user(email='user2')
+        self.user3 = User.objects.create_user(email='user3')
 
         self.ctf_team = Team.objects.create(name='ctf1', competition=self.competition_ctf, team_leader=self.user1)
 
-        TeamMember.objects.create(team=self.ctf_team, user=self.user1)
-        TeamMember.objects.create(team=self.ctf_team, user=self.user2)
+        self.team_member1 = TeamMember.objects.create(team=self.ctf_team, user=self.user1)
+        self.team_member2 = TeamMember.objects.create(team=self.ctf_team, user=self.user2)
 
         self.category_documents = TaskCategory.objects.create(name='Documents')
         self.widget_file = TaskWidget.objects.create(name='File')
@@ -100,14 +101,33 @@ class SubmitUserTaskTestCase(APITestCase):
         self.client.force_authenticate(self.user2)
         data = {
             'response': 'Upload KTM',
-            'userId': self.user1.pk,
+            'teamMemberId': self.team_member1.pk,
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         user_task_response = UserTaskResponse.objects.first()
         self.assertEqual(user_task_response.response, data['response'])
-        self.assertEqual(user_task_response.user_id, data['userId'])
+        self.assertEqual(user_task_response.team_member.id, data['teamMemberId'])
+
+    def test_submit_user_task_using_user_id(self):
+        '''
+        Submit user task
+        '''
+        url = reverse(
+            'competition-team-task-detail',
+            kwargs={'team_id': self.ctf_team.pk, 'task_id': self.ctf_upload_ktm_task.pk})
+        self.client.force_authenticate(self.user2)
+        data = {
+            'response': 'Upload KTM',
+            'userId': self.team_member1.pk,
+        }
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        user_task_response = UserTaskResponse.objects.first()
+        self.assertEqual(user_task_response.response, data['response'])
+        self.assertEqual(user_task_response.team_member.id, data['userId'])
 
     def test_submit_user_task_without_user_id(self):
         '''
@@ -125,4 +145,19 @@ class SubmitUserTaskTestCase(APITestCase):
 
         user_task_response = UserTaskResponse.objects.first()
         self.assertEqual(user_task_response.response, data['response'])
-        self.assertEqual(user_task_response.user_id, self.user2.id)
+        self.assertEqual(user_task_response.team_member.id, self.user2.id)
+
+    def test_submit_user_task_not_team_member(self):
+        '''
+        If someone submit user task to a team that is not his/hers, the code will be 404
+        '''
+        url = reverse(
+            'competition-team-task-detail',
+            kwargs={'team_id': self.ctf_team.pk, 'task_id': self.ctf_upload_ktm_task.pk})
+        self.client.force_authenticate(self.user3)
+        data = {
+            'response': 'Upload KTM',
+            'userId': self.team_member1.pk,
+        }
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
