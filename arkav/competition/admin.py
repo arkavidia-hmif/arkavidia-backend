@@ -155,7 +155,12 @@ class TaskResponseAdmin(AbstractTaskResponseAdmin):
 
 @admin.register(UserTaskResponse)
 class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
-    list_display = ['team_link', 'task', 'team_member', 'status', 'open_response', 'accept_reject']
+    list_display = ['team_link', 'task', 'team_member_name', 'status', 'open_response', 'accept_reject']
+
+    def team_member_name(self, obj):
+        return obj.team_member.full_name
+
+    team_member_name.short_description = 'Team Member'
 
 
 @admin.register(Team)
