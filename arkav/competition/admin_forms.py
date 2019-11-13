@@ -1,5 +1,4 @@
 from django import forms
-from arkav.competition.models import TaskResponse
 from arkav.competition.services import TaskResponseService
 
 
