@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from arkav.announcement.models import Announcement
+from arkav.announcement.models import AnnouncementUser
 
 
-class AnnouncementSerializer(serializers.ModelSerializer):
+class AnnouncementUserSerializer(serializers.ModelSerializer):
 
     class Meta:
-        model = Announcement
+        model = AnnouncementUser
         fields = ('message', 'date_sent')
         read_only_fields = ('message', 'date_sent')
