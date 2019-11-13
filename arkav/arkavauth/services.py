@@ -1,6 +1,10 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils import timezone
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserService:
@@ -15,8 +19,10 @@ class UserService:
             to=[user.email],
         )
         mail.attach_alternative(mail_html_message, 'text/html')
-        mail.send()
-        user.email_last_sent_at = timezone.now()
+        try:
+            mail.send()
+        except Exception:
+            logger.error('Error mailing {} with subject {}'.format(user.email, subject))
         user.save()
 
     def send_registration_confirmation_email(self, user):
@@ -28,7 +34,7 @@ class UserService:
             'token': user.confirmation_token,
         }
 
-        self.send_email('[Arkavidia] Konfirmasi Email', context, text_template, html_template)
+        self.send_email(user, '[Arkavidia] Konfirmasi Email', context, text_template, html_template)
         user.confirmation_email_last_sent_time = timezone.now()
         user.save()
 
@@ -40,7 +46,7 @@ class UserService:
 
         context = {
             'user': user,
-            'token': user.confirmation_token,
+            'token': password_reset_attempt.token,
         }
 
         self.send_email(user, '[Arkavidia] Reset Password', context, text_template, html_template)

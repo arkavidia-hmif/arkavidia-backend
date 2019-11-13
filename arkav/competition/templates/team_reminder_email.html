@@ -1,19 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
-w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    </style>
 </head>
-<body style="font-family: Roboto,sans-serif; line-height: 2;">
-    <table style="width: 100%; background-color: #FFFFF2 !important; background-image: url(https://dashboard.arkavidia.id/img/bg_pattern.feb36b04.png) !important; background-size: 50% !important; padding: 10px;">
-        <tr><td style="text-align: center"><img src="https://static.arkavidia.id/5/images/logo-long.png" height="50"></td></tr>
-        <tr><td>Halo, {{ team_name }}! </td></tr>
-        <tr><td>Diingatkan kembali untuk melengkapi tahap {{ active_stage.name }}:</td></tr>
-        {%  for i in tasks %}
-            <tr><td>- {{ i.name }}</td></tr>
+<body style="font-family: Roboto,sans-serif; line-height: 2; background-color: #eee; width: 100%; padding: 20px; margin: 0;">
+    <table style="margin: auto; width: 100%; background-color: #FFF; padding: 20px; max-width: 500px;">
+        <tr><td style="text-align: center"><img src="https://arkavidia.sgp1.digitaloceanspaces.com/static/logo-arkavidia.png" height="100"></td></tr>
+        <tr><td style="text-align: center">Halo, {{ team_name }}! </td></tr>
+        <tr><td style="text-align: center">Diingatkan kembali untuk melengkapi tahap {{ active_stage.name }}:</td></tr>
+        {%  for task in tasks %}
+            <tr><td style="text-align: center">- {{ task.name }}</td></tr>
         {% endfor %}
         <tr></tr>
         <tr></tr>
-        <tr><td>Untuk melihat tim Anda, <a href="https://dashboard.arkavidia.id/">klik disini</a>.</td></tr>
+        <tr><td style="text-align: center">Untuk melihat tim Anda, <a href="https://arkavidia.id/dashboard/">klik disini</a>.</td></tr>
     </table>
 </body>
 </html>

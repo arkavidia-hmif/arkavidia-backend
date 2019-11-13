@@ -1,9 +1,11 @@
 from arkav.arkavauth.models import User
+from arkav.uploader.models import UploadedFile
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
-from datetime import datetime
+import jsonfield
+import uuid
 
 
 @receiver(post_save, sender=User)
@@ -25,6 +27,7 @@ def handle_user_post_save(sender, instance, created, **kwargs):
 
 class Competition(models.Model):
     name = models.CharField(max_length=50)
+    slug = models.SlugField(max_length=50)
     max_team_members = models.IntegerField(default=1)
     min_team_members = models.IntegerField(default=1)
     is_registration_open = models.BooleanField(default=True)
@@ -83,11 +86,12 @@ class Task(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(to=TaskCategory, related_name='tasks', on_delete=models.PROTECT)
     widget = models.ForeignKey(to=TaskWidget, related_name='tasks', on_delete=models.PROTECT)
-    widget_parameters = models.TextField()
+    widget_parameters = jsonfield.JSONField(null=True)
     requires_validation = models.BooleanField(default=False)
+    is_user_task = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return '{} - {}'.format(self.stage.competition.name, self.name)
 
 
 class Team(models.Model):
@@ -102,7 +106,7 @@ class Team(models.Model):
     '''
     competition = models.ForeignKey(to=Competition, related_name='teams', on_delete=models.PROTECT)
     name = models.CharField(max_length=50, unique=True)
-    institution = models.CharField(max_length=50)
+    institution = models.CharField(max_length=100)
     members = models.ManyToManyField(to=User, related_name='teams', through='TeamMember')
     team_leader = models.ForeignKey(to=User, related_name='led_teams', on_delete=models.PROTECT)
     active_stage = models.ForeignKey(to=Stage, related_name='active_teams', on_delete=models.PROTECT)
@@ -110,7 +114,7 @@ class Team(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return '{:03d} - {}'.format(self.id, self.name)
 
     @property
     def has_completed_active_stage(self):
@@ -194,12 +198,13 @@ class TeamMember(models.Model):
         get_latest_by = 'created_at'
 
 
-class TaskResponse(models.Model):
+class AbstractTaskResponse(models.Model):
     '''
     A response to a task, e.g. proof of payment image, uploaded proposal.
     A TaskResponse will be created when a response is submitted for a task.
     Each team can only have at most 1 task response per task;
     resubmissions will update the existing TaskResponse and reset its state to awaiting_validation.
+    If a task response is rejected, the reason should be detailed on reason.
     '''
     AWAITING_VALIDATION = 'awaiting_validation'
     COMPLETED = 'completed'
@@ -213,11 +218,26 @@ class TaskResponse(models.Model):
     task = models.ForeignKey(to=Task, related_name='task_responses', on_delete=models.PROTECT)
     team = models.ForeignKey(to=Team, related_name='task_responses', on_delete=models.CASCADE)
     response = models.TextField()
+    reason = models.TextField(blank=True, default='')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     last_submitted_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return '%s - %s' % (self.task.name, self.team.name)
+
+    @property
+    def response_or_link(self):
+        '''
+        Return file link if response is valid uuid of an UploadedFile and is it a link
+        '''
+        try:
+            uuid_response = uuid.UUID(self.response)
+            response_file = UploadedFile.objects.filter(id=str(uuid_response)).first()
+            if response_file is not None:
+                return (response_file.file_link, True)
+            return (self.response, False)
+        except ValueError:
+            return (self.response, False)
 
     def save(self, *args, **kwargs):
         # If this response's task's requires_validation is True,
@@ -228,14 +248,30 @@ class TaskResponse(models.Model):
             else:
                 self.status = self.COMPLETED
 
-        super(TaskResponse, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = (('task', 'team'),)  # Each team can only have at most 1 task response per task
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
+        get_latest_by = 'created_at'
+        abstract = True
+
+
+class TaskResponse(AbstractTaskResponse):
+
+    class Meta:
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
         get_latest_by = 'created_at'
 
 
-class Announcement(models.Model):
-    user = models.ForeignKey(to=User, related_name='announcements', on_delete=models.CASCADE)
-    message = models.CharField(max_length=1000)
-    date_sent = models.DateTimeField(default=datetime.now)
+class UserTaskResponse(AbstractTaskResponse):
+    team_member = models.ForeignKey(to=TeamMember, related_name='user_task_responses',
+                                    on_delete=models.CASCADE, null=True)
+    task = models.ForeignKey(to=Task, related_name='user_task_responses', on_delete=models.PROTECT)
+    team = models.ForeignKey(to=Team, related_name='user_task_responses', on_delete=models.CASCADE)
+
+    class Meta:
+        # Each user in team can only have at most 1 task response per task
+        unique_together = (('task', 'team', 'team_member'),)
+        get_latest_by = 'created_at'

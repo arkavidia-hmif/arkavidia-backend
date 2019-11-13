@@ -1,10 +1,7 @@
-
-
-
 Halo, {{ team_name }}!
 Diingatkan kembali untuk melengkapi {{ active_stage }}:
-{%  for i in tasks %}
-    - {{ i.name }}
+{%  for task in tasks %}
+    - {{ task.name }}
 {% endfor %}
 
-Untuk melihat tim Anda, https://dashboard.arkavidia.id/
+Untuk melihat tim Anda, https://arkavidia.id/dashboard/

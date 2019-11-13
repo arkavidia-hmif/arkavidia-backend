@@ -1,5 +1,4 @@
 from arkav.competition.views import AddTeamMemberView
-from arkav.competition.views import ListAnnouncementsView
 from arkav.competition.views import ListCompetitionsView
 from arkav.competition.views import ListTeamsView
 from arkav.competition.views import RegisterTeamView
@@ -19,5 +18,4 @@ urlpatterns = [
          RetrieveUpdateDestroyTeamMemberView.as_view(), name='competition-team-member-detail'),
     path('teams/<int:team_id>/tasks/<int:task_id>/',
          SubmitTaskResponseView.as_view(), name='competition-team-task-detail'),
-    path('announcements/', ListAnnouncementsView, name='competition-announcements'),
 ]

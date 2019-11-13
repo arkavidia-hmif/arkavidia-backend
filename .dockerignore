@@ -1,0 +1,10 @@
+.DS_Store
+.env
+.tmp_commits_squashed
+db.sqlite3
+static
+venv
+.vscode
+.github
+.git
+.gitignore

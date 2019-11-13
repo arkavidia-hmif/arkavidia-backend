@@ -1,22 +1,25 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from arkav.arkavauth.models import User
-from arkav.competition.models import Announcement
 from arkav.competition.models import Competition
 from arkav.competition.models import Stage
 from arkav.competition.models import Task
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
 from arkav.competition.models import TaskResponse
+from arkav.competition.models import UserTaskResponse
+from django.template import engines
+
+django_engine = engines['django']
 
 
 class CompetitionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Competition
-        fields = ('id', 'name', 'max_team_members', 'min_team_members',
+        fields = ('id', 'name', 'slug', 'max_team_members', 'min_team_members',
                   'is_registration_open', 'view_icon')
-        read_only_fields = ('id', 'name', 'max_team_members', 'min_team_members',
+        read_only_fields = ('id', 'name', 'slug', 'max_team_members', 'min_team_members',
                             'is_registration_open', 'view_icon')
 
 
@@ -26,8 +29,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
-        read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
+        fields = ('id', 'name', 'category', 'widget', 'widget_parameters', 'is_user_task')
+        read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters', 'is_user_task')
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -45,20 +48,35 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = TeamMember
         fields = (
-            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'email_last_sent_at', 'created_at'
+            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'created_at'
         )
         read_only_fields = (
-            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'email_last_sent_at', 'created_at'
+            'id', 'full_name', 'email', 'has_account', 'is_team_leader', 'created_at'
         )
 
 
 class TaskResponseSerializer(serializers.ModelSerializer):
     task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(source='team_member',
+                                                 queryset=TeamMember.objects.all(), required=False)
+    team_member_id = serializers.PrimaryKeyRelatedField(source='team_member',
+                                                        queryset=TeamMember.objects.all(), required=False)
 
     class Meta:
         model = TaskResponse
-        fields = ('task_id', 'response', 'status', 'last_submitted_at')
-        read_only_fields = ('task_id', 'status', 'last_submitted_at')
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
+
+
+class UserTaskResponseSerializer(serializers.ModelSerializer):
+    task_id = serializers.PrimaryKeyRelatedField(source='task', read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(source='team_member', queryset=TeamMember.objects.all())
+    team_member_id = serializers.PrimaryKeyRelatedField(source='team_member', queryset=TeamMember.objects.all())
+
+    class Meta:
+        model = UserTaskResponse
+        fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
+        read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'user_id', 'team_member_id')
 
 
 class TeamSerializer(serializers.ModelSerializer):
@@ -83,18 +101,34 @@ class TeamDetailsSerializer(serializers.ModelSerializer):
     active_stage_id = serializers.PrimaryKeyRelatedField(source='active_stage', read_only=True)
     stages = StageSerializer(source='visible_stages', many=True, read_only=True)
     task_responses = TaskResponseSerializer(many=True, read_only=True)
+    user_task_responses = UserTaskResponseSerializer(many=True, read_only=True)
 
     class Meta:
         model = Team
         fields = (
             'id', 'competition', 'category', 'name', 'team_leader_email', 'institution',
-            'is_participating', 'team_members', 'active_stage_id', 'stages', 'task_responses',
-            'created_at'
+            'is_participating', 'team_members', 'active_stage_id', 'stages',
+            'task_responses', 'user_task_responses', 'created_at'
         )
         read_only_fields = (
             'id', 'competition', 'category', 'is_participating', 'team_members',
-            'active_stage_id', 'stages', 'task_responses', 'created_at'
+            'active_stage_id', 'stages', 'task_responses', 'user_task_responses', 'created_at'
         )
+
+    def to_representation(self, instance):
+        '''
+        Render task widget parameter as template
+        '''
+        team_data = super().to_representation(instance)
+        for stage in team_data['stages']:
+            for task in stage['tasks']:
+                if 'description' in task['widget_parameters']:
+                    template_string = django_engine.from_string(task['widget_parameters']['description'])
+                    task['widget_parameters']['description'] = template_string.render(context={
+                        'team': instance,
+                        'team_number': '{:03d}'.format(instance.id + 100)
+                    })
+        return team_data
 
 
 class RegisterTeamRequestSerializer(serializers.Serializer):
@@ -106,11 +140,3 @@ class RegisterTeamRequestSerializer(serializers.Serializer):
 class AddTeamMemberRequestSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=75)
     email = serializers.EmailField()
-
-
-class AnnouncementSerializer(serializers.Serializer):
-
-    class Meta:
-        model = Announcement
-        fields = ('user', 'message', 'date_sent')
-        read_only_fields = ('user', 'message', 'date_sent')

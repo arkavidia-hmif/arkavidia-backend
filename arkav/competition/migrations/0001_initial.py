@@ -81,7 +81,6 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('invitation_full_name', models.CharField(max_length=75)),
                 ('invitation_email', models.EmailField(max_length=254)),
-                ('email_last_sent_at', models.DateTimeField(blank=True, null=True)),
                 ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_members',
                                            to='competition.Team')),
                 ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT,
@@ -109,7 +108,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
-                ('widget_parameters', models.TextField()),
+                ('widget_parameters', models.TextField(default='')),
                 ('requires_validation', models.BooleanField(default=False)),
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='tasks',
                                                to='competition.TaskCategory')),
