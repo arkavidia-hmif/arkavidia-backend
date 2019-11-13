@@ -1,6 +1,5 @@
 from arkav.arkavauth.models import User
 from arkav.preevent.models import Preevent
-from arkav.preevent.models import Stage
 from arkav.preevent.models import Registrant
 from arkav.preevent.serializers import RegistrantSerializer
 from django.urls import reverse
@@ -14,16 +13,6 @@ class RegistrantListTestCase(APITestCase):
 
         preevent1 = Preevent.objects.create(name='Preevent 1')
         preevent2 = Preevent.objects.create(name='Preevent 2')
-
-        registrant1 = Registrant.objects.create(
-            preevent=preevent1,
-            user=self.user1,
-        )
-
-        registrant2 = Registrant.objects.create(
-            preevent=preevent2,
-            user=self.user1,
-        )
 
     def test_list_registrants(self):
         '''

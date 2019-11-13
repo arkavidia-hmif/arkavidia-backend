@@ -61,11 +61,6 @@ class RegisterRegistrantTestCase(APITestCase):
             user=self.user1,
         )
 
-        new_registrant_again = Registrant.objects.create(
-            preevent=self.preevent_open,
-            user=self.user1,
-        )
-
         data = {
             'preevent_id': self.preevent_open.pk,
         }

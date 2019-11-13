@@ -5,7 +5,6 @@ from arkav.preevent.models import Task
 from arkav.preevent.models import TaskResponse
 from arkav.preevent.models import TaskCategory
 from arkav.preevent.models import TaskWidget
-from django.db import IntegrityError
 from django.test import TestCase
 
 

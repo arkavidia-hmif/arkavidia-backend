@@ -57,7 +57,6 @@ class RegistrantService:
                 preevent=preevent,
                 user=user,
             )
-           
         except ValueError as e:
             raise ArkavAPIException(
                 detail=str(e),

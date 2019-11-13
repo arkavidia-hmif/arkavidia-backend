@@ -8,14 +8,11 @@ from arkav.preevent.serializers import TaskResponseSerializer
 from arkav.preevent.services import TaskResponseService
 from arkav.preevent.services import RegistrantService
 from arkav.utils.exceptions import ArkavAPIException
-from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.serializers import ValidationError
 
 
 class ListPreeventsView(generics.ListAPIView):
