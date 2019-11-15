@@ -27,6 +27,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
         read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
+        ref_name = 'PreeventTaskSerializer'
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -36,6 +37,7 @@ class StageSerializer(serializers.ModelSerializer):
         model = Stage
         fields = ('id', 'name', 'order', 'tasks')
         read_only_fields = ('id', 'name', 'order', 'tasks')
+        ref_name = 'PreeventStageSerializer'
 
 
 class TaskResponseSerializer(serializers.ModelSerializer):
@@ -47,6 +49,7 @@ class TaskResponseSerializer(serializers.ModelSerializer):
         model = TaskResponse
         fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'registrant_id')
         read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'registrant_id')
+        ref_name = 'PreeventTaskResponseSerializer'
 
 
 class RegistrantSerializer(serializers.ModelSerializer):
