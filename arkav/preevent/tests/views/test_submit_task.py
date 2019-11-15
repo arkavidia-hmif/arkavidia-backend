@@ -19,7 +19,7 @@ class SubmitTaskTestCase(APITestCase):
         self.user2 = User.objects.create_user(email='user2')
         self.user3 = User.objects.create_user(email='user3')
 
-        self.aa_registrant = Registrant.objects.create(user=self.user1, preevent=self.preevent_aa)
+        self.aa_registrant = Registrant.objects.create(user=self.user2, preevent=self.preevent_aa)
 
         self.category_documents = TaskCategory.objects.create(name='Documents')
         self.widget_file = TaskWidget.objects.create(name='File')
@@ -42,53 +42,14 @@ class SubmitTaskTestCase(APITestCase):
         self.client.force_authenticate(self.user2)
         data = {
             'response': 'Upload KTM',
-            'registrant_id': self.registrant.pk,
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         task_response = TaskResponse.objects.first()
         self.assertEqual(task_response.response, data['response'])
-        self.assertEqual(task_response.registrant.id, data['registrant_id'])
 
-    def test_submit_user_task_using_user_id(self):
-        '''
-        Submit user task
-        '''
-        url = reverse(
-            'preevent-registrant-task-detail',
-            kwargs={'registrant_id': self.aa_registrant.pk, 'task_id': self.aa_upload_ktm_task.pk})
-        self.client.force_authenticate(self.user2)
-        data = {
-            'response': 'Upload KTM',
-            'user_id': self.registrant.user.pk,
-        }
-        res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        task_response = TaskResponse.objects.first()
-        self.assertEqual(task_response.response, data['response'])
-        self.assertEqual(task_response.registrant.user.id, data['user_id'])
-
-    def test_submit_user_task_without_user_id(self):
-        '''
-        Submit user task without user id, it will be treated as current user
-        '''
-        url = reverse(
-            'preevent-registrant-task-detail',
-            kwargs={'registrant_id': self.aa_registrant.pk, 'task_id': self.aa_upload_ktm_task.pk})
-        self.client.force_authenticate(self.user2)
-        data = {
-            'response': 'Upload KTM',
-        }
-        res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        task_response = TaskResponse.objects.first()
-        self.assertEqual(task_response.response, data['response'])
-        self.assertEqual(task_response.registrant.user.id, self.user2.id)
-
-    def test_submit_user_task_not_registrant_member(self):
+    def test_submit_user_task_not_owned_registrant(self):
         '''
         If someone submit user task to a registrant that is not his/hers, the code will be 404
         '''
@@ -98,7 +59,6 @@ class SubmitTaskTestCase(APITestCase):
         self.client.force_authenticate(self.user3)
         data = {
             'response': 'Upload KTM',
-            'user_id': self.registrant.user.pk,
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)

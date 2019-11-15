@@ -47,8 +47,8 @@ class ListRegistrantsView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        # User should only be able to see registrants in which he/she is the member
-        return Registrant.objects.filter(registrant__user=self.request.user)
+        # User should only be able to see registrants in which he/she is the user
+        return Registrant.objects.filter(user=self.request.user)
 
     @swagger_auto_schema(operation_summary='Registrant List')
     def get(self, request, *args, **kwargs):
@@ -61,7 +61,7 @@ class RetrieveUpdateDestroyRegistrantView(generics.RetrieveUpdateDestroyAPIView)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        # User should only be able to see registrants in which he/she is a member
+        # User should only be able to see registrants in which he/she is a user
         # Disable edit/delete if preevent's is_registration_open is false or the registrant's is_participating is false
         if self.request.method == 'GET':
             return self.request.user.preevent_registrants.all()

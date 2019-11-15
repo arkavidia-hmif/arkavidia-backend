@@ -52,6 +52,14 @@ class RegistrantService:
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
+        # A user can't register to a preevent twice
+        if Registrant.objects.filter(preevent=preevent, user=user).exists():
+            raise ArkavAPIException(
+                detail='User already registered',
+                code='preevent_already_registered',
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             new_registrant = Registrant.objects.create(
                 preevent=preevent,
