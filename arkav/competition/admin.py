@@ -58,7 +58,7 @@ class AbstractTaskResponseAdmin(admin.ModelAdmin):
     list_display = ['team_link', 'task', 'status', 'open_response', 'accept_reject']
     list_display_links = ['task']
     list_filter = ['status', 'task__category']
-    search_fields = ['team', 'task']
+    search_fields = ['team__name', 'team__id', 'task__name']
     autocomplete_fields = ['team', 'task']
 
     def team_link(self, obj):
