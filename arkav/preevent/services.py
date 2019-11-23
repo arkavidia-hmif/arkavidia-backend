@@ -1,4 +1,3 @@
-from arkav.arkavauth.models import User
 from arkav.preevent.models import Task
 from arkav.preevent.models import TaskResponse
 from arkav.preevent.models import Registrant

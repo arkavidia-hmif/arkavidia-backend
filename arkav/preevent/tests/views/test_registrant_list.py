@@ -11,9 +11,6 @@ class RegistrantListTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user')
 
-        preevent1 = Preevent.objects.create(name='Preevent 1')
-        preevent2 = Preevent.objects.create(name='Preevent 2')
-
     def test_list_registrants(self):
         '''
         List of registrants will be returned

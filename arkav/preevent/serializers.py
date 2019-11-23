@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from arkav.arkavauth.models import User
 from arkav.arkavauth.serializers import UserSerializer
 from arkav.preevent.models import Preevent
 from arkav.preevent.models import Stage

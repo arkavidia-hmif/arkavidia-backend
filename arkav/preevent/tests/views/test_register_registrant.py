@@ -56,7 +56,7 @@ class RegisterRegistrantTestCase(APITestCase):
         self.client.force_authenticate(self.user1)
 
         # Creates new registrant to the preevent
-        new_registrant = Registrant.objects.create(
+        Registrant.objects.create(
             preevent=self.preevent_open,
             user=self.user1,
         )
