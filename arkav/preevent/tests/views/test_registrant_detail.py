@@ -24,8 +24,8 @@ class RegistrantListTestCase(APITestCase):
             widget=TaskWidget.objects.create(name='widget 1'),
             category=TaskCategory.objects.create(name='category 1'),
             widget_parameters={
-                'description': 'Halo, {{ registrant.name }}!',
-                'original': 'Halo, {{ registrant.name }}!',
+                'description': 'Halo, {{ registrant.user.email }}!',
+                'original': 'Halo, {{ registrant.user.email }}!',
             }
         )
         self.task2 = Task.objects.create(
@@ -33,7 +33,6 @@ class RegistrantListTestCase(APITestCase):
             stage=self.stage,
             widget=TaskWidget.objects.create(name='widget 2'),
             category=TaskCategory.objects.create(name='category 2'),
-            is_user_task=True,
             widget_parameters={
                 'description': 'Tanpa template',
                 'original': 'Tanpa template',
@@ -69,9 +68,9 @@ class RegistrantListTestCase(APITestCase):
 
         self.assertEqual(len(res.data['stages']), 1)
         self.assertEqual(len(res.data['stages'][0]['tasks']), 3)
-        self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['description'], 'Halo, Registrant 1!')
+        self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['description'], 'Halo, user1!')
         self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['original'],
-                         'Halo, {{ registrant.name }}!')
+                         'Halo, {{ registrant.user.email }}!')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['description'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], '101')

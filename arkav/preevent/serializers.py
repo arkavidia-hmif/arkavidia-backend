@@ -27,6 +27,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
         read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
+        ref_name = 'PreeventTaskSerializer'
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -36,6 +37,7 @@ class StageSerializer(serializers.ModelSerializer):
         model = Stage
         fields = ('id', 'name', 'order', 'tasks')
         read_only_fields = ('id', 'name', 'order', 'tasks')
+        ref_name = 'PreeventStageSerializer'
 
 
 class TaskResponseSerializer(serializers.ModelSerializer):
@@ -47,26 +49,26 @@ class TaskResponseSerializer(serializers.ModelSerializer):
         model = TaskResponse
         fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at', 'registrant_id')
         read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at', 'registrant_id')
+        ref_name = 'PreeventTaskResponseSerializer'
 
 
 class RegistrantSerializer(serializers.ModelSerializer):
     preevent = PreeventSerializer(read_only=True)
+    user = UserSerializer(read_only=True)
     category = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    user_email = serializers.SlugRelatedField(source='user', slug_field='email', read_only=True)
 
     class Meta:
         model = Registrant
-        fields = ('id', 'preevent', 'user', 'user_email', 'institution',
+        fields = ('id', 'preevent', 'user',
                   'is_participating', 'category')
-        read_only_fields = ('id', 'preevent', 'user', 'user_email', 'institution',
+        read_only_fields = ('id', 'preevent', 'user',
                             'is_participating', 'category')
 
 
 class RegistrantDetailsSerializer(serializers.ModelSerializer):
     preevent = PreeventSerializer(read_only=True)
     category = serializers.SlugRelatedField(slug_field='name', read_only=True)
-    user = UserSerializer(many=True, read_only=True)
-    user_email = serializers.SlugRelatedField(source='user', slug_field='email', queryset=User.objects.all())
+    user = UserSerializer(read_only=True)
     active_stage_id = serializers.PrimaryKeyRelatedField(source='active_stage', read_only=True)
     stages = StageSerializer(source='visible_stages', many=True, read_only=True)
     task_responses = TaskResponseSerializer(many=True, read_only=True)
@@ -74,7 +76,7 @@ class RegistrantDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Registrant
         fields = (
-            'id', 'preevent', 'category', 'user', 'user_email', 'institution',
+            'id', 'preevent', 'category', 'user',
             'is_participating', 'active_stage_id', 'stages',
             'task_responses', 'created_at'
         )

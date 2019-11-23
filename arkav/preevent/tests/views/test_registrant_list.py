@@ -24,7 +24,6 @@ class RegistrantListTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         res_registrants = res.data
-        print(res.data)
         self.assertEqual(len(res_registrants), Registrant.objects.count())
         for res_registrant in res_registrants:
             registrant = Registrant.objects.get(id=res_registrant['id'])
@@ -36,5 +35,4 @@ class RegistrantListTestCase(APITestCase):
         '''
         url = reverse('preevent-registrant-list')
         res = self.client.get(url)
-        print(res)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -34,7 +34,7 @@ class RegistrantService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Reminder Lomba Arkavidia 6.0',
+            subject='Reminder Preevent Arkavidia 6.0',
             body=mail_text_message,
             to=registrant.user.email,
         )
@@ -53,9 +53,10 @@ class RegistrantService:
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
+        # A user can't register to a preevent more than once
         if Registrant.objects.filter(preevent=preevent, user=user).exists():
             raise ArkavAPIException(
-                detail='One user can only participate once in a preevent.',
+                detail='User already registered',
                 code='preevent_already_registered',
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
