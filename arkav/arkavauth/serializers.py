@@ -14,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(max_length=75)
     email = serializers.EmailField(read_only=True)
     date_joined = serializers.DateTimeField(read_only=True)
-    current_education = serializers.CharField(max_length=10, allow_null=True)
+    current_education = serializers.CharField(max_length=30, allow_null=True)
     institution = serializers.CharField(max_length=75, allow_null=True)
     phone_number = serializers.CharField(max_length=20, allow_null=True)
     birth_date = serializers.DateField(allow_null=True)
