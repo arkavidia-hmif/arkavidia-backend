@@ -1,5 +1,4 @@
 from arkav.arkavauth.models import User
-from arkav.preevent.models import Preevent
 from arkav.preevent.models import Registrant
 from arkav.preevent.serializers import RegistrantSerializer
 from django.urls import reverse
