@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'arkav.uploader',
     'arkav.announcement',
     'arkav.competition',
-    # 'arkav.preevent',
+    'arkav.preevent',
     # 'arkav.quiz',
     # 'arkav.seminar',
 ]
