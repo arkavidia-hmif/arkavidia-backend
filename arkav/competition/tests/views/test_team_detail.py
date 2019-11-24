@@ -13,7 +13,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 
-class TeamListTestCase(APITestCase):
+class TeamDetailTestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create_user(email='user1')
         self.user2 = User.objects.create_user(email='user2')

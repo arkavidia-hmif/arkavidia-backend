@@ -32,5 +32,5 @@ urlpatterns = [
     path('api/competition/', include('arkav.competition.urls')),
     path('api/preevent/', include('arkav.preevent.urls')),
     # path('api/quiz/', include('arkav.quiz.urls')),
-    # path('api/seminar/', include('arkav.seminar.urls')),
+    path('api/mainevent/', include('arkav.mainevent.urls')),
 ]
