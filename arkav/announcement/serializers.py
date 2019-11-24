@@ -6,5 +6,5 @@ class AnnouncementUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = AnnouncementUser
-        fields = ('message', 'date_sent')
-        read_only_fields = ('message', 'date_sent')
+        fields = ('title', 'message', 'date_sent')
+        read_only_fields = ('title', 'message', 'date_sent')

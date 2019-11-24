@@ -7,7 +7,7 @@ class AnnouncementService():
     def send_announcement(self, title, message, users):
         announcement, _ = Announcement.objects.get_or_create(
             title=title,
-            defaults={'message': message}
+            message=message,
         )
 
         announcement_users = [AnnouncementUser(user=user, announcement=announcement) for user in users]
