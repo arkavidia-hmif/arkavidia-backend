@@ -28,7 +28,7 @@ send_reminder.short_description = 'Send reminder email'
 
 @admin.register(Preevent)
 class PreeventAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'is_registration_open']
+    list_display = ['id', 'name', 'subtitle', 'is_registration_open']
     list_display_links = ['id', 'name']
     list_filter = ['is_registration_open']
     inlines = [StageInline]

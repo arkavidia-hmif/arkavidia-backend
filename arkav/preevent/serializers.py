@@ -14,8 +14,8 @@ class PreeventSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Preevent
-        fields = ('id', 'name', 'slug', 'is_registration_open')
-        read_only_fields = ('id', 'name', 'slug', 'is_registration_open')
+        fields = ('id', 'name', 'subtitle', 'slug', 'is_registration_open')
+        read_only_fields = ('id', 'name', 'subtitle', 'slug', 'is_registration_open')
 
 
 class TaskSerializer(serializers.ModelSerializer):
