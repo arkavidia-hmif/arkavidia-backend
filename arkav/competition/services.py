@@ -1,3 +1,4 @@
+from arkav.announcement.services import AnnouncementService
 from arkav.arkavauth.models import User
 from arkav.competition.models import AbstractTaskResponse
 from arkav.competition.models import Task
@@ -238,3 +239,37 @@ class TaskResponseService:
             )
 
         return new_task_response
+
+    @transaction.atomic
+    def accept_task_response(self, task_response):
+        task_response.reason = ''
+        task_response.status = TaskResponse.COMPLETED
+        task_response.save()
+
+        if task_response.task.is_user_task:
+            users = [task_response.team_member.user]
+        else:
+            users = task_response.team.members.all()
+        AnnouncementService().send_announcement(
+            title="{} Task Completion".format(task_response.task),
+            message="Submisi berkas Anda untuk {} sudah diverifikasi dan diterima".format(
+                task_response.task),
+            users=users
+        )
+
+    @transaction.atomic
+    def reject_task_response(self, task_response, reason):
+        task_response.reason = reason
+        task_response.status = TaskResponse.REJECTED
+        task_response.save()
+
+        if task_response.task.is_user_task:
+            users = [task_response.team_member.user]
+        else:
+            users = task_response.team.members.all()
+        AnnouncementService().send_announcement(
+            title="{} Task Rejection".format(task_response.task),
+            message="Submisi berkas Anda untuk {} ditolak, lihat alasannya pada tab Competition!".format(
+                task_response.task),
+            users=users
+        )
