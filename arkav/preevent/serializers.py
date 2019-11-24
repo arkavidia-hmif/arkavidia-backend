@@ -102,3 +102,6 @@ class RegistrantDetailsSerializer(serializers.ModelSerializer):
 
 class RegisterRegistrantRequestSerializer(serializers.Serializer):
     preevent_id = serializers.PrimaryKeyRelatedField(queryset=Preevent.objects.all())
+
+    class Meta:
+        ref_name = 'PreeventRegisterRegistrantRequestSerializer'

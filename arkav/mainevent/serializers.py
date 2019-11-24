@@ -29,6 +29,7 @@ class TaskSerializer(serializers.ModelSerializer):
         model = Task
         fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
         read_only_fields = ('id', 'name', 'category', 'widget', 'widget_parameters')
+        ref_name = 'MaineventTaskSerializer'
 
 
 class StageSerializer(serializers.ModelSerializer):
@@ -38,6 +39,7 @@ class StageSerializer(serializers.ModelSerializer):
         model = Stage
         fields = ('id', 'name', 'order', 'tasks')
         read_only_fields = ('id', 'name', 'order', 'tasks')
+        ref_name = 'MaineventStageSerializer'
 
 
 class TaskResponseSerializer(serializers.ModelSerializer):
@@ -47,6 +49,7 @@ class TaskResponseSerializer(serializers.ModelSerializer):
         model = TaskResponse
         fields = ('task_id', 'response', 'status', 'reason', 'last_submitted_at')
         read_only_fields = ('task_id', 'status', 'reason', 'last_submitted_at')
+        ref_name = 'MaineventTaskResponseSerializer'
 
 
 class RegistrantSerializer(serializers.ModelSerializer):
@@ -57,6 +60,7 @@ class RegistrantSerializer(serializers.ModelSerializer):
         model = Registrant
         fields = ('id', 'mainevent', 'user', 'is_participating')
         read_only_fields = ('id', 'mainevent', 'user', 'is_participating')
+        ref_name = 'MaineventRegistrantSerializer'
 
 
 class RegistrantDetailsSerializer(serializers.ModelSerializer):
@@ -76,6 +80,7 @@ class RegistrantDetailsSerializer(serializers.ModelSerializer):
             'id', 'mainevent', 'user',
             'active_stage_id', 'stages', 'task_responses', 'created_at',
         )
+        ref_name = 'MaineventRegistrantDetailsSerializer'
 
     def to_representation(self, instance):
         '''
@@ -95,3 +100,6 @@ class RegistrantDetailsSerializer(serializers.ModelSerializer):
 
 class RegisterRegistrantRequestSerializer(serializers.Serializer):
     mainevent_id = serializers.PrimaryKeyRelatedField(queryset=Mainevent.objects.all())
+
+    class Meta:
+        ref_name = 'MaineventRegisterRegistrantRequestSerializer'
