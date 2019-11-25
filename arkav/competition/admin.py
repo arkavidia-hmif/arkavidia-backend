@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.template.defaultfilters import escape
 from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
@@ -15,6 +16,7 @@ from arkav.competition.models import Stage
 from arkav.competition.models import Task
 from arkav.competition.models import TaskCategory
 from arkav.competition.models import TaskResponse
+from arkav.competition.models import UserTaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 
@@ -46,19 +48,27 @@ class StageAdmin(admin.ModelAdmin):
 
 @admin.register(Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'stage', 'category', 'widget', 'requires_validation']
+    list_display = ['id', 'name', 'stage', 'category', 'widget', 'requires_validation', 'is_user_task']
     list_display_links = ['id', 'name']
     list_filter = ['category', 'widget', 'stage__competition', 'stage']
     search_fields = ['name']
 
 
-@admin.register(TaskResponse)
-class TaskResponseAdmin(admin.ModelAdmin):
-    list_display = ['team', 'task', 'status', 'open_response', 'accept_reject']
-    list_display_links = ['team']
+class AbstractTaskResponseAdmin(admin.ModelAdmin):
+    list_display = ['team_link', 'task', 'status', 'open_response', 'accept_reject']
+    list_display_links = ['task']
     list_filter = ['status', 'task__category']
-    search_fields = ['team', 'task']
+    search_fields = ['team__name', 'team__id', 'task__name']
     autocomplete_fields = ['team', 'task']
+
+    def team_link(self, obj):
+        return format_html(
+            '<a href="{}">{}</a>'.format(reverse('admin:competition_team_change',
+                                                 args=(obj.team.id,)),
+                                         escape(obj.team))
+        )
+
+    team_link.short_description = 'Team'
 
     def open_response(self, obj):
         response, is_link = obj.response_or_link
@@ -70,26 +80,28 @@ class TaskResponseAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        model_name = self.model._meta.model_name
         custom_urls = [
             path(
                 '<int:task_response_id>/accept/',
                 self.admin_site.admin_view(self.accept_task_response),
-                name='competition-taskresponse-accept',
+                name='competition-{}-accept'.format(model_name),
             ),
             path(
                 '<int:task_response_id>/reject/',
                 self.admin_site.admin_view(self.reject_task_response),
-                name='competition-taskresponse-reject',
+                name='competition-{}-reject'.format(model_name),
             ),
         ]
         return custom_urls + urls
 
     def accept_reject(self, obj):
+        model_name = self.model._meta.model_name
         return format_html(
             '<a class="button" href="{}">Accept</a>&nbsp;'
             '<a class="button" href="{}">Reject</a>',
-            reverse('admin:competition-taskresponse-accept', args=[obj.pk]),
-            reverse('admin:competition-taskresponse-reject', args=[obj.pk]),
+            reverse('admin:competition-{}-accept'.format(model_name), args=[obj.pk]),
+            reverse('admin:competition-{}-reject'.format(model_name), args=[obj.pk]),
         )
 
     accept_reject.short_description = 'Accept / Reject'
@@ -134,6 +146,21 @@ class TaskResponseAdmin(admin.ModelAdmin):
         context['title'] = action_title
 
         return TemplateResponse(request, 'admin_task_response.html', context)
+
+
+@admin.register(TaskResponse)
+class TaskResponseAdmin(AbstractTaskResponseAdmin):
+    pass
+
+
+@admin.register(UserTaskResponse)
+class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
+    list_display = ['team_link', 'task', 'team_member_name', 'status', 'open_response', 'accept_reject']
+
+    def team_member_name(self, obj):
+        return obj.team_member.full_name
+
+    team_member_name.short_description = 'Team Member'
 
 
 @admin.register(Team)

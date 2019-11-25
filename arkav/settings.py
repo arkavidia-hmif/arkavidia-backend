@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
-]
+] if not DEBUG else ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -55,9 +55,9 @@ INSTALLED_APPS = [
     'arkav.uploader',
     'arkav.announcement',
     'arkav.competition',
-    # 'arkav.preevent',
+    'arkav.preevent',
     # 'arkav.quiz',
-    # 'arkav.seminar',
+    'arkav.mainevent',
 ]
 AUTH_USER_MODEL = 'arkavauth.User'
 

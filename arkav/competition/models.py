@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
+import jsonfield
 import uuid
 
 
@@ -85,8 +86,9 @@ class Task(models.Model):
     name = models.CharField(max_length=50)
     category = models.ForeignKey(to=TaskCategory, related_name='tasks', on_delete=models.PROTECT)
     widget = models.ForeignKey(to=TaskWidget, related_name='tasks', on_delete=models.PROTECT)
-    widget_parameters = models.TextField()
+    widget_parameters = jsonfield.JSONField(null=True)
     requires_validation = models.BooleanField(default=False)
+    is_user_task = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} - {}'.format(self.stage.competition.name, self.name)
@@ -104,7 +106,7 @@ class Team(models.Model):
     '''
     competition = models.ForeignKey(to=Competition, related_name='teams', on_delete=models.PROTECT)
     name = models.CharField(max_length=50, unique=True)
-    institution = models.CharField(max_length=50)
+    institution = models.CharField(max_length=100)
     members = models.ManyToManyField(to=User, related_name='teams', through='TeamMember')
     team_leader = models.ForeignKey(to=User, related_name='led_teams', on_delete=models.PROTECT)
     active_stage = models.ForeignKey(to=Stage, related_name='active_teams', on_delete=models.PROTECT)
@@ -196,7 +198,7 @@ class TeamMember(models.Model):
         get_latest_by = 'created_at'
 
 
-class TaskResponse(models.Model):
+class AbstractTaskResponse(models.Model):
     '''
     A response to a task, e.g. proof of payment image, uploaded proposal.
     A TaskResponse will be created when a response is submitted for a task.
@@ -246,8 +248,30 @@ class TaskResponse(models.Model):
             else:
                 self.status = self.COMPLETED
 
-        super(TaskResponse, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = (('task', 'team'),)  # Each team can only have at most 1 task response per task
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
+        get_latest_by = 'created_at'
+        abstract = True
+
+
+class TaskResponse(AbstractTaskResponse):
+
+    class Meta:
+        # Each team can only have at most 1 task response per task
+        unique_together = (('task', 'team'),)
+        get_latest_by = 'created_at'
+
+
+class UserTaskResponse(AbstractTaskResponse):
+    team_member = models.ForeignKey(to=TeamMember, related_name='user_task_responses',
+                                    on_delete=models.CASCADE, null=True)
+    task = models.ForeignKey(to=Task, related_name='user_task_responses', on_delete=models.PROTECT)
+    team = models.ForeignKey(to=Team, related_name='user_task_responses', on_delete=models.CASCADE)
+
+    class Meta:
+        # Each user in team can only have at most 1 task response per task
+        unique_together = (('task', 'team', 'team_member'),)
         get_latest_by = 'created_at'

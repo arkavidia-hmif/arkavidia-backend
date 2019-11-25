@@ -85,7 +85,7 @@ class EditUserTestCase(APITestCase):
             'is_staff': True,
             'is_active': False,
             'is_email_confirmed': False,
-            'currentEducation': 'SCHOOL',
+            'currentEducation': 'ABCDEFGHIJKLM',
             'institution': 'SMA 3 Bandung',
             'phoneNumber': '0877012345678',
             'birthDate': '1998-10-11',

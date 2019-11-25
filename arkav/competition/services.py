@@ -1,8 +1,11 @@
+from arkav.announcement.services import AnnouncementService
+from arkav.arkavauth.models import User
+from arkav.competition.models import AbstractTaskResponse
 from arkav.competition.models import Task
 from arkav.competition.models import TaskResponse
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
-from arkav.competition.models import User
+from arkav.competition.models import UserTaskResponse
 from arkav.utils.exceptions import ArkavAPIException
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
@@ -39,7 +42,7 @@ class TeamService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Reminder Lomba Arkavidia 5.0',
+            subject='Reminder Lomba Arkavidia 6.0',
             body=mail_text_message,
             to=addresses,
         )
@@ -107,7 +110,7 @@ class TeamMemberService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Pendaftaran Tim Arkavidia 5.0',
+            subject='Pendaftaran Tim Arkavidia 6.0',
             body=mail_text_message,
             to=[team_member.invitation_email]
         )
@@ -181,6 +184,11 @@ class TaskResponseService:
             id=team_id,
             team_members__user=user,
         )
+        team_member = get_object_or_404(
+            TeamMember.objects.all(),
+            team_id=team_id,
+            user=user,
+        )
 
         if not team.is_participating:
             raise ArkavAPIException(
@@ -202,18 +210,66 @@ class TaskResponseService:
         # according to the whether this task requires validation,
         # and also updating its last_submitted_at.
         if task.requires_validation:
-            task_response_status = TaskResponse.AWAITING_VALIDATION
+            task_response_status = AbstractTaskResponse.AWAITING_VALIDATION
         else:
-            task_response_status = TaskResponse.COMPLETED
+            task_response_status = AbstractTaskResponse.COMPLETED
 
-        new_task_response = TaskResponse.objects.update_or_create(
-            task=task,
-            team=team,
-            defaults={
-                'response': response,
-                'status': task_response_status,
-                'last_submitted_at': timezone.now(),
-            },
+        new_task_response = None
+        if task.is_user_task:
+            task_team_member = task_response_data.get('team_member', team_member)
+            new_task_response, created = UserTaskResponse.objects.update_or_create(
+                task=task,
+                team=team,
+                team_member=task_team_member,
+                defaults={
+                    'response': response,
+                    'status': task_response_status,
+                    'last_submitted_at': timezone.now(),
+                },
+            )
+        else:
+            new_task_response, created = TaskResponse.objects.update_or_create(
+                task=task,
+                team=team,
+                defaults={
+                    'response': response,
+                    'status': task_response_status,
+                    'last_submitted_at': timezone.now(),
+                },
+            )
+
+        return new_task_response
+
+    @transaction.atomic
+    def accept_task_response(self, task_response):
+        task_response.reason = ''
+        task_response.status = TaskResponse.COMPLETED
+        task_response.save()
+
+        if task_response.task.is_user_task:
+            users = [task_response.team_member.user]
+        else:
+            users = task_response.team.members.all()
+        AnnouncementService().send_announcement(
+            title="{} Task Completion".format(task_response.task),
+            message="Submisi berkas Anda untuk {} sudah diverifikasi dan diterima".format(
+                task_response.task),
+            users=users
         )
 
-        return new_task_response[0]
+    @transaction.atomic
+    def reject_task_response(self, task_response, reason):
+        task_response.reason = reason
+        task_response.status = TaskResponse.REJECTED
+        task_response.save()
+
+        if task_response.task.is_user_task:
+            users = [task_response.team_member.user]
+        else:
+            users = task_response.team.members.all()
+        AnnouncementService().send_announcement(
+            title="{} Task Rejection".format(task_response.task),
+            message="Submisi berkas Anda untuk {} ditolak, lihat alasannya pada tab Competition!".format(
+                task_response.task),
+            users=users
+        )

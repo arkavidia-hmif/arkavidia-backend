@@ -1,15 +1,15 @@
-from arkav.announcement.models import Announcement
-from arkav.announcement.serializers import AnnouncementSerializer
+from arkav.announcement.models import AnnouncementUser
+from arkav.announcement.serializers import AnnouncementUserSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 
 
 class ListAnnouncementsView(generics.ListAPIView):
-    serializer_class = AnnouncementSerializer
+    serializer_class = AnnouncementUserSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         '''
         User should only be able to see his / her announcements
         '''
-        return Announcement.objects.filter(user=self.request.user)
+        return AnnouncementUser.objects.filter(user=self.request.user)

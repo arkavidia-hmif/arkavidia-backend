@@ -1,11 +1,14 @@
 from arkav.announcement.models import Announcement
+from arkav.announcement.models import AnnouncementUser
 
 
 class AnnouncementService():
 
     def send_announcement(self, title, message, users):
-        announcement = Announcement.objects.create(title=title, message=message)
-        UserAnnouncement = Announcement.user.through
+        announcement, _ = Announcement.objects.get_or_create(
+            title=title,
+            message=message,
+        )
 
-        user_announcements = [UserAnnouncement(user_id=user.id, announcement_id=announcement.id) for user in users]
-        UserAnnouncement.objects.bulk_create(user_announcements)
+        announcement_users = [AnnouncementUser(user=user, announcement=announcement) for user in users]
+        AnnouncementUser.objects.bulk_create(announcement_users)

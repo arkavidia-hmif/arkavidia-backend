@@ -108,7 +108,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50)),
-                ('widget_parameters', models.TextField()),
+                ('widget_parameters', models.TextField(default='')),
                 ('requires_validation', models.BooleanField(default=False)),
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='tasks',
                                                to='competition.TaskCategory')),

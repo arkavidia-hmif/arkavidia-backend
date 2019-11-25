@@ -15,9 +15,11 @@ from arkav.utils.exceptions import ArkavAPIException
 from django.shortcuts import get_object_or_404
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.serializers import ValidationError
 
 
 class ListCompetitionsView(generics.ListAPIView):
@@ -38,13 +40,20 @@ class RegisterTeamView(views.APIView):
                          responses={200: TeamSerializer()})
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = RegisterTeamRequestSerializer(data=request.data)
-        request_serializer.is_valid(raise_exception=True)
         try:
+            request_serializer.is_valid(raise_exception=True)
             new_team = TeamService().create_team(request_serializer.validated_data, request.user)
             response_serializer = TeamSerializer(new_team)
             return Response(data=response_serializer.data)
         except ArkavAPIException as e:
             return e.as_response()
+        except ValidationError as e:
+            if 'name' in e.detail and e.detail['name'][0].code == 'unique':
+                return Response({
+                    'code': 'team_name_is_used',
+                    'detail': 'Team name is already taken',
+                }, status=status.HTTP_400_BAD_REQUEST)
+            raise e
 
 
 class AddTeamMemberView(views.APIView):
@@ -93,6 +102,12 @@ class RetrieveUpdateDestroyTeamView(generics.RetrieveUpdateDestroyAPIView):
             return self.request.user.teams.all()
         else:
             return self.request.user.teams.filter(competition__is_registration_open=True, is_participating=True)
+
+    def retrieve(self, request, *args, **kwargs):
+        team = self.get_object()
+        serializer = self.get_serializer(team)
+
+        return Response(serializer.data)
 
     @swagger_auto_schema(operation_summary='Team Detail')
     def get(self, request, *args, **kwargs):

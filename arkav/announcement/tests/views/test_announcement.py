@@ -1,6 +1,7 @@
 from arkav.arkavauth.models import User
 from arkav.announcement.models import Announcement
-from arkav.announcement.serializers import AnnouncementSerializer
+from arkav.announcement.models import AnnouncementUser
+from arkav.announcement.serializers import AnnouncementUserSerializer
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -28,8 +29,9 @@ class AnnouncementTestCase(APITestCase):
         res_announcements = res.data
         self.assertEqual(len(res_announcements), Announcement.objects.filter(user=self.user1).count())
         for res_announcement in res_announcements:
-            announcement = Announcement.objects.get(message=res_announcement['message'])
-            self.assertDictEqual(res_announcement, AnnouncementSerializer(announcement).data)
+            announcement_user = AnnouncementUser.objects.get(
+                announcement__message=res_announcement['message'], user=self.user1)
+            self.assertDictEqual(res_announcement, AnnouncementUserSerializer(announcement_user).data)
 
         url = reverse('announcement-list')
         self.client.force_authenticate(self.user2)
@@ -39,5 +41,6 @@ class AnnouncementTestCase(APITestCase):
         res_announcements = res.data
         self.assertEqual(len(res_announcements), Announcement.objects.filter(user=self.user2).count())
         for res_announcement in res_announcements:
-            announcement = Announcement.objects.get(message=res_announcement['message'])
-            self.assertDictEqual(res_announcement, AnnouncementSerializer(announcement).data)
+            announcement_user = AnnouncementUser.objects.get(
+                announcement__message=res_announcement['message'], user=self.user2)
+            self.assertDictEqual(res_announcement, AnnouncementUserSerializer(announcement_user).data)

@@ -14,13 +14,6 @@ class User(AbstractUser):
     to be used if this field is false.
     Confirmation token for the email confirmation is saved too.
     '''
-    EDUCATION_CHOICE_HIGH_SCHOOL = 'SCHOOL'
-    EDUCATION_CHOICE_HIGHER_EDUCATION = 'COLLEGE'
-    EDUCATION_CHOICES = (
-        (EDUCATION_CHOICE_HIGH_SCHOOL, 'SMA / Sederajat'),
-        (EDUCATION_CHOICE_HIGHER_EDUCATION, 'Universitas / Sederajat'),
-    )
-
     username = None
     first_name = None
     last_name = None
@@ -30,8 +23,8 @@ class User(AbstractUser):
     confirmation_token = models.CharField(max_length=30, default=generate_random_token, unique=True)
     confirmation_email_last_sent_time = models.DateTimeField(null=True, blank=True)
 
-    current_education = models.CharField(max_length=10, choices=EDUCATION_CHOICES, null=True, default=None)
-    institution = models.CharField(max_length=75, null=True, blank=True, default=None)
+    current_education = models.CharField(max_length=30, null=True, default=None)
+    institution = models.CharField(max_length=100, null=True, blank=True, default=None)
     phone_number = models.CharField(max_length=20, null=True, default=None)
     birth_date = models.DateField(null=True, default=None)
     address = models.TextField(null=True, default=None)
