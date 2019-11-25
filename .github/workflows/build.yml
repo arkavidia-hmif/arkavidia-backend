@@ -46,7 +46,7 @@ jobs:
   #       registry: docker.pkg.github.com
   deploy-staging:
     runs-on: ubuntu-latest
-    if: github.ref == 'develop' || github.ref == 'heads/yonas/cd'
+    if: github.ref == 'develop' || github.ref == 'ref/heads/yonas/cd'
     # needs: build
     steps:
     - name: Run deployment script over SSH
@@ -57,16 +57,16 @@ jobs:
         USER: ${{ secrets.USER }}
       with:
         args: "/root/scripts/deploy-staging.sh"
-  deploy-prod:
-    runs-on: ubuntu-latest
-    if: github.ref == 'master'
-    needs: build
-    steps:
-    - name: Run deployment script over SSH
-      uses: maddox/actions/ssh@master
-      env:
-        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        HOST: ${{ secrets.HOST }}
-        USER: ${{ secrets.USER }}
-      with:
-        args: "/root/scripts/deploy-production.sh"
+  # deploy-prod:
+  #   runs-on: ubuntu-latest
+  #   if: github.ref == 'master'
+  #   needs: build
+  #   steps:
+  #   - name: Run deployment script over SSH
+  #     uses: maddox/actions/ssh@master
+  #     env:
+  #       PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+  #       HOST: ${{ secrets.HOST }}
+  #       USER: ${{ secrets.USER }}
+  #     with:
+  #       args: "/root/scripts/deploy-production.sh"
