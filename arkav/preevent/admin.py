@@ -14,6 +14,7 @@ from arkav.preevent.models import Preevent
 from arkav.preevent.models import Stage
 from arkav.preevent.models import Task
 from arkav.preevent.models import TaskCategory
+from arkav.preevent.models import TaskResponse
 from arkav.preevent.models import TaskWidget
 from arkav.preevent.models import Registrant
 
@@ -51,6 +52,7 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ['name']
 
 
+@admin.register(TaskResponse)
 class TaskResponseAdmin(admin.ModelAdmin):
     list_display = ['registrant_link', 'task', 'status', 'open_response', 'accept_reject']
     list_display_links = ['task']
