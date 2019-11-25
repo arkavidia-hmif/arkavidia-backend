@@ -15,8 +15,7 @@ jobs:
       uses: maddox/actions/ssh@master
       with:
         args: "/root/scripts/deploy-staging.sh"
-        secrets: [
-          "PRIVATE_KEY",
-          "HOST",
-          "USER"
-        ]
+        env:
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
