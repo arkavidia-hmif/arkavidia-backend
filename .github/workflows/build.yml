@@ -46,7 +46,7 @@ jobs:
   #       registry: docker.pkg.github.com
   deploy-staging:
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'ref/heads/develop') || startsWith(github.ref, 'ref/heads/yonas/cd')
+    if: github.ref == refs/heads/develop || github.ref == 'refs/heads/yonas/cd'
     # needs: build
     steps:
     - name: Run deployment script over SSH
