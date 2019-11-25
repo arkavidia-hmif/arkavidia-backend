@@ -7,15 +7,16 @@ on:
       - yonas/cd
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
     - name: Run deployment script
       uses: maddox/actions/ssh@master
-      args: "/root/scripts/deploy-staging.sh"
-      secrets: [
-        "PRIVATE_KEY",
-        "HOST",
-        "USER"
-      ]
+      with:
+        args: "/root/scripts/deploy-staging.sh"
+        secrets: [
+          "PRIVATE_KEY",
+          "HOST",
+          "USER"
+        ]
