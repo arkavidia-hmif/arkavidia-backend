@@ -1,4 +1,6 @@
 from arkav.arkavauth.models import User
+from arkav.announcement.models import Announcement
+from arkav.announcement.models import AnnouncementUser
 from arkav.announcement.services import AnnouncementService
 from django.test import TestCase
 
@@ -14,6 +16,7 @@ class AnnouncementServiceTestCase(TestCase):
                                                 users=User.objects.filter(email='yonas@gmail.com'))
         AnnouncementService().send_announcement(title='A3', message='announcement3',
                                                 users=User.objects.filter(email='jones@gmail.com'))
+        AnnouncementService().send_announcement(title='A4', message='announcement3', users=[])
 
         self.assertIsNotNone(self.user1.announcements.filter(title='A1').first())
         self.assertIsNotNone(self.user1.announcements.filter(title='A2').first())
@@ -22,3 +25,6 @@ class AnnouncementServiceTestCase(TestCase):
         self.assertIsNotNone(self.user2.announcements.filter(title='A1').first())
         self.assertIsNone(self.user2.announcements.filter(title='A2').first())
         self.assertIsNotNone(self.user2.announcements.filter(title='A3').first())
+
+        self.assertEqual(Announcement.objects.filter(title='A4').count(), 1)
+        self.assertEqual(AnnouncementUser.objects.filter(announcement__title='A4').count(), 0)

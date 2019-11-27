@@ -73,7 +73,8 @@ class RegistrantListTestCase(APITestCase):
                          'Halo, {{ registrant.user.email }}!')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['description'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
-        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], '101')
+        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'],
+                         str(100 + self.registrant.id))
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['original'], '{{ registrant_number }}')
 
         self.assertIn('task_responses', res.data)

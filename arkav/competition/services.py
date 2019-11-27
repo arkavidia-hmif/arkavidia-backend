@@ -246,15 +246,17 @@ class TaskResponseService:
         task_response.status = TaskResponse.COMPLETED
         task_response.save()
 
+        users = []
         if task_response.task.is_user_task:
-            users = [task_response.team_member.user]
+            if task_response.team_member.user is not None:
+                users = [task_response.team_member.user]
         else:
             users = task_response.team.members.all()
         AnnouncementService().send_announcement(
             title="{} Task Completion".format(task_response.task),
             message="Submisi berkas Anda untuk {} sudah diverifikasi dan diterima".format(
                 task_response.task),
-            users=users
+            users=users,
         )
 
     @transaction.atomic
@@ -263,13 +265,15 @@ class TaskResponseService:
         task_response.status = TaskResponse.REJECTED
         task_response.save()
 
+        users = []
         if task_response.task.is_user_task:
-            users = [task_response.team_member.user]
+            if task_response.team_member.user is not None:
+                users = [task_response.team_member.user]
         else:
             users = task_response.team.members.all()
         AnnouncementService().send_announcement(
             title="{} Task Rejection".format(task_response.task),
             message="Submisi berkas Anda untuk {} ditolak, lihat alasannya pada tab Competition!".format(
                 task_response.task),
-            users=users
+            users=users,
         )

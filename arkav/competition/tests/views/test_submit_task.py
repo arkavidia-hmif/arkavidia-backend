@@ -145,7 +145,7 @@ class SubmitUserTaskTestCase(APITestCase):
 
         user_task_response = UserTaskResponse.objects.first()
         self.assertEqual(user_task_response.response, data['response'])
-        self.assertEqual(user_task_response.team_member.id, self.user2.id)
+        self.assertEqual(user_task_response.team_member.user.id, self.user2.id)
 
     def test_submit_user_task_not_team_member(self):
         '''
