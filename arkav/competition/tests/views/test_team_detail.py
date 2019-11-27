@@ -92,7 +92,7 @@ class TeamDetailTestCase(APITestCase):
         self.assertEqual(res.data['stages'][0]['tasks'][0]['widget_parameters']['original'], 'Halo, {{ team.name }}!')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['description'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
-        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], '101')  # 100 + team id
+        self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'], str(100 + self.team.id))  # 100 + team id
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['original'], '{{ team_number }}')
 
         self.assertIn('task_responses', res.data)
@@ -102,5 +102,7 @@ class TeamDetailTestCase(APITestCase):
         self.assertEqual(res.data['task_responses'][0]['task_id'], self.task1.id)
         self.assertEqual(res.data['user_task_responses'][0]['task_id'], self.task2.id)
         self.assertEqual(res.data['user_task_responses'][1]['task_id'], self.task2.id)
-        self.assertEqual(res.data['user_task_responses'][0]['user_id'], self.user1.id)
-        self.assertEqual(res.data['user_task_responses'][1]['user_id'], self.user2.id)
+        self.assertEqual(res.data['user_task_responses'][0]['team_member_id'],
+                         self.team.team_members.filter(user=self.user1).first().id)
+        self.assertEqual(res.data['user_task_responses'][1]['team_member_id'],
+                         self.team.team_members.filter(user=self.user2).first().id)

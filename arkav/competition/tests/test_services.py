@@ -27,6 +27,7 @@ class TaskResponseServiceTestCase(TestCase):
 
         self.team_member1 = TeamMember.objects.create(team=self.ctf_team, user=self.user1)
         self.team_member2 = TeamMember.objects.create(team=self.ctf_team, user=self.user2)
+        self.team_member3 = TeamMember.objects.create(team=self.ctf_team, user=None)
 
         self.category_documents = TaskCategory.objects.create(name='Documents')
         self.widget_file = TaskWidget.objects.create(name='File')
@@ -88,6 +89,19 @@ class TaskResponseServiceTestCase(TestCase):
         self.assertEqual(AnnouncementUser.objects.count(), 1)
         self.assertEqual(AnnouncementUser.objects.first().user, self.user1)
         self.assertEqual('{} Task Completion'.format(ctf_user_task_response.task), Announcement.objects.first().title)
+
+    def test_accept_user_task_response_unregistered_user(self):
+        ctf_user_task_response = UserTaskResponse(
+            team_member=self.team_member3,
+            task=self.ctf_user_task,
+            team=self.ctf_team,
+            response=self.ctf_team_task.name,
+            status=AbstractTaskResponse.AWAITING_VALIDATION,
+        )
+        TaskResponseService().accept_task_response(ctf_user_task_response)
+        ctf_user_task_response.refresh_from_db()
+        self.assertEqual(ctf_user_task_response.status, AbstractTaskResponse.COMPLETED)
+        self.assertEqual(AnnouncementUser.objects.count(), 0)
 
     def test_reject_user_task_response(self):
         ctf_user_task_response = UserTaskResponse(

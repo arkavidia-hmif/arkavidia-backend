@@ -76,7 +76,7 @@ class RegistrantDetailTestCase(APITestCase):
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['description'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][1]['widget_parameters']['original'], 'Tanpa template')
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['description'],
-                         '601')  # 600 + registrant id
+                         str(600 + self.registrant.id))  # 600 + registrant id
         self.assertEqual(res.data['stages'][0]['tasks'][2]['widget_parameters']['original'], '{{ registrant_number }}')
 
         self.assertIn('task_responses', res.data)
