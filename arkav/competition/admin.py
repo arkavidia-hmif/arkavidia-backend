@@ -134,7 +134,7 @@ class AbstractTaskResponseAdmin(admin.ModelAdmin):
                 form.save(task_response, request.user)
                 self.message_user(request, 'Success')
                 url = reverse(
-                    'admin:competition_taskresponse_changelist',
+                    'admin:competition_{}_changelist'.format(self.model._meta.model_name),
                     current_app=self.admin_site.name,
                 )
                 return HttpResponseRedirect(url)
