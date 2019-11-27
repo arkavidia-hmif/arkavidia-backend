@@ -35,6 +35,8 @@ jobs:
     needs: test
     steps:
     - uses: actions/checkout@master
+      with:
+        ref: develop
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
