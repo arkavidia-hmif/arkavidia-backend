@@ -2,7 +2,6 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - master
       - develop
 jobs:
   test:
@@ -45,7 +44,6 @@ jobs:
         registry: docker.pkg.github.com
   deploy-staging:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/develop'
     needs: build
     steps:
     - name: Run deployment script over SSH
@@ -56,16 +54,3 @@ jobs:
         USER: ${{ secrets.USER }}
       with:
         args: "/root/deployment-scripts/deploy-staging.sh"
-  deploy-prod:
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    needs: build
-    steps:
-    - name: Run deployment script over SSH
-      uses: maddox/actions/ssh@master
-      env:
-        PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-        HOST: ${{ secrets.HOST }}
-        USER: ${{ secrets.USER }}
-      with:
-        args: "/root/deployment-scripts/deploy-production.sh"
