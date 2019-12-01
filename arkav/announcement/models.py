@@ -32,5 +32,4 @@ class AnnouncementUser(models.Model):
         return self.announcement.message
 
     class Meta:
-        unique_together = (('announcement', 'user'),)
         get_latest_by = 'date_sent'
