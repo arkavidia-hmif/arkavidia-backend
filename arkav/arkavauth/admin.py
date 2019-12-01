@@ -61,7 +61,6 @@ class UserAdmin(DjangoUserAdmin):
         return custom_urls + urls
 
     def custom_action(self, obj):
-        model_name = self.model._meta.model_name
         return format_html(
             '<a class="button" href="{}">Impersonate</a>',
             reverse('admin:arkavauth-impersonate', args=[obj.pk]),
