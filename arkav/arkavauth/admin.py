@@ -71,7 +71,7 @@ class UserAdmin(DjangoUserAdmin):
 
     def impersonate(self, request, user_id):
         user = User.objects.filter(pk=user_id).first()
-        jwt_token = LoginRequestSerializer.get_token(user)
+        jwt_token = LoginRequestSerializer.get_token(user).access_token
         return HttpResponseRedirect('https://arkavidia.id/mediated-login?fromToken={}'.format(jwt_token))
 
 
