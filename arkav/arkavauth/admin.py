@@ -1,5 +1,6 @@
 from arkav.arkavauth.models import PasswordResetAttempt
 from arkav.arkavauth.models import User
+from arkav.arkavauth.serializers import LoginRequestSerializer
 from arkav.arkavauth.services import UserService
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
@@ -8,7 +9,6 @@ from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
 def resend_confirmation_email(modeladmin, request, queryset):
@@ -71,8 +71,8 @@ class UserAdmin(DjangoUserAdmin):
 
     def impersonate(self, request, user_id):
         user = User.objects.filter(pk=user_id).first()
-        jwt_token = TokenObtainPairSerializer.get_token(user)
-        return HttpResponseRedirect('https://arkavidia.id/login?fromJwt={}'.format(jwt_token))
+        jwt_token = LoginRequestSerializer.get_token(user)
+        return HttpResponseRedirect('https://arkavidia.id/mediated-login?fromToken={}'.format(jwt_token))
 
 
 @admin.register(PasswordResetAttempt)
