@@ -1,8 +1,13 @@
-from arkav.arkavauth.models import User
 from arkav.arkavauth.models import PasswordResetAttempt
+from arkav.arkavauth.models import User
+from arkav.arkavauth.serializers import LoginRequestSerializer
 from arkav.arkavauth.services import UserService
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
+from django.http import HttpResponseRedirect
+from django.urls import path
+from django.urls import reverse
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -39,10 +44,35 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-    list_display = ('email', 'full_name', 'is_staff', 'is_active', 'is_email_confirmed')
+    list_display = ('email', 'full_name', 'is_staff', 'is_active', 'is_email_confirmed', 'custom_action')
     search_fields = ('email', 'full_name')
     ordering = ('email',)
     actions = [resend_confirmation_email]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        custom_urls = [
+            path(
+                '<int:user_id>/impersonate/',
+                self.admin_site.admin_view(self.impersonate),
+                name='arkavauth-impersonate',
+            ),
+        ]
+        return custom_urls + urls
+
+    def custom_action(self, obj):
+        return format_html(
+            '<a class="button" href="{}">Impersonate</a>',
+            reverse('admin:arkavauth-impersonate', args=[obj.pk]),
+        )
+
+    custom_action.short_description = 'Action'
+    custom_action.allow_tags = True
+
+    def impersonate(self, request, user_id):
+        user = User.objects.filter(pk=user_id).first()
+        jwt_token = LoginRequestSerializer.get_token(user).access_token
+        return HttpResponseRedirect('https://arkavidia.id/mediated-login?fromToken={}'.format(jwt_token))
 
 
 @admin.register(PasswordResetAttempt)
