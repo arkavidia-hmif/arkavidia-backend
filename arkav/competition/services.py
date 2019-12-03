@@ -130,12 +130,12 @@ class TeamMemberService:
         )
 
         # Check whether registration is open for this competition
-        if not team.competition.is_registration_open:
-            raise ArkavAPIException(
-                detail='The competition you are trying to register to is not open for registration.',
-                code='competition_registration_closed',
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
+        # if not team.competition.is_registration_open:
+        #     raise ArkavAPIException(
+        #         detail='The competition you are trying to register to is not open for registration.',
+        #         code='competition_registration_closed',
+        #         status_code=status.HTTP_400_BAD_REQUEST,
+        #     )
 
         # Check whether team is still participating in the competition
         if not team.is_participating:

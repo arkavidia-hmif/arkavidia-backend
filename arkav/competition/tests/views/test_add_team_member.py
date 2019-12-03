@@ -100,8 +100,11 @@ class AddTeamMemberTestCase(APITestCase):
         }
 
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(res.data['code'], 'competition_registration_closed')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(self.team1.team_members.count(), 2)
+        self.assertEqual(self.team1.team_members.filter(invitation_full_name=self.full_name).exists(), True)
+        self.assertEqual(self.team1.team_members.get(invitation_full_name=self.full_name).has_account, False)
 
     def test_add_team_member_not_participating(self):
         '''
