@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 boto3 = "==1.9.248"
 drf-yasg = "==1.17.0"
-django = "==2.2.8"
+django = "==3.0"
 django-cors-headers = "==3.1.1"
 djangorestframework = "==3.10.3"
 djangorestframework-camel-case = "==1.1.1"
