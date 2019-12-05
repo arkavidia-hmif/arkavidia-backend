@@ -19,11 +19,12 @@ from arkav.competition.models import TaskResponse
 from arkav.competition.models import UserTaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
+from arkav.competition.services import TeamService
 
 
 def send_reminder(modeladmin, request, queryset):
     for item in queryset:
-        item.send_reminder()
+        TeamService().send_reminder_email(item)
 
 
 send_reminder.short_description = 'Send reminder email'
