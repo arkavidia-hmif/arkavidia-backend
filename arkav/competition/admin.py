@@ -30,6 +30,16 @@ def send_reminder(modeladmin, request, queryset):
 send_reminder.short_description = 'Send reminder email'
 
 
+def move_to_next_stage(modeladmin, request, queryset):
+    for item in queryset:
+        next_stage = Stage.objects.filter(order__gt=item.active_stage.order).order_by('order').first()
+        item.active_stage = next_stage
+        item.save()
+
+
+move_to_next_stage.short_description = 'Move to next stage'
+
+
 @admin.register(Competition)
 class CompetitionAdmin(admin.ModelAdmin):
     list_display = ['id', 'name', 'min_team_members', 'max_team_members', 'is_registration_open']
@@ -166,7 +176,7 @@ class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    actions = [send_reminder]
+    actions = [send_reminder, move_to_next_stage]
     list_display = ['id', 'name', 'competition', 'institution', 'team_leader',
                     'active_stage', 'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'name']
