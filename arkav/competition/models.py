@@ -118,9 +118,14 @@ class Team(models.Model):
 
     @property
     def has_completed_active_stage(self):
+        '''
+        Whether the team has already complete all the task in the active stage or not
+        '''
         active_stage_task_count = self.active_stage.tasks.count()
-        active_stage_completed_task_count = self.task_responses.filter(
-            task__stage=self.active_stage, status=TaskResponse.COMPLETED).count()
+        active_stage_completed_task_count = (
+            self.task_responses.filter(task__stage=self.active_stage, status=TaskResponse.COMPLETED).count() +
+            self.user_task_responses.filter(task__stage=self.active_stage, status=TaskResponse.COMPLETED).count()
+        )
         return active_stage_task_count == active_stage_completed_task_count
 
     @property
