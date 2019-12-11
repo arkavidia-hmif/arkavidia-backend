@@ -48,7 +48,7 @@ class TaskResponseInline(admin.TabularInline):
 
 class UserTaskResponseInline(admin.TabularInline):
     model = UserTaskResponse
-    fields = ['team', 'task', 'user', 'status', 'file_link', 'last_submitted_at']
+    fields = ['team', 'task', 'team_member', 'status', 'file_link', 'last_submitted_at']
     readonly_fields = ['file_link', 'last_submitted_at']
     autocomplete_fields = ['team', 'task']
     extra = 1
