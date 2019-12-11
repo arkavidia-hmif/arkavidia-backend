@@ -11,6 +11,7 @@ from arkav.competition.admin_inlines import StageInline
 from arkav.competition.admin_inlines import TaskInline
 from arkav.competition.admin_inlines import TeamMemberInline
 from arkav.competition.admin_inlines import TaskResponseInline
+from arkav.competition.admin_inlines import UserTaskResponseInline
 from arkav.competition.models import Competition
 from arkav.competition.models import Stage
 from arkav.competition.models import Task
@@ -183,7 +184,7 @@ class TeamAdmin(admin.ModelAdmin):
     list_filter = ['is_participating', 'institution', 'competition', 'active_stage']
     search_fields = ['name']
     autocomplete_fields = ['team_leader']
-    inlines = [TeamMemberInline, TaskResponseInline]
+    inlines = [TeamMemberInline, TaskResponseInline, UserTaskResponseInline]
 
     def has_completed_active_stage(self, instance):
         return instance.has_completed_active_stage

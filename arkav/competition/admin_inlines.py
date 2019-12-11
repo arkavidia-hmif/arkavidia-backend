@@ -4,6 +4,7 @@ from arkav.competition.models import Stage
 from arkav.competition.models import Task
 from arkav.competition.models import TaskResponse
 from arkav.competition.models import TeamMember
+from arkav.competition.models import UserTaskResponse
 from arkav.competition.services import TeamMemberService
 
 
@@ -32,6 +33,22 @@ class TaskInline(admin.TabularInline):
 class TaskResponseInline(admin.TabularInline):
     model = TaskResponse
     fields = ['team', 'task', 'status', 'file_link', 'last_submitted_at']
+    readonly_fields = ['file_link', 'last_submitted_at']
+    autocomplete_fields = ['team', 'task']
+    extra = 1
+
+    def file_link(self, obj):
+        response, is_link = obj.response_or_link
+        if is_link:
+            return format_html('<a href="{}">Open</a>'.format(response))
+        return response
+
+    file_link.short_descripton = 'Link / Answer'
+
+
+class UserTaskResponseInline(admin.TabularInline):
+    model = UserTaskResponse
+    fields = ['team', 'task', 'team_member', 'status', 'file_link', 'last_submitted_at']
     readonly_fields = ['file_link', 'last_submitted_at']
     autocomplete_fields = ['team', 'task']
     extra = 1
