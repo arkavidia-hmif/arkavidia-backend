@@ -16,6 +16,17 @@ class MaineventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mainevent
         fields = ('id', 'name', 'slug', 'category', 'is_registration_open',
+                  'short_desc', 'begin_time', 'end_time', 'order')
+        read_only_fields = ('id', 'name', 'slug', 'category', 'is_registration_open',
+                            'short_desc', 'begin_time', 'end_time', 'order')
+
+
+class MaineventDetailsSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(slug_field='name', read_only=True)
+
+    class Meta:
+        model = Mainevent
+        fields = ('id', 'name', 'slug', 'category', 'is_registration_open',
                   'short_desc', 'long_desc', 'begin_time', 'end_time', 'order')
         read_only_fields = ('id', 'name', 'slug', 'category', 'is_registration_open',
                             'short_desc', 'long_desc', 'begin_time', 'end_time', 'order')

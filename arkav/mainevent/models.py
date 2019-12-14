@@ -110,6 +110,30 @@ class Registrant(models.Model):
         return '{:03d} - {}'.format(self.id, self.user.full_name)
 
     @property
+    def full_name(self):
+        return self.user.full_name
+
+    @property
+    def current_education(self):
+        return self.user.current_education
+
+    @property
+    def institution(self):
+        return self.user.institution
+
+    @property
+    def phone_number(self):
+        return self.user.phone_number
+
+    @property
+    def address(self):
+        return self.user.address
+
+    @property
+    def birth_date(self):
+        return self.user.birth_date
+
+    @property
     def has_completed_active_stage(self):
         active_stage_task_count = self.active_stage.tasks.count()
         active_stage_completed_task_count = self.task_responses.filter(
