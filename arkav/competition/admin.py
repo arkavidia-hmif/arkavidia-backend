@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.template.defaultfilters import escape
 from django.template.response import TemplateResponse
 from django.urls import path
@@ -177,7 +178,7 @@ class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    actions = [send_reminder, move_to_next_stage]
+    actions = [move_to_next_stage, 'send_custom_email', send_reminder]
     list_display = ['id', 'name', 'competition', 'institution', 'team_leader',
                     'active_stage', 'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'name']
@@ -189,6 +190,20 @@ class TeamAdmin(admin.ModelAdmin):
     def has_completed_active_stage(self, instance):
         return instance.has_completed_active_stage
     has_completed_active_stage.boolean = True
+
+    def send_custom_email(self, request, queryset):
+        if 'apply' in request.POST:
+            TeamService().send_custom_email(
+                queryset,
+                request.POST['subject'],
+                request.POST['mail_text_message'],
+                request.POST['mail_html_message'],
+            )
+            self.message_user(request, 'Sent email to {} teams'.format(queryset.count()))
+            return HttpResponseRedirect(request.get_full_path())
+
+        return render(request, 'admin_custom_email.html', context={'teams': queryset})
+    send_custom_email.short_description = 'Send Customized Email'
 
 
 @admin.register(TaskCategory)
