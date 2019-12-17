@@ -49,6 +49,23 @@ class TeamService:
         mail.attach_alternative(mail_html_message, 'text/html')
         mail.send()
 
+    def send_custom_email(self, teams, subject, mail_text_message, mail_html_message):
+        for team in teams.all():
+            addresses = []
+            for member in team.team_members.all():
+                if (member.user):
+                    addresses.append(member.user.email)
+                else:
+                    addresses.append(member.email)
+
+            mail = EmailMultiAlternatives(
+                subject=subject,
+                body=mail_text_message,
+                to=addresses,
+            )
+            mail.attach_alternative(mail_html_message, 'text/html')
+            mail.send()
+
     @transaction.atomic
     def create_team(self, team_data, user):
         competition = team_data['competition_id']
