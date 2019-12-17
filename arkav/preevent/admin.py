@@ -149,17 +149,30 @@ class TaskResponseAdmin(admin.ModelAdmin):
 
 @admin.register(Registrant)
 class RegistrantAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (
+            None, {"fields": ['user', 'preevent', 'active_stage']}
+        ),
+    )
     actions = [send_reminder]
-    list_display = ['id', 'user', 'preevent', 'active_stage', 'has_completed_active_stage',
+    list_display = ['id', 'preevent', 'user', 'active_stage', 'has_completed_active_stage',
                     'is_participating', 'created_at']
     list_display_links = ['id', 'user']
     list_filter = ['is_participating', 'preevent', 'active_stage']
     search_fields = ['user']
+    readonly_fields = ['full_name', 'current_education', 'institution', 'phone_number', 'address', 'birth_date']
     inlines = [TaskResponseInline]
 
     def has_completed_active_stage(self, instance):
         return instance.has_completed_active_stage
     has_completed_active_stage.boolean = True
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = super(RegistrantAdmin, self).get_fieldsets(request, obj)
+        newfieldsets = list(fieldsets)
+        fields = self.readonly_fields
+        newfieldsets.append(['USER DATA', {'fields': fields}])
+        return newfieldsets
 
 
 @admin.register(TaskCategory)
