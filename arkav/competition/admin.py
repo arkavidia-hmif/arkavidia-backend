@@ -34,7 +34,10 @@ send_reminder.short_description = 'Send reminder email'
 
 def move_to_next_stage(modeladmin, request, queryset):
     for item in queryset:
-        next_stage = Stage.objects.filter(order__gt=item.active_stage.order).order_by('order').first()
+        next_stage = Stage.objects.filter(
+            competition=item.competition,
+            order__gt=item.active_stage.order,
+        ).order_by('order').first()
         item.active_stage = next_stage
         item.save()
 
