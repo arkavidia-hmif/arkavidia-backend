@@ -26,7 +26,8 @@ class ListMaineventsView(generics.ListAPIView):
         return super().get(request, *args, **kwargs)
 
 
-class DetailMaineventView(generics.ListAPIView):
+class DetailMaineventView(generics.RetrieveAPIView):
+    lookup_url_kwarg = 'mainevent_id'
     queryset = Mainevent.objects.all()
     serializer_class = MaineventDetailsSerializer
     permission_classes = (IsAuthenticated,)
