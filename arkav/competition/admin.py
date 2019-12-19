@@ -22,6 +22,7 @@ from arkav.competition.models import UserTaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 from arkav.competition.services import TeamService
+import django_rq
 
 
 def send_reminder(modeladmin, request, queryset):
@@ -196,7 +197,8 @@ class TeamAdmin(admin.ModelAdmin):
 
     def send_custom_email(self, request, queryset):
         if 'apply' in request.POST:
-            TeamService().send_custom_email(
+            django_rq.enqueue(
+                TeamService().send_custom_email,
                 queryset,
                 request.POST['subject'],
                 request.POST['mail_text_message'],

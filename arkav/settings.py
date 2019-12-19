@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'nested_admin',
     'storages',
     'corsheaders',
+    'django_rq',
 
     'arkav.arkavauth',
     'arkav.uploader',
@@ -270,3 +271,11 @@ LOGGING = {
         },
     },
 }
+
+RQ_QUEUES = {
+    'default': {
+        'URL': os.getenv('REDISTOGO_URL', 'redis://localhost:6379/0'),
+        'DEFAULT_TIMEOUT': 360,
+    },
+}
+RQ_SHOW_ADMIN_LINK = True
