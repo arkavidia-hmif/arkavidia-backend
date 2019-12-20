@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.utils import timezone
 from rest_framework import status
+import django_rq
 
 
 class TeamService:
@@ -64,7 +65,7 @@ class TeamService:
                 to=addresses,
             )
             mail.attach_alternative(mail_html_message, 'text/html')
-            mail.send()
+            django_rq.enqueue(mail.send)
 
     @transaction.atomic
     def create_team(self, team_data, user):

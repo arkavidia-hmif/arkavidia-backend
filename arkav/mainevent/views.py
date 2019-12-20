@@ -1,6 +1,7 @@
 from arkav.mainevent.models import Mainevent
 from arkav.mainevent.models import Registrant
 from arkav.mainevent.serializers import MaineventSerializer
+from arkav.mainevent.serializers import MaineventDetailsSerializer
 from arkav.mainevent.serializers import RegisterRegistrantRequestSerializer
 from arkav.mainevent.serializers import RegistrantSerializer
 from arkav.mainevent.serializers import RegistrantDetailsSerializer
@@ -21,6 +22,17 @@ class ListMaineventsView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     @swagger_auto_schema(operation_summary='Mainevent List')
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+
+class DetailMaineventView(generics.RetrieveAPIView):
+    lookup_url_kwarg = 'mainevent_id'
+    queryset = Mainevent.objects.all()
+    serializer_class = MaineventDetailsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    @swagger_auto_schema(operation_summary='Mainevent Detail')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 

@@ -22,6 +22,7 @@ from arkav.competition.models import UserTaskResponse
 from arkav.competition.models import TaskWidget
 from arkav.competition.models import Team
 from arkav.competition.services import TeamService
+import django_rq
 
 
 def send_reminder(modeladmin, request, queryset):
@@ -34,7 +35,10 @@ send_reminder.short_description = 'Send reminder email'
 
 def move_to_next_stage(modeladmin, request, queryset):
     for item in queryset:
-        next_stage = Stage.objects.filter(order__gt=item.active_stage.order).order_by('order').first()
+        next_stage = Stage.objects.filter(
+            competition=item.competition,
+            order__gt=item.active_stage.order,
+        ).order_by('order').first()
         item.active_stage = next_stage
         item.save()
 
@@ -193,7 +197,8 @@ class TeamAdmin(admin.ModelAdmin):
 
     def send_custom_email(self, request, queryset):
         if 'apply' in request.POST:
-            TeamService().send_custom_email(
+            django_rq.enqueue(
+                TeamService().send_custom_email,
                 queryset,
                 request.POST['subject'],
                 request.POST['mail_text_message'],
