@@ -193,7 +193,7 @@ class TaskResponse(models.Model):
     last_submitted_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return '%s - %s' % (self.task.name, self.registrant.name)
+        return '%s - %s' % (self.task.name, self.registrant.full_name)
 
     @property
     def response_or_link(self):
