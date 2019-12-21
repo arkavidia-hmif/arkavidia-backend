@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.template.defaultfilters import escape
 from django.template.response import TemplateResponse
 from django.urls import path
@@ -18,11 +19,13 @@ from arkav.mainevent.models import TaskCategory
 from arkav.mainevent.models import TaskResponse
 from arkav.mainevent.models import TaskWidget
 from arkav.mainevent.models import Registrant
+from arkav.mainevent.services import RegistrantService
+import django_rq
 
 
 def send_reminder(modeladmin, request, queryset):
     for item in queryset:
-        item.send_reminder()
+        RegistrantService().send_reminder_email(item)
 
 
 send_reminder.short_description = 'Send reminder email'
@@ -161,7 +164,7 @@ class RegistrantAdmin(admin.ModelAdmin):
             None, {"fields": ['user', 'mainevent', 'active_stage']}
         ),
     )
-    actions = [send_reminder]
+    actions = [send_reminder, 'send_custom_email']
     list_display = ['id', 'mainevent', 'user', 'active_stage',
                     'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'user']
@@ -180,6 +183,21 @@ class RegistrantAdmin(admin.ModelAdmin):
         fields = self.readonly_fields
         newfieldsets.append(['USER DATA', {'fields': fields}])
         return newfieldsets
+
+    def send_custom_email(self, request, queryset):
+        if 'apply' in request.POST:
+            django_rq.enqueue(
+                RegistrantService().send_custom_email,
+                queryset,
+                request.POST['subject'],
+                request.POST['mail_text_message'],
+                request.POST['mail_html_message'],
+            )
+            self.message_user(request, 'Sent email to {} registrants'.format(queryset.count()))
+            return HttpResponseRedirect(request.get_full_path())
+
+        return render(request, 'mainevent_admin_custom_email.html', context={'registrants': queryset})
+    send_custom_email.short_description = 'Send Customized Email'
 
 
 @admin.register(TaskCategory)

@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.template.loader import get_template
 from django.utils import timezone
 from rest_framework import status
+import django_rq
 
 
 class RegistrantService:
@@ -22,25 +23,35 @@ class RegistrantService:
             if(not task_response_count):
                 need_to_notify.append(task)
 
-        addresses = [registrant.user.email]
-
         context = {
             'name': registrant.user.full_name,
             'active_stage': registrant.active_stage,
             'tasks': need_to_notify,
         }
-        text_template = get_template('registrant_reminder_email.txt')
-        html_template = get_template('registrant_reminder_email.html')
+        text_template = get_template('mainevent_registrant_reminder_email.txt')
+        html_template = get_template('mainevent_registrant_reminder_email.html')
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
             subject='Reminder Main Event Arkavidia 6.0',
             body=mail_text_message,
-            to=addresses,
+            to=[registrant.user.email],
         )
         mail.attach_alternative(mail_html_message, 'text/html')
-        mail.send()
+        django_rq.enqueue(mail.send)
+
+    def send_custom_email(self, registrants, subject, mail_text_message, mail_html_message):
+        for registrant in registrants.all():
+            addresses = [registrant.user.email]
+
+            mail = EmailMultiAlternatives(
+                subject=subject,
+                body=mail_text_message,
+                to=addresses,
+            )
+            mail.attach_alternative(mail_html_message, 'text/html')
+            django_rq.enqueue(mail.send)
 
     @transaction.atomic
     def create_registrant(self, registrant_data, user):

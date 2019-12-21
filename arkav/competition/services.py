@@ -37,8 +37,8 @@ class TeamService:
             'active_stage': team.active_stage,
             'tasks': need_to_notify,
         }
-        text_template = get_template('team_reminder_email.txt')
-        html_template = get_template('team_reminder_email.html')
+        text_template = get_template('competition_team_reminder_email.txt')
+        html_template = get_template('competition_team_reminder_email.html')
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
 

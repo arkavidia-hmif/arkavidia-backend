@@ -1,6 +1,7 @@
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.utils import timezone
+import django_rq
 import logging
 
 
@@ -20,7 +21,7 @@ class UserService:
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         try:
-            mail.send()
+            django_rq.enqueue(mail.send)
         except Exception:
             logger.error('Error mailing {} with subject {}'.format(user.email, subject))
         user.save()
