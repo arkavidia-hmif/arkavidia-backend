@@ -207,7 +207,7 @@ class TeamAdmin(admin.ModelAdmin):
             self.message_user(request, 'Sent email to {} teams'.format(queryset.count()))
             return HttpResponseRedirect(request.get_full_path())
 
-        return render(request, 'admin_custom_email.html', context={'teams': queryset})
+        return render(request, 'competition_admin_custom_email.html', context={'teams': queryset})
     send_custom_email.short_description = 'Send Customized Email'
 
 
