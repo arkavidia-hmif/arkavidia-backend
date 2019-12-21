@@ -24,7 +24,7 @@ class RegistrantService:
                 need_to_notify.append(task)
 
         context = {
-            'user': registrant.user,
+            'name': registrant.user.name,
             'active_stage': registrant.active_stage,
             'tasks': need_to_notify,
         }

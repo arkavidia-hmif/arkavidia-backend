@@ -23,8 +23,6 @@ class RegistrantService:
             if(not task_response_count):
                 need_to_notify.append(task)
 
-        addresses = [registrant.user.email]
-
         context = {
             'name': registrant.user.full_name,
             'active_stage': registrant.active_stage,
@@ -38,7 +36,7 @@ class RegistrantService:
         mail = EmailMultiAlternatives(
             subject='Reminder Main Event Arkavidia 6.0',
             body=mail_text_message,
-            to=addresses,
+            to=[registrant.user.email],
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         django_rq.enqueue(mail.send)
