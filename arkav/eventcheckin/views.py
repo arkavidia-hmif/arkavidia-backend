@@ -1,4 +1,3 @@
-from arkav.eventcheckin.models import CheckInAttendee
 from arkav.eventcheckin.serializers import CheckInRequestSerializer
 from arkav.eventcheckin.serializers import CheckInResponseSerializer
 from arkav.eventcheckin.services import CheckInService

@@ -1,4 +1,3 @@
-from arkav.eventcheckin.models import CheckInEvent
 from arkav.eventcheckin.models import CheckInAttendee
 from arkav.utils.exceptions import ArkavAPIException
 from django.utils import timezone

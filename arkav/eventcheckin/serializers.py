@@ -1,7 +1,7 @@
 from arkav.eventcheckin.models import CheckInAttendee
 from arkav.eventcheckin.models import CheckInEvent
 from rest_framework import serializers
-import uuid
+
 
 class CheckInEventSerializer(serializers.ModelSerializer):
 

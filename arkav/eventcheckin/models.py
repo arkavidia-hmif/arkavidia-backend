@@ -1,4 +1,3 @@
-from arkav.arkavauth.models import User
 from django.db import models
 import uuid
 
