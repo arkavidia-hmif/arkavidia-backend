@@ -67,7 +67,7 @@ class TaskResponseAdmin(admin.ModelAdmin):
     list_display = ['registrant_link', 'task', 'status', 'open_response', 'accept_reject']
     list_display_links = ['task']
     list_filter = ['status', 'task__category']
-    search_fields = ['registrant__user__name', 'registrant__id', 'task__name']
+    search_fields = ['registrant__user__full_name', 'registrant__id', 'task__name']
     autocomplete_fields = ['task']
 
     def registrant_link(self, obj):
