@@ -104,7 +104,7 @@ class RegistrantDetailsSerializer(serializers.ModelSerializer):
                     template_string = django_engine.from_string(task['widget_parameters']['description'])
                     task['widget_parameters']['description'] = template_string.render(context={
                         'registrant': instance,
-                        'registrant_number': '{:03d}'.format(instance.id + 600)
+                        'registrant_number': '{:03d}'.format(instance.id)
                     })
         return registrant_data
 
