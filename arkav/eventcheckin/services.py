@@ -6,6 +6,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
 from django.template.loader import get_template
 from django.utils import timezone
+from django.utils.html import strip_tags
 from rest_framework import status
 import django_rq
 import logging
@@ -70,28 +71,31 @@ class CheckInService():
                 attendee=attendee,
             ) for attendee in attendees])
 
-    # def send_email(self, attendee, subject, context, text_template, html_template):
-    #     mail_text_message = text_template.render(context)
-    #     mail_html_message = html_template.render(context)
-    #     mail_to = attendee.email
+    def send_email(self, attendee, subject, context, text_template, html_template):
+        mail_text_message = text_template.render(context)
+        mail_html_message = html_template.render(context)
+        mail_to = attendee.email
 
-    #     mail = EmailMultiAlternatives(
-    #         subject=subject,
-    #         body=mail_text_message,
-    #         to=[mail_to],
-    #     )
-    #     mail.attach_alternative(mail_html_message, 'text/html')
-    #     try:
-    #         django_rq.enqueue(mail.send)
-    #     except Exception:
-    #         logger.error('Error mailing {} with subject {}'.format(mail_to, subject))
+        mail = EmailMultiAlternatives(
+            subject=subject,
+            body=mail_text_message,
+            to=[mail_to],
+        )
+        mail.attach_alternative(mail_html_message, 'text/html')
+        try:
+            mail.send()
+        except Exception:
+            logger.error('Error mailing {} with subject {}'.format(mail_to, subject))
 
-    # def send_token_qr_code(self, attendee):
-    #     text_template = get_template('token_qr_code_email.txt')
-    #     html_template = get_template('token_qr_code_email.html')
+    def send_token_qr_code(self, attendance):
+        html_template = get_template('token_qr_code_email.html')
+        text_template = get_template('token_qr_code_email.html')
 
-    #     context = {
-    #         'token': attendee.token,
-    #     }
+        context = {
+            'event': attendance.event,
+            'attendee': attendance.attendee,
+            'token': attendance.token,
+        }
 
-    #     self.send_email(attendee, '[Arkavidia] Konfirmasi Email', context, text_template, html_template)
+        subject = '[Arkavidia] {} - Check-In QR Code'.format(attendance.event)
+        self.send_email(attendance.attendee, subject, context, text_template, html_template)
