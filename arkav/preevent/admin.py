@@ -200,11 +200,14 @@ class RegistrantAdmin(admin.ModelAdmin):
             CheckInService().migrate_registrants(queryset, events)
 
             self.message_user(
-                request, 'Migrated {} registrants to attending {} check-in events'.format(queryset.count(), events.count()))
+                request,
+                'Migrated {} registrants to attending {} check-in events'.format(queryset.count(), events.count())
+            )
             return HttpResponseRedirect(request.get_full_path())
 
         events = CheckInEvent.objects.all()
-        return render(request, 'preevent_admin_migrate_checkinevent.html', context={'registrants': queryset, 'events': events})
+        return render(request, 'preevent_admin_migrate_checkinevent.html',
+                      context={'registrants': queryset, 'events': events})
     migrate_checkinevent.short_description = 'Migrate to Check-in Event'
 
 

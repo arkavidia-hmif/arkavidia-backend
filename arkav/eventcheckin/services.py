@@ -6,7 +6,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
 from django.template.loader import get_template
 from django.utils import timezone
-from django.utils.html import strip_tags
 from rest_framework import status
 import django_rq
 import logging
@@ -83,7 +82,7 @@ class CheckInService():
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         try:
-            mail.send()
+            django_rq.enqueue(mail.send)
         except Exception:
             logger.error('Error mailing {} with subject {}'.format(mail_to, subject))
 

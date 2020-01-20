@@ -3,9 +3,7 @@ from arkav.eventcheckin.models import CheckInEvent
 from arkav.eventcheckin.models import CheckInAttendance
 from arkav.eventcheckin.models import CheckInAttendee
 from arkav.eventcheckin.services import CheckInService
-from django import forms
 from django.contrib import admin
-from django.contrib.admin.helpers import ActionForm
 
 
 @admin.register(CheckInEvent)

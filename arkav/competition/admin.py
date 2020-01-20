@@ -222,7 +222,8 @@ class TeamAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(request.get_full_path())
 
         events = CheckInEvent.objects.all()
-        return render(request, 'competition_admin_migrate_checkinevent.html', context={'teams': queryset, 'events': events})
+        return render(request, 'competition_admin_migrate_checkinevent.html',
+                      context={'teams': queryset, 'events': events})
     migrate_checkinevent.short_description = 'Migrate to Check-in Event'
 
 

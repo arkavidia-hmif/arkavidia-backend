@@ -34,8 +34,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('token', models.UUIDField(default=uuid.uuid4, editable=False, unique=True)),
                 ('checkin_time', models.DateTimeField(blank=True, null=True)),
-                ('attendee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='event_attendee', to='eventcheckin.CheckInAttendee')),
-                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='event_attendee', to='eventcheckin.CheckInEvent')),
+                ('attendee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                               related_name='event_attendee', to='eventcheckin.CheckInAttendee')),
+                ('event', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                            related_name='event_attendee', to='eventcheckin.CheckInEvent')),
             ],
             options={
                 'get_latest_by': 'checkin_time',
