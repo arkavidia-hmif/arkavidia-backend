@@ -30,7 +30,7 @@ class CheckInAttendance(models.Model):
     event = models.ForeignKey(to=CheckInEvent, related_name='event_attendee', on_delete=models.CASCADE)
     attendee = models.ForeignKey(to=CheckInAttendee, related_name='event_attendee', on_delete=models.CASCADE)
 
-    token = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    token = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     checkin_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
 
     @property
@@ -39,3 +39,6 @@ class CheckInAttendance(models.Model):
 
     class Meta:
         get_latest_by = 'checkin_time'
+
+    def __str__(self):
+        return '{} - {}'.format(self.attendee, self.event)
