@@ -46,7 +46,6 @@ class EventCheckInTestCase(APITestCase):
         self.attendance_attended.refresh_from_db()
         self.assertEqual(initial_checkin_time, self.attendance_attended.checkin_time)
 
-
     def test_checkin_wrong_token(self):
         '''
         Checking-in with an inexistent token returns an error and checkin_time remains unchanged

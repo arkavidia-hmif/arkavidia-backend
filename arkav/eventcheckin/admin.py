@@ -31,5 +31,7 @@ class CheckInAttendanceAdmin(admin.ModelAdmin):
     def send_qr_code(self, request, queryset):
         for obj in queryset:
             CheckInService().send_token_qr_code(obj)
-        self.message_user(request, 'Check-In QR Codes are queued to be sent to {} attendances.'.format(queryset.count()))
+        self.message_user(request,
+                          'Check-In QR Codes are queued to be sent to {} attendances.'
+                          .format(queryset.count()))
     send_qr_code.short_description = 'Send Check-In QR Code'

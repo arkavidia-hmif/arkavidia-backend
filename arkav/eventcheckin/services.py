@@ -1,5 +1,4 @@
 from arkav.eventcheckin.models import CheckInAttendance
-from arkav.eventcheckin.models import CheckInAttendee
 from arkav.utils.exceptions import ArkavAPIException
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
