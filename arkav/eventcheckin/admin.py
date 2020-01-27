@@ -23,13 +23,13 @@ class CheckInAttendeeAdmin(admin.ModelAdmin):
 @admin.register(CheckInAttendance)
 class CheckInAttendanceAdmin(admin.ModelAdmin):
     actions = ['send_qr_code']
-    list_display = ('attendee', 'event', 'checkin_time', )
-    list_filter = ['event', 'checkin_time']
+    list_display = ('attendee', 'event', 'checkin_time', 'last_sent_token', )
+    list_filter = ['event', 'checkin_time', 'last_sent_token']
     search_fields = ('attendee', 'event', )
     ordering = ('-checkin_time',)
 
     def send_qr_code(self, request, queryset):
         for obj in queryset:
             CheckInService().send_token_qr_code(obj)
-        self.message_user(request, 'Check-In QR Codes sent to {} attendances.'.format(queryset.count()))
+        self.message_user(request, 'Check-In QR Codes are queued to be sent to {} attendances.'.format(queryset.count()))
     send_qr_code.short_description = 'Send Check-In QR Code'

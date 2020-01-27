@@ -7,7 +7,6 @@ from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
 from arkav.eventcheckin.models import CheckInEvent
-from arkav.eventcheckin.services import CheckInService
 from arkav.preevent.admin_forms import AcceptTaskResponseActionForm
 from arkav.preevent.admin_forms import RejectTaskResponseActionForm
 from arkav.preevent.admin_inlines import StageInline
@@ -197,7 +196,7 @@ class RegistrantAdmin(admin.ModelAdmin):
     def migrate_checkinevent(self, request, queryset):
         if 'apply' in request.POST:
             events = CheckInEvent.objects.filter(id__in=request.POST.getlist('events'))
-            CheckInService().migrate_registrants(queryset, events)
+            RegistrantService().migrate_registrants(queryset, events)
 
             self.message_user(
                 request,

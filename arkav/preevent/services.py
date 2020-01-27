@@ -1,3 +1,5 @@
+from arkav.eventcheckin.models import CheckInAttendance
+from arkav.eventcheckin.models import CheckInAttendee
 from arkav.preevent.models import Task
 from arkav.preevent.models import TaskResponse
 from arkav.preevent.models import Registrant
@@ -87,6 +89,21 @@ class RegistrantService:
             )
 
         return new_registrant
+
+    @transaction.atomic
+    def migrate_registrants(self, registrants, events):
+        attendees = []
+        for registrant in registrants:
+            attendee, _ = CheckInAttendee.objects.get_or_create(
+                email=registrant.user.email,
+                name=registrant.user.full_name,
+            )
+            attendees.append(attendee)
+        for event in events:
+            CheckInAttendance.objects.bulk_create([CheckInAttendance(
+                event=event,
+                attendee=attendee,
+            ) for attendee in attendees])
 
 
 class TaskResponseService:

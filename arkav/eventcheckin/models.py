@@ -32,10 +32,15 @@ class CheckInAttendance(models.Model):
 
     token = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
     checkin_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    last_sent_token = models.DateTimeField(auto_now_add=False, null=True, blank=True)
 
     @property
     def is_checked_in(self):
         return self.checkin_time is not None
+
+    @property
+    def is_token_sent(self):
+        return self.last_sent_token is not None
 
     class Meta:
         get_latest_by = 'checkin_time'

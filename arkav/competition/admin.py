@@ -7,7 +7,6 @@ from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
 from arkav.eventcheckin.models import CheckInEvent
-from arkav.eventcheckin.services import CheckInService
 from arkav.competition.admin_forms import AcceptTaskResponseActionForm
 from arkav.competition.admin_forms import RejectTaskResponseActionForm
 from arkav.competition.admin_inlines import StageInline
@@ -215,7 +214,7 @@ class TeamAdmin(admin.ModelAdmin):
     def migrate_checkinevent(self, request, queryset):
         if 'apply' in request.POST:
             events = CheckInEvent.objects.filter(id__in=request.POST.getlist('events'))
-            CheckInService().migrate_teams(queryset, events)
+            TeamService().migrate_teams(queryset, events)
 
             self.message_user(
                 request, 'Migrated {} teams to attending {} check-in events'.format(queryset.count(), events.count()))

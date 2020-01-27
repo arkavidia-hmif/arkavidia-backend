@@ -2,11 +2,11 @@ from arkav.eventcheckin.serializers import CheckInRequestSerializer
 from arkav.eventcheckin.serializers import CheckInResponseSerializer
 from arkav.eventcheckin.services import CheckInService
 from arkav.utils.exceptions import ArkavAPIException
-from rest_framework import generics
-from rest_framework import status
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework import generics
+from rest_framework import status
 from rest_framework.response import Response
 
 

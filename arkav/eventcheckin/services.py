@@ -1,4 +1,3 @@
-from arkav.competition.models import TeamMember
 from arkav.eventcheckin.models import CheckInAttendance
 from arkav.eventcheckin.models import CheckInAttendee
 from arkav.utils.exceptions import ArkavAPIException
@@ -18,7 +17,14 @@ class CheckInService():
 
     @transaction.atomic
     def checkin(self, checkin_data):
-        attendance = CheckInAttendance.objects.get(token=checkin_data['token'])
+        try:
+            attendance = CheckInAttendance.objects.get(token=checkin_data['token'])
+        except CheckInAttendance.DoesNotExist:
+            raise ArkavAPIException(
+                detail='Attendance token does not exist',
+                code='wrong_token',
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
 
         if attendance.is_checked_in:
             raise ArkavAPIException(
@@ -27,53 +33,14 @@ class CheckInService():
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            attendance.checkin_time = timezone.now()
-            attendance.save()
-        except ValueError as e:
-            raise ArkavAPIException(
-                detail=str(e),
-                code='checkin_fail',
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-
+        attendance.checkin_time = timezone.now()
+        attendance.save()
         return attendance
 
-    @transaction.atomic
-    def migrate_teams(self, teams, events):
-        members = TeamMember.objects.filter(team__in=teams).distinct()
-        attendees = []
-        for member in members:
-            attendee, _ = CheckInAttendee.objects.get_or_create(
-                email=member.email,
-                name=member.full_name,
-            )
-            attendees.append(attendee)
-        for event in events:
-            CheckInAttendance.objects.bulk_create([CheckInAttendance(
-                event=event,
-                attendee=attendee,
-            ) for attendee in attendees])
-
-    @transaction.atomic
-    def migrate_registrants(self, registrants, events):
-        attendees = []
-        for registrant in registrants:
-            attendee, _ = CheckInAttendee.objects.get_or_create(
-                email=registrant.user.email,
-                name=registrant.user.full_name,
-            )
-            attendees.append(attendee)
-        for event in events:
-            CheckInAttendance.objects.bulk_create([CheckInAttendance(
-                event=event,
-                attendee=attendee,
-            ) for attendee in attendees])
-
-    def send_email(self, attendee, subject, context, text_template, html_template):
+    def send_email(self, attendance, subject, context, text_template, html_template):
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
-        mail_to = attendee.email
+        mail_to = attendance.attendee.email
 
         mail = EmailMultiAlternatives(
             subject=subject,
@@ -82,13 +49,15 @@ class CheckInService():
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         try:
-            django_rq.enqueue(mail.send)
+            mail.send()
+            attendance.last_sent_token = timezone.now()
+            attendance.save()
         except Exception:
             logger.error('Error mailing {} with subject {}'.format(mail_to, subject))
 
     def send_token_qr_code(self, attendance):
         html_template = get_template('token_qr_code_email.html')
-        text_template = get_template('token_qr_code_email.html')
+        text_template = get_template('token_qr_code_email.txt')
 
         context = {
             'event': attendance.event,
@@ -97,4 +66,11 @@ class CheckInService():
         }
 
         subject = '[Arkavidia] {} - Check-In QR Code'.format(attendance.event)
-        self.send_email(attendance.attendee, subject, context, text_template, html_template)
+        django_rq.enqueue(
+            self.send_email,
+            attendance,
+            subject,
+            context,
+            text_template,
+            html_template
+        )

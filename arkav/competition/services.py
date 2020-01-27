@@ -1,3 +1,5 @@
+from arkav.eventcheckin.models import CheckInAttendance
+from arkav.eventcheckin.models import CheckInAttendee
 from arkav.announcement.services import AnnouncementService
 from arkav.arkavauth.models import User
 from arkav.competition.models import AbstractTaskResponse
@@ -113,6 +115,22 @@ class TeamService:
             )
 
         return new_team
+
+    @transaction.atomic
+    def migrate_teams(self, teams, events):
+        members = TeamMember.objects.filter(team__in=teams).distinct()
+        attendees = []
+        for member in members:
+            attendee, _ = CheckInAttendee.objects.get_or_create(
+                email=member.email,
+                name=member.full_name,
+            )
+            attendees.append(attendee)
+        for event in events:
+            CheckInAttendance.objects.bulk_create([CheckInAttendance(
+                event=event,
+                attendee=attendee,
+            ) for attendee in attendees])
 
 
 class TeamMemberService:
