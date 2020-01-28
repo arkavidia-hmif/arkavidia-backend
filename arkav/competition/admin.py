@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from arkav.eventcheckin.models import CheckInEvent
 from arkav.competition.admin_forms import AcceptTaskResponseActionForm
 from arkav.competition.admin_forms import RejectTaskResponseActionForm
 from arkav.competition.admin_inlines import StageInline
@@ -182,7 +183,7 @@ class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    actions = [move_to_next_stage, 'send_custom_email', send_reminder]
+    actions = [move_to_next_stage, 'send_custom_email', 'migrate_checkinevent', send_reminder]
     list_display = ['id', 'name', 'competition', 'institution', 'team_leader',
                     'active_stage', 'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'name']
@@ -209,6 +210,20 @@ class TeamAdmin(admin.ModelAdmin):
 
         return render(request, 'competition_admin_custom_email.html', context={'teams': queryset})
     send_custom_email.short_description = 'Send Customized Email'
+
+    def migrate_checkinevent(self, request, queryset):
+        if 'apply' in request.POST:
+            events = CheckInEvent.objects.filter(id__in=request.POST.getlist('events'))
+            TeamService().migrate_teams(queryset, events)
+
+            self.message_user(
+                request, 'Migrated {} teams to attending {} check-in events'.format(queryset.count(), events.count()))
+            return HttpResponseRedirect(request.get_full_path())
+
+        events = CheckInEvent.objects.all()
+        return render(request, 'competition_admin_migrate_checkinevent.html',
+                      context={'teams': queryset, 'events': events})
+    migrate_checkinevent.short_description = 'Migrate to Check-in Event'
 
 
 @admin.register(TaskCategory)

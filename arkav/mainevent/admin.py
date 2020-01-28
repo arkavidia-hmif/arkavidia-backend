@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from arkav.eventcheckin.models import CheckInEvent
 from arkav.mainevent.admin_forms import AcceptTaskResponseActionForm
 from arkav.mainevent.admin_forms import RejectTaskResponseActionForm
 from arkav.mainevent.admin_inlines import StageInline
@@ -164,7 +165,7 @@ class RegistrantAdmin(admin.ModelAdmin):
             None, {"fields": ['user', 'mainevent', 'active_stage']}
         ),
     )
-    actions = [send_reminder, 'send_custom_email']
+    actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent']
     list_display = ['id', 'mainevent', 'user', 'active_stage',
                     'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'user']
@@ -198,6 +199,22 @@ class RegistrantAdmin(admin.ModelAdmin):
 
         return render(request, 'mainevent_admin_custom_email.html', context={'registrants': queryset})
     send_custom_email.short_description = 'Send Customized Email'
+
+    def migrate_checkinevent(self, request, queryset):
+        if 'apply' in request.POST:
+            events = CheckInEvent.objects.filter(id__in=request.POST.getlist('events'))
+            RegistrantService().migrate_registrants(queryset, events)
+
+            self.message_user(
+                request,
+                'Migrated {} registrants to attending {} check-in events'.format(queryset.count(), events.count())
+            )
+            return HttpResponseRedirect(request.get_full_path())
+
+        events = CheckInEvent.objects.all()
+        return render(request, 'mainevent_admin_migrate_checkinevent.html',
+                      context={'registrants': queryset, 'events': events})
+    migrate_checkinevent.short_description = 'Migrate to Check-in Event'
 
 
 @admin.register(TaskCategory)
