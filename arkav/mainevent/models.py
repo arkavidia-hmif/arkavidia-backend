@@ -26,12 +26,19 @@ class Mainevent(models.Model):
     begin_time = models.DateTimeField(null=True)
     end_time = models.DateTimeField(null=True)
     order = models.IntegerField(default=0)
+    seats_available = models.IntegerField(default=0)
+    seats_remaining = models.IntegerField(default=0)  # will be updated automatically
 
     def __str__(self):
         return self.name
 
     class Meta:
         ordering = ['order']
+
+    def update_seats_remaining(self):
+        registrants_count = self.registrants.filter(is_participating=True).count()
+        self.seats_remaining = self.seats_available - registrants_count
+        self.save()
 
 
 class Stage(models.Model):
@@ -99,11 +106,12 @@ class Registrant(models.Model):
       and only if is_participating is True; all other stages are locked.
     - active_stage defaults to the first stage in the registrant's mainevent;
       creation fails if the registrant's mainevent does not have a stage yet.
+    - is_participating set to True if the registrant is valid for participating
     '''
     mainevent = models.ForeignKey(to=Mainevent, related_name='registrants', on_delete=models.PROTECT)
     user = models.ForeignKey(to=User, related_name='mainevent_registrants', on_delete=models.PROTECT)
     active_stage = models.ForeignKey(to=Stage, related_name='active_registrants', on_delete=models.PROTECT)
-    is_participating = models.BooleanField(default=True)
+    is_participating = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

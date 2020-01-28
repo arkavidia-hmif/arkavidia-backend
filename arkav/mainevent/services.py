@@ -117,13 +117,6 @@ class TaskResponseService:
             user=user,
         )
 
-        if not registrant.is_participating:
-            raise ArkavAPIException(
-                detail='Your registrant is no longer participating in this main event.',
-                code='registrant_not_participating',
-                status_code=status.HTTP_400_BAD_REQUEST,
-            )
-
         # A registrant can only respond to tasks in the currently active stage
         task = get_object_or_404(
             Task.objects.all(),
