@@ -38,6 +38,8 @@ class Mainevent(models.Model):
     def update_seats_remaining(self):
         registrants_count = self.registrants.filter(is_participating=True).count()
         self.seats_remaining = self.seats_available - registrants_count
+        if (self.seats_remaining < 0):
+            self.seats_remaining = 0
         self.save()
 
 
