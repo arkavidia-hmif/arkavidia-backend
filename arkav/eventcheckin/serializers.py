@@ -19,7 +19,7 @@ class CheckInEventSerializer(serializers.ModelSerializer):
 
 
 class CheckInRequestSerializer(serializers.Serializer):
-    token = serializers.UUIDField()
+    pass
 
 
 class CheckInResponseSerializer(serializers.ModelSerializer):

@@ -15,14 +15,14 @@ logger = logging.getLogger(__name__)
 class CheckInService():
 
     @transaction.atomic
-    def checkin(self, checkin_data):
+    def checkin(self, token):
         try:
-            attendance = CheckInAttendance.objects.get(token=checkin_data['token'])
+            attendance = CheckInAttendance.objects.get(token=token)
         except CheckInAttendance.DoesNotExist:
             raise ArkavAPIException(
                 detail='Attendance token does not exist',
                 code='wrong_token',
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status_code=status.HTTP_404_NOT_FOUND,
             )
 
         if attendance.is_fully_checked_in:
