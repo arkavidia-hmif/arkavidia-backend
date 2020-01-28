@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class CheckInService():
 
     @transaction.atomic
-    def checkin(self, token):
+    def checkin(self, token, password=''):
         try:
             attendance = CheckInAttendance.objects.get(token=token)
         except CheckInAttendance.DoesNotExist:
@@ -29,6 +29,13 @@ class CheckInService():
             raise ArkavAPIException(
                 detail='Attendee can only check in once',
                 code='attendee_already_checkin',
+                status_code=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if attendance.event.password != password:
+            raise ArkavAPIException(
+                detail='Wrong Password',
+                code='wrong_event_password',
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 

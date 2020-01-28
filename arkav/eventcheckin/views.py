@@ -38,7 +38,10 @@ class CheckInAttendeeView(generics.GenericAPIView):
         request_serializer = CheckInRequestSerializer(data=request.data)
         try:
             request_serializer.is_valid(raise_exception=True)
-            checkin_data = CheckInService().checkin(self.kwargs['token'])
+            checkin_data = CheckInService().checkin(
+                self.kwargs['token'],
+                request_serializer.validated_data['password'],
+            )
             response_serializer = CheckInResponseSerializer(checkin_data)
             return Response(data=response_serializer.data, status=status.HTTP_200_OK)
         except ArkavAPIException as e:

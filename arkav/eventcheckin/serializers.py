@@ -19,14 +19,21 @@ class CheckInEventSerializer(serializers.ModelSerializer):
 
 
 class CheckInRequestSerializer(serializers.Serializer):
-    pass
+    password = serializers.CharField(max_length=100, required=False)
 
 
 class CheckInResponseSerializer(serializers.ModelSerializer):
-    attendee = CheckInAttendeeSerializer(read_only=True)
-    event = CheckInEventSerializer(read_only=True)
+    attendee_name = serializers.SerializerMethodField()
+    attendee_email = serializers.SerializerMethodField()
+    event = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = CheckInAttendance
-        fields = ('attendee', 'event', 'pax', 'pax_checked_in')
-        read_only_fields = ('attendee', 'event', 'token', 'pax', 'pax_checked_in')
+        fields = ('attendee_name', 'attendee_email', 'event', 'pax', 'pax_checked_in')
+        read_only_fields = ('attendee_name', 'attendee_email', 'event', 'token', 'pax', 'pax_checked_in')
+
+    def get_attendee_name(self, obj):
+        return obj.attendee.name
+
+    def get_attendee_email(self, obj):
+        return obj.attendee.email
