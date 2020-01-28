@@ -23,10 +23,10 @@ class CheckInAttendeeAdmin(admin.ModelAdmin):
 @admin.register(CheckInAttendance)
 class CheckInAttendanceAdmin(admin.ModelAdmin):
     actions = ['send_qr_code']
-    list_display = ('attendee', 'event', 'checkin_time', 'last_sent_token', )
-    list_filter = ['event', 'checkin_time', 'last_sent_token']
-    search_fields = ('attendee', 'event', )
-    ordering = ('-checkin_time',)
+    list_display = ('attendee', 'event', 'last_sent_token', 'pax', 'pax_checked_in')
+    list_filter = ['event']
+    search_fields = ('attendee', 'event', 'token')
+    ordering = ('-last_sent_token',)
 
     def send_qr_code(self, request, queryset):
         for obj in queryset:

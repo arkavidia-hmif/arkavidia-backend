@@ -28,5 +28,5 @@ class CheckInResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CheckInAttendance
-        fields = ('attendee', 'event', 'checkin_time')
-        read_only_fields = ('attendee', 'event', 'token', 'checkin_time')
+        fields = ('attendee', 'event', 'pax', 'pax_checked_in')
+        read_only_fields = ('attendee', 'event', 'token', 'pax', 'pax_checked_in')

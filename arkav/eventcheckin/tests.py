@@ -2,7 +2,6 @@ from arkav.eventcheckin.models import CheckInAttendee
 from arkav.eventcheckin.models import CheckInAttendance
 from arkav.eventcheckin.models import CheckInEvent
 from django.urls import reverse
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
@@ -12,9 +11,10 @@ class EventCheckInTestCase(APITestCase):
         self.attendee = CheckInAttendee.objects.create(name='attendee', email='attendee')
         self.event1 = CheckInEvent.objects.create(name='event1')
         self.event2 = CheckInEvent.objects.create(name='event2')
-        self.attendance_unattended = CheckInAttendance.objects.create(attendee=self.attendee, event=self.event1)
+        self.attendance_unattended = CheckInAttendance.objects.create(
+            attendee=self.attendee, event=self.event1, pax=2, pax_checked_in=1)
         self.attendance_attended = CheckInAttendance.objects.create(
-            attendee=self.attendee, event=self.event2, checkin_time=timezone.now())
+            attendee=self.attendee, event=self.event2, pax=2, pax_checked_in=2)
 
     def test_checkin_unattended(self):
         '''
@@ -28,14 +28,13 @@ class EventCheckInTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         self.attendance_unattended.refresh_from_db()
-        self.assertTrue(self.attendance_unattended.is_checked_in)
+        self.assertTrue(self.attendance_unattended.is_fully_checked_in)
 
     def test_checkin_already_attended(self):
         '''
         Checking-in an attendee which has checked in to an event before returns an error
-        and checkin_time remains unchanged
         '''
-        initial_checkin_time = self.attendance_attended.checkin_time
+        self.assertEqual(self.attendance_attended.pax, self.attendance_attended.pax_checked_in)
         url = reverse('attendee-checkin')
         data = {
             'token': self.attendance_attended.token,
@@ -44,13 +43,13 @@ class EventCheckInTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.attendance_attended.refresh_from_db()
-        self.assertEqual(initial_checkin_time, self.attendance_attended.checkin_time)
+        self.assertEqual(self.attendance_attended.pax, self.attendance_attended.pax_checked_in)
 
     def test_checkin_wrong_token(self):
         '''
-        Checking-in with an inexistent token returns an error and checkin_time remains unchanged
+        Checking-in with an inexistent token returns an error
         '''
-        initial_checkin_time = self.attendance_attended.checkin_time
+        self.assertEqual(self.attendance_attended.pax, self.attendance_attended.pax_checked_in)
         url = reverse('attendee-checkin')
         data = {
             'token': 'inexistent',
@@ -59,4 +58,4 @@ class EventCheckInTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
         self.attendance_attended.refresh_from_db()
-        self.assertEqual(initial_checkin_time, self.attendance_attended.checkin_time)
+        self.assertEqual(self.attendance_attended.pax, self.attendance_attended.pax_checked_in)

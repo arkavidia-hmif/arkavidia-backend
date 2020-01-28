@@ -31,19 +31,17 @@ class CheckInAttendance(models.Model):
     attendee = models.ForeignKey(to=CheckInAttendee, related_name='event_attendee', on_delete=models.CASCADE)
 
     token = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
-    checkin_time = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     last_sent_token = models.DateTimeField(auto_now_add=False, null=True, blank=True)
+    pax = models.IntegerField(default=1)
+    pax_checked_in = models.IntegerField(default=0)
 
     @property
-    def is_checked_in(self):
-        return self.checkin_time is not None
+    def is_fully_checked_in(self):
+        return self.pax == self.pax_checked_in
 
     @property
     def is_token_sent(self):
         return self.last_sent_token is not None
-
-    class Meta:
-        get_latest_by = 'checkin_time'
 
     def __str__(self):
         return '{} - {}'.format(self.attendee, self.event)

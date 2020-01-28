@@ -25,14 +25,14 @@ class CheckInService():
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        if attendance.is_checked_in:
+        if attendance.is_fully_checked_in:
             raise ArkavAPIException(
                 detail='Attendee can only check in once',
                 code='attendee_already_checkin',
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
-        attendance.checkin_time = timezone.now()
+        attendance.pax_checked_in += 1
         attendance.save()
         return attendance
 
