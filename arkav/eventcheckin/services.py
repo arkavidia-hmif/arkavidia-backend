@@ -43,9 +43,7 @@ class CheckInService():
         attendance.save()
         return attendance
 
-    def send_email(self, attendance, subject, context, text_template, html_template):
-        mail_text_message = text_template.render(context)
-        mail_html_message = html_template.render(context)
+    def send_email(self, attendance, subject, mail_text_message, mail_html_message):
         mail_to = attendance.attendee.email
 
         mail = EmailMultiAlternatives(
@@ -71,12 +69,14 @@ class CheckInService():
             'token': attendance.token,
         }
 
+        mail_text_message = text_template.render(context)
+        mail_html_message = html_template.render(context)
+
         subject = '[Arkavidia] {} - Check-In QR Code'.format(attendance.event)
         django_rq.enqueue(
             self.send_email,
             attendance,
             subject,
-            context,
-            text_template,
-            html_template
+            mail_text_message,
+            mail_html_message
         )
