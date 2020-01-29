@@ -26,7 +26,6 @@ class EventCheckInTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
         checkin_data = res.json()
-        print(checkin_data)
         self.assertEqual(checkin_data['attendeeName'], self.attendance_unattended.attendee.name)
         self.assertEqual(checkin_data['attendeeEmail'], self.attendance_unattended.attendee.email)
         self.assertEqual(checkin_data['pax'], self.attendance_unattended.pax)
@@ -51,6 +50,28 @@ class EventCheckInTestCase(APITestCase):
         data = {
             'password': self.attendance_unattended.event.password,
         }
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.attendance_unattended.refresh_from_db()
+        self.assertTrue(self.attendance_unattended.is_fully_checked_in)
+
+    def test_checkin_unattended_twice(self):
+        '''
+        Check-in an attendee which has not checked in before to an event
+        '''
+        self.attendance_unattended.pax_checked_in = 0
+        self.attendance_unattended.save()
+        url = reverse('attendee-checkin', kwargs={'token': self.attendance_unattended.token})
+        data = {
+            'password': self.attendance_unattended.event.password,
+        }
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.attendance_unattended.refresh_from_db()
+        self.assertFalse(self.attendance_unattended.is_fully_checked_in)
+
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
