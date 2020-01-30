@@ -74,12 +74,11 @@ class RetrieveUpdateDestroyRegistrantView(generics.RetrieveUpdateDestroyAPIView)
 
     def get_queryset(self):
         # User should only be able to his/her own registration
-        # Disable edit/delete if mainevent's is_registration_open is false or the registrant's is_participating is false
+        # Disable edit/delete if mainevent's is_registration_open is false
         if self.request.method == 'GET':
             return self.request.user.mainevent_registrants.all()
         else:
-            return self.request.user.mainevent_registrants.filter(mainevent__is_registration_open=True,
-                                                                  is_participating=True)
+            return self.request.user.mainevent_registrants.filter(mainevent__is_registration_open=True)
 
     def retrieve(self, request, *args, **kwargs):
         registrant = self.get_object()

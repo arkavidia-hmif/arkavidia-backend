@@ -1,0 +1,10 @@
+Halo, {{ attendee }}!
+
+Anda telah teregistrasi menjadi peserta {{ event }}.
+
+Tunjukkan kode QR di bawah kepada panitia saat melakukan check-in!
+https://chart.apis.google.com/chart?cht=qr&chs=400x400&chl={{ token }}
+
+
+--
+Arkavidia 6.0

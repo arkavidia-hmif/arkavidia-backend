@@ -53,11 +53,11 @@ INSTALLED_APPS = [
     'django_rq',
 
     'arkav.arkavauth',
+    'arkav.eventcheckin',
     'arkav.uploader',
     'arkav.announcement',
     'arkav.competition',
     'arkav.preevent',
-    # 'arkav.quiz',
     'arkav.mainevent',
 ]
 AUTH_USER_MODEL = 'arkavauth.User'

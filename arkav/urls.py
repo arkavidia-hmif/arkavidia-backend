@@ -28,6 +28,7 @@ urlpatterns = [
     # API routes
     path('api/auth/', include('arkav.arkavauth.urls')),
     path('api/announcement/', include('arkav.announcement.urls')),
+    path('api/checkin/', include('arkav.eventcheckin.urls')),
     path('api/uploader/', include('arkav.uploader.urls')),
     path('api/competition/', include('arkav.competition.urls')),
     path('api/preevent/', include('arkav.preevent.urls')),
