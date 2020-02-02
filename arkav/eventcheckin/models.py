@@ -18,7 +18,10 @@ class CheckInEvent(models.Model):
     Event related to the check in process
     - password is needed so the user have to match the event password
     """
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=100)
+    venue = models.CharField(max_length=100, default='')
+    begin_time = models.DateTimeField(null=True)
+    end_time = models.DateTimeField(null=True)
     password = models.CharField(max_length=100, null=False, blank=True)
 
     def __str__(self):
@@ -32,7 +35,7 @@ class CheckInAttendance(models.Model):
     event = models.ForeignKey(to=CheckInEvent, related_name='event_attendee', on_delete=models.CASCADE)
     attendee = models.ForeignKey(to=CheckInAttendee, related_name='event_attendee', on_delete=models.CASCADE)
 
-    token = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
+    token = models.UUIDField(unique=False, default=uuid.uuid4, editable=True)
     last_sent_token = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     pax = models.IntegerField(default=1)
     pax_checked_in = models.IntegerField(default=0)

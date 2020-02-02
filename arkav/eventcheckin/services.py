@@ -2,7 +2,8 @@ from arkav.eventcheckin.models import CheckInAttendance
 from arkav.utils.exceptions import ArkavAPIException
 from django.core.mail import EmailMultiAlternatives
 from django.db import transaction
-from django.template.loader import get_template
+from django.template import Context
+from django.template import Template
 from django.utils import timezone
 from rest_framework import status
 import django_rq
@@ -56,27 +57,29 @@ class CheckInService():
             mail.send()
             attendance.last_sent_token = timezone.now()
             attendance.save()
-        except Exception:
+        except Exception as e:
             logger.error('Error mailing {} with subject {}'.format(mail_to, subject))
+            raise e
 
-    def send_token_qr_code(self, attendance):
-        html_template = get_template('token_qr_code_email.html')
-        text_template = get_template('token_qr_code_email.txt')
+    def send_templated_email(self, attendance, subject_template, text_template, html_template):
+        subject_template = Template(subject_template)
+        html_template = Template(html_template)
+        text_template = Template(text_template)
 
-        context = {
+        context = Context({
             'event': attendance.event,
             'attendee': attendance.attendee,
             'token': attendance.token,
-        }
+        })
 
+        mail_subject = subject_template.render(context)
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
 
-        subject = '[Arkavidia] {} - Check-In QR Code'.format(attendance.event)
         django_rq.enqueue(
             self.send_email,
             attendance,
-            subject,
+            mail_subject,
             mail_text_message,
             mail_html_message
         )

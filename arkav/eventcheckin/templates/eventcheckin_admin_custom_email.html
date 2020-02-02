@@ -1,0 +1,24 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form action="." method="POST">
+    {% csrf_token %}
+    <p>Email akan dikirim ke:</p>
+    <ul>
+        {% for attendance in attendances %}
+        <li>
+            {{ attendance.attendee.name }} ({{ attendance.attendee.email }}) - {{ attendance.event.name }}
+        </li>
+        <input type="hidden" name="_selected_action" value="{{ attendance.pk }}" />
+        {% endfor %}
+    </ul>
+    
+    <p>Available contexts: <b>attendee, event, token</b></p>
+    <p><input size=150 type="text" name="subject_template" value="{{ subject_template }}"/></p>
+    <p><textarea name="text_template" rows="10" cols="150">{{ text_template }}</textarea></p>
+    <p><textarea name="html_template" rows="10" cols="150">{{ html_template }}</textarea></p>
+
+    <input type="hidden" name="action" value="send_templated_email" />
+    <input type="submit" name="apply" value="Render template & send!" />
+</form>
+{% endblock %}
