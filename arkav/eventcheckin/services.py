@@ -76,7 +76,8 @@ class CheckInService():
         mail_text_message = text_template.render(context)
         mail_html_message = html_template.render(context)
 
-        self.send_email(
+        django_rq.enqueue(
+            self.send_email,
             attendance,
             mail_subject,
             mail_text_message,
