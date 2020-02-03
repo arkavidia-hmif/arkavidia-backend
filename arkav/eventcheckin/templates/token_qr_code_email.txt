@@ -1,10 +1,18 @@
+{% load i18n %}
+
+{% language 'id' %}
 Halo, {{ attendee }}!
 
-Anda telah teregistrasi menjadi peserta {{ event }}.
+Anda telah teregistrasi menjadi peserta {{ event.name }}.
+
+Hari, tanggal: {{ event.begin_time|date:"l, j F Y" }}
+Pukul: {{ event.begin_time|time:"H:i" }} - {{ event.end_time|time:"H:i" }}
+Tempat: {{ event.venue }}
 
 Tunjukkan kode QR di bawah kepada panitia saat melakukan check-in!
-https://chart.apis.google.com/chart?cht=qr&chs=400x400&chl={{ token }}
+https://chart.apis.google.com/chart?cht=qr&chs=300x300&chl={{ token }}
 
 
 --
 Arkavidia 6.0
+{% endlanguage %}
