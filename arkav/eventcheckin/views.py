@@ -18,16 +18,15 @@ class CheckInAttendeeView(generics.GenericAPIView):
                          responses={200: CheckInResponseSerializer()})
     def get(self, request, *args, **kwargs):
         try:
-            try:
-                attendance = CheckInAttendance.objects.get(token=self.kwargs['token'])
-                response_serializer = CheckInResponseSerializer(attendance)
-                return Response(data=response_serializer.data, status=status.HTTP_200_OK)
-            except CheckInAttendance.DoesNotExist:
+            attendance = CheckInAttendance.objects.filter(token=self.kwargs['token']).first()
+            if attendance is None:
                 raise ArkavAPIException(
                     detail='Attendance token does not exist',
                     code='wrong_token',
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
+            response_serializer = CheckInResponseSerializer(attendance)
+            return Response(data=response_serializer.data, status=status.HTTP_200_OK)
         except ArkavAPIException as e:
             return e.as_response()
 
