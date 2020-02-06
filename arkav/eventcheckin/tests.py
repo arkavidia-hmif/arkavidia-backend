@@ -109,7 +109,7 @@ class EventCheckInTestCase(APITestCase):
             'password': 'wrong-password',
         }
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
         self.attendance_unattended.refresh_from_db()
         self.assertFalse(self.attendance_unattended.is_fully_checked_in)
