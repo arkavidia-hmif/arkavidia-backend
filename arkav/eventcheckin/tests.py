@@ -117,3 +117,11 @@ class EventCheckInTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_checkin_missing_password(self):
+        '''
+        Checking-in with an inexistent token returns an error
+        '''
+        url = reverse('attendee-checkin', kwargs={'token': 'e19a1e6d-3375-4fff-9006-a02243fe8cda'})
+        res = self.client.post(url, data={}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
