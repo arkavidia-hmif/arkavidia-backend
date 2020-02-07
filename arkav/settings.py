@@ -230,6 +230,7 @@ CORS_ORIGIN_WHITELIST = [
     'https://arkavidia.id',
     'https://www.arkavidia.id',
     'https://preview.arkavidia.id',
+    'https://panda.arkavidia.id',
 ]
 CORS_ALLOW_HEADERS = list(default_headers) + [
     'set-cookie',
