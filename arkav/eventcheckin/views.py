@@ -18,16 +18,25 @@ class CheckInAttendeeView(generics.GenericAPIView):
                          responses={200: CheckInResponseSerializer()})
     def get(self, request, *args, **kwargs):
         try:
-            try:
-                attendance = CheckInAttendance.objects.get(token=self.kwargs['token'])
-                response_serializer = CheckInResponseSerializer(attendance)
-                return Response(data=response_serializer.data, status=status.HTTP_200_OK)
-            except CheckInAttendance.DoesNotExist:
+            # If the password is passed on url param, we check for which event has the password
+            # This enable specific token for specific event, because token for each event may duplicated
+            # Example use case, "wild token" that can be used to enter multiple mainevent
+            password = request.GET.get('password', None)
+            attendance = None
+            if password is None:
+                attendance = CheckInAttendance.objects.filter(token=self.kwargs['token']).first()
+            else:
+                attendance = CheckInAttendance.objects.filter(
+                    token=self.kwargs['token'], event__password=password
+                ).first()
+            if attendance is None:
                 raise ArkavAPIException(
                     detail='Attendance token does not exist',
                     code='wrong_token',
                     status_code=status.HTTP_404_NOT_FOUND,
                 )
+            response_serializer = CheckInResponseSerializer(attendance)
+            return Response(data=response_serializer.data, status=status.HTTP_200_OK)
         except ArkavAPIException as e:
             return e.as_response()
 

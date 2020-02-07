@@ -19,7 +19,7 @@ class CheckInEventSerializer(serializers.ModelSerializer):
 
 
 class CheckInRequestSerializer(serializers.Serializer):
-    password = serializers.CharField(max_length=100, required=False)
+    password = serializers.CharField(max_length=100)
 
 
 class CheckInResponseSerializer(serializers.ModelSerializer):

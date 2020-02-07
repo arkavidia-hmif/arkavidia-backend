@@ -34,6 +34,28 @@ class EventCheckInTestCase(APITestCase):
         self.attendance_unattended.refresh_from_db()
         self.assertEqual(original_pax_checked_in, self.attendance_unattended.pax_checked_in)
 
+    def test_checkin_get_with_password(self):
+        '''
+        Check for the check in data
+        '''
+        token = 'ea73c0bd-c063-44f9-bb15-6759dc29234a'
+        CheckInAttendance.objects.create(token=token, event=self.event1, attendee=self.attendee, pax=1)
+        CheckInAttendance.objects.create(token=token, event=self.event2, attendee=self.attendee, pax=1)
+
+        url = reverse('attendee-checkin', kwargs={'token': token})
+        res = self.client.get(f'{url}?password={self.event1.password}', format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        checkin_data = res.json()
+        self.assertEqual(checkin_data['event'], self.event1.name)
+
+        url = reverse('attendee-checkin', kwargs={'token': token})
+        res = self.client.get(f'{url}?password={self.event2.password}', format='json')
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        checkin_data = res.json()
+        self.assertEqual(checkin_data['event'], self.event2.name)
+
     def test_checkin_get_invalid_token(self):
         '''
         Check for the check in data
@@ -87,7 +109,7 @@ class EventCheckInTestCase(APITestCase):
             'password': 'wrong-password',
         }
         res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
 
         self.attendance_unattended.refresh_from_db()
         self.assertFalse(self.attendance_unattended.is_fully_checked_in)
@@ -117,3 +139,11 @@ class EventCheckInTestCase(APITestCase):
         }
         res = self.client.post(url, data=data, format='json')
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_checkin_missing_password(self):
+        '''
+        Checking-in with an inexistent token returns an error
+        '''
+        url = reverse('attendee-checkin', kwargs={'token': 'e19a1e6d-3375-4fff-9006-a02243fe8cda'})
+        res = self.client.post(url, data={}, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)

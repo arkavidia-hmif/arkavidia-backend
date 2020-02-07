@@ -1,5 +1,5 @@
 from arkav.arkavauth.constants import K_LOGIN_FAILED
-from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
+# from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.models import User
 from arkav.arkavauth.serializers import UserSerializer
 from django.urls import reverse
@@ -38,18 +38,18 @@ class LoginTestCase(APITestCase):
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(res.data['code'], K_LOGIN_FAILED)
 
-    def test_login_not_confirmed(self):
-        '''
-        User won't be able to login if the email is not confirmed yet.
-        '''
-        url = reverse('auth-login')
-        data = {
-            'email': 'nella@gmail.com',
-            'password': 'password',
-        }
-        res = self.client.post(url, data=data, format='json')
-        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(res.data['code'], K_ACCOUNT_EMAIL_NOT_CONFIRMED)
+    # def test_login_not_confirmed(self):
+    #     '''
+    #     User won't be able to login if the email is not confirmed yet.
+    #     '''
+    #     url = reverse('auth-login')
+    #     data = {
+    #         'email': 'nella@gmail.com',
+    #         'password': 'password',
+    #     }
+    #     res = self.client.post(url, data=data, format='json')
+    #     self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+    #     self.assertEqual(res.data['code'], K_ACCOUNT_EMAIL_NOT_CONFIRMED)
 
     def test_login_already_login(self):
         '''
