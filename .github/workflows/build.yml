@@ -55,4 +55,4 @@ jobs:
         HOST: ${{ secrets.HOST }}
         USER: ${{ secrets.USER }}
       with:
-        args: "/root/deployment-scripts/deploy-staging.sh"
+        args: "cd /root/ && docker-compose up -d"
