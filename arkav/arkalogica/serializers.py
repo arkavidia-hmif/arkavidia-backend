@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.template import engines
-from arkav.arkavauth.serializers import UserSerializer
-from arkav.arkalogica.models import Session, Question, Answer, Submission, Choice, ChoiceImage, QuestionImage
+from arkav.arkalogica.models import Session, Question, Answer
+from arkav.arkalogica.models import Submission, Choice, ChoiceImage, QuestionImage
 
 django_engine = engines['django']
 
@@ -48,7 +48,6 @@ class SessionListSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time',)
 
 
-
 class SessionSerializer(serializers.ModelSerializer):
     question = QuestionSerializer(many=True, read_only=True)
 
@@ -76,6 +75,7 @@ class SubmissionRespSerializer(serializers.ModelSerializer):
 
 class SubmissionReqSerializer(serializers.ModelSerializer):
     answer = AnswerSerializer(many=True)
+
     class Meta:
         model = Submission
         fields = ('id', 'start', 'end', 'session', 'answer',)

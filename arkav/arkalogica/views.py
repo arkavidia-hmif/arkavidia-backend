@@ -41,12 +41,12 @@ class StartSessionView(generics.GenericAPIView):
     def get(self, request, *args, **kwargs):
         pass
 
+
 class SubmitView(generics.GenericAPIView):
     serializer_class = SubmissionReqSerializer
     permission_classes = (IsAuthenticated,)
 
     @swagger_auto_schema(operation_summary='Submit Submission',
                          responses={200: SubmissionRespSerializer()})
-    #@method_decorator(ensure_csrf_cookie)
     def post(self, request, *args, **kwargs):
         pass
