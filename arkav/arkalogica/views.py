@@ -1,11 +1,12 @@
-from arkav.utils.exceptions import ArkavAPIException
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
-from rest_framework import views
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from arkav.arkalogica.serializers import SubmissionRespSerializer, SessionSerializer, SessionListSerializer, SubmissionReqSerializer
+from arkav.arkalogica.serializers import SubmissionRespSerializer
+from arkav.arkalogica.serializers import SessionSerializer
+from arkav.arkalogica.serializers import SessionListSerializer
+from arkav.arkalogica.serializers import SubmissionReqSerializer
 from arkav.arkalogica.models import Submission, Session
+
 
 class ListSubmissionsView(generics.ListAPIView):
     serializer_class = SubmissionRespSerializer
