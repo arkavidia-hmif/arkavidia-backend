@@ -32,7 +32,6 @@ class Submission(models.Model):
     user = models.ForeignKey(to=User, related_name='submission', on_delete=models.CASCADE)
     session = models.ForeignKey(to=Session, related_name='submission', on_delete=models.CASCADE)
 
-
     def answer_count(self):
         return Answer.objects.filter(answer__id=self.id).count()
 
@@ -72,7 +71,6 @@ class Answer(models.Model):
             if (choice.tag == self.tag) and (choice.is_correct):
                 return True
         return False
-
 
     def __str__(self):
         return self.tag

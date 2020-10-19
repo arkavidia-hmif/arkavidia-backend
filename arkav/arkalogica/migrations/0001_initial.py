@@ -49,8 +49,12 @@ class Migration(migrations.Migration):
                 ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
                 ('start', models.DateTimeField(auto_now_add=True)),
                 ('end', models.DateTimeField(auto_now=True)),
-                ('session', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submission', to='arkalogica.Session')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='submission', to=settings.AUTH_USER_MODEL)),
+                ('session', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='submission', to='arkalogica.Session')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='submission',
+                    to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'unique_together': {('user', 'session')},
@@ -61,7 +65,10 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.CharField(max_length=255)),
-                ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='question_image', to='arkalogica.Question')),
+                ('question', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='question_image',
+                    to='arkalogica.Question')),
             ],
         ),
         migrations.CreateModel(
@@ -69,13 +76,19 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.CharField(max_length=255)),
-                ('choice', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='choice_image', to='arkalogica.Choice')),
+                ('choice', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='choice_image',
+                    to='arkalogica.Choice')),
             ],
         ),
         migrations.AddField(
             model_name='choice',
             name='question',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='choice', to='arkalogica.Question'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='choice',
+                to='arkalogica.Question'),
         ),
         migrations.CreateModel(
             name='Answer',
@@ -83,7 +96,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('tag', models.CharField(max_length=1)),
                 ('question', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='arkalogica.Question')),
-                ('submission', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answer', to='arkalogica.Submission')),
+                ('submission', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='answer',
+                    to='arkalogica.Submission')),
             ],
             options={
                 'unique_together': {('submission', 'question')},

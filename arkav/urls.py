@@ -34,6 +34,7 @@ urlpatterns = [
     path('api/preevent/', include('arkav.preevent.urls')),
     # path('api/quiz/', include('arkav.quiz.urls')),
     path('api/mainevent/', include('arkav.mainevent.urls')),
+    path('api/arkalogica/', include('arkav.arkalogica.urls')),
 
     # Django RQ
     path('django-rq/', include('django_rq.urls')),
