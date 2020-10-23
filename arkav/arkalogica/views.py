@@ -1,52 +1,38 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from arkav.arkalogica.serializers import SubmissionRespSerializer
+from arkav.arkalogica.serializers import SubmissionSerializer
+from arkav.arkalogica.serializers import AnswerReqSerializer
 from arkav.arkalogica.serializers import SessionSerializer
-from arkav.arkalogica.serializers import SessionListSerializer
-from arkav.arkalogica.serializers import SubmissionReqSerializer
-from arkav.arkalogica.models import Submission, Session
+from arkav.arkalogica.models import Submission
 
 
-class ListSubmissionsView(generics.ListAPIView):
-    serializer_class = SubmissionRespSerializer
+class SubmissionView(generics.ListAPIView):
+    serializer_class = SubmissionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return Submission.objects.filter(user=self.request.user)
 
-    @swagger_auto_schema(operation_summary='Submission List')
+    @swagger_auto_schema(operation_summary='User Submission''s Answer List')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
 
-class ListSessionsView(generics.ListAPIView):
-    serializer_class = SessionListSerializer
+class StartView(generics.GenericAPIView):
+    serializer_class = SessionSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        return Session.objects.all()
-
-    @swagger_auto_schema(operation_summary='Session List')
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
-
-
-class StartSessionView(generics.GenericAPIView):
-    serializer_class = SubmissionRespSerializer
-    permission_classes = (IsAuthenticated,)
-
-    @swagger_auto_schema(operation_summary='Start Session',
-                         responses={200: SessionSerializer()})
+    @swagger_auto_schema(operation_summary='Start')
     def get(self, request, *args, **kwargs):
         pass
 
 
 class SubmitView(generics.GenericAPIView):
-    serializer_class = SubmissionReqSerializer
+    serializer_class = AnswerReqSerializer
     permission_classes = (IsAuthenticated,)
 
-    @swagger_auto_schema(operation_summary='Submit Submission',
-                         responses={200: SubmissionRespSerializer()})
+    @swagger_auto_schema(operation_summary='Submit Answer',
+                         responses={200: SubmissionSerializer()})
     def post(self, request, *args, **kwargs):
         pass

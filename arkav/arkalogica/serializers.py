@@ -16,10 +16,14 @@ class ChoiceImageSerializer(serializers.ModelSerializer):
 
 class ChoiceSerializer(serializers.ModelSerializer):
     images = ChoiceImageSerializer(source='choice_image', many=True, read_only=True)
+    tag = serializers.SerializerMethodField()
+
+    def get_tag(self, obj):
+        return obj.tag()
 
     class Meta:
         model = Choice
-        fields = ('tag', 'content', 'question', 'images',)
+        fields = ('tag', 'content', 'images',)
         read_only_fields = ('content', 'images',)
 
 
@@ -33,19 +37,12 @@ class QuestionImageSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     images = QuestionImageSerializer(source='question_image', many=True, read_only=True)
+    choices = ChoiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
-        fields = ('id', 'title', 'content', 'images',)
-        read_only_fields = ('id', 'title', 'content', 'images',)
-
-
-class SessionListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Session
-        fields = ('id', 'title', 'description', 'start_time', 'end_time',)
-        read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time',)
+        fields = ('id', 'title', 'content', 'images', 'choices')
+        read_only_fields = ('id', 'title', 'content', 'images', 'choices')
 
 
 class SessionSerializer(serializers.ModelSerializer):
@@ -54,29 +51,33 @@ class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = ('id', 'title', 'description', 'start_time', 'end_time', 'question',)
-        read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time',)
+        read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time', 'question',)
 
 
-class AnswerSerializer(serializers.ModelSerializer):
+class AnswerRespSerializer(serializers.ModelSerializer):
+    tag = serializers.SerializerMethodField()
+
+    def get_tag(self, obj):
+        return obj.tag()
+
+    class Meta:
+        model = Answer
+        fields = ('question', 'tag',)
+        read_only_fields = ('question', 'tag',)
+
+
+class AnswerReqSerializer(serializers.ModelSerializer):
+    tag = serializers.CharField(min_length=1, max_length=1)
 
     class Meta:
         model = Answer
         fields = ('question', 'tag',)
 
 
-class SubmissionRespSerializer(serializers.ModelSerializer):
-    answer = AnswerSerializer(many=True, read_only=True)
+class SubmissionSerializer(serializers.ModelSerializer):
+    answer = AnswerRespSerializer(many=True, read_only=True)
 
     class Meta:
         model = Submission
-        fields = ('id', 'start', 'end', 'session', 'answer')
-        read_only_fields = ('id', 'start', 'end', 'session', 'answer')
-
-
-class SubmissionReqSerializer(serializers.ModelSerializer):
-    answer = AnswerSerializer(many=True)
-
-    class Meta:
-        model = Submission
-        fields = ('id', 'start', 'end', 'session', 'answer',)
-        read_only_fields = ('id', 'start', 'end',)
+        fields = ('id', 'start', 'end', 'answer',)
+        read_only_fields = ('id', 'start', 'end', 'answer',)

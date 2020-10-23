@@ -1,9 +1,8 @@
 from django.urls import path
-from arkav.arkalogica.views import ListSubmissionsView, StartSessionView, ListSessionsView, SubmitView
+from arkav.arkalogica.views import SubmissionView, StartView, SubmitView
 
 urlpatterns = [
-    path('', ListSessionsView.as_view(), name='arkalogica-available-session'),
-    path('<uuid:session_id>', StartSessionView.as_view(), name='arkalogica-start-session'),
-    path('submissions/', ListSubmissionsView.as_view(), name='arkalogica-submissions'),
+    path('<int:session_id>', StartView.as_view(), name='arkalogica-start'),
+    path('submissions/', SubmissionView.as_view(), name='arkalogica-submissions'),
     path('submit/', SubmitView.as_view(), name='arkalogica-submissions')
 ]
