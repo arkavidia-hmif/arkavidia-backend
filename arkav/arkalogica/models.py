@@ -50,6 +50,7 @@ class Answer(models.Model):
     submission = models.ForeignKey(to=Submission, related_name='answer', on_delete=models.CASCADE)
     question = models.ForeignKey(to=Question, on_delete=models.CASCADE)
 
+    @property
     def tag(self):
         return self.choice.tag
 
