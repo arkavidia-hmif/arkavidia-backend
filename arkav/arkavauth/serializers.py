@@ -1,5 +1,6 @@
 # from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.constants import K_LOGIN_FAILED
+from arkav.arkavauth.constants import K_ACCOUNT_EMAIL_NOT_CONFIRMED
 from arkav.arkavauth.models import User
 from arkav.utils.exceptions import ArkavAPIException
 from rest_framework import exceptions
@@ -47,14 +48,12 @@ class LoginRequestSerializer(TokenObtainSerializer):
                 status_code=status.HTTP_401_UNAUTHORIZED,
             )
 
-        # Temporarily enable login of user with unconfirmed email
-        # for the sake of easy login on arkavidia day
-        # if (not self.user.is_email_confirmed):
-        #     raise ArkavAPIException(
-        #         detail='User email is not confirmed',
-        #         code=K_ACCOUNT_EMAIL_NOT_CONFIRMED,
-        #         status_code=status.HTTP_401_UNAUTHORIZED,
-        #     )
+        if (not self.user.is_email_confirmed):
+            raise ArkavAPIException(
+                detail='User email is not confirmed',
+                code=K_ACCOUNT_EMAIL_NOT_CONFIRMED,
+                status_code=status.HTTP_401_UNAUTHORIZED,
+            )
 
         data['user'] = UserSerializer(self.user).data
         data['exp'] = refresh.payload['exp']

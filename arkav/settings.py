@@ -203,7 +203,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
 EMAIL_USE_TLS = strtobool(os.getenv('EMAIL_USE_TLS', 'True'))
 
-DEFAULT_FROM_EMAIL = 'Arkavidia 6.0 <noreply@arkavidia.id>'
+DEFAULT_FROM_EMAIL = 'Arkavidia 7.0 <noreply@arkavidia.id>'
 COMPETITION_REGISTRATION_OPEN = strtobool(os.getenv('COMPETITION_REGISTRATION_OPEN', 'False'))
 CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_OPEN', 'False'))
 

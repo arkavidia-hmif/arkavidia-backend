@@ -36,7 +36,7 @@ class RegistrantService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Reminder Main Event Arkavidia 6.0',
+            subject='Reminder Main Event Arkavidia 7.0',
             body=mail_text_message,
             to=[registrant.user.email],
         )

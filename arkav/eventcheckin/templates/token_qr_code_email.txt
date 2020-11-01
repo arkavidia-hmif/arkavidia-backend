@@ -14,5 +14,5 @@ https://chart.apis.google.com/chart?cht=qr&chs=300x300&chl={{ token }}
 
 
 --
-Arkavidia 6.0
+Arkavidia 7.0
 {% endlanguage %}

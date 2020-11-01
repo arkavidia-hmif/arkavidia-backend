@@ -45,7 +45,7 @@ class TeamService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Reminder Lomba Arkavidia 6.0',
+            subject='Reminder Lomba Arkavidia 7.0',
             body=mail_text_message,
             to=addresses,
         )
@@ -146,7 +146,7 @@ class TeamMemberService:
         mail_html_message = html_template.render(context)
 
         mail = EmailMultiAlternatives(
-            subject='Pendaftaran Tim Arkavidia 6.0',
+            subject='Pendaftaran Tim Arkavidia 7.0',
             body=mail_text_message,
             to=[team_member.invitation_email]
         )
