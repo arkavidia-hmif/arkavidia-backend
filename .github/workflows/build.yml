@@ -40,7 +40,7 @@ jobs:
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@master
       with:
-        name: arkavidia-hmif/arkavidia-backend/builds
+        name: arkavidia-hmif/arkavidia-backend/staging
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         registry: docker.pkg.github.com
@@ -55,4 +55,4 @@ jobs:
         HOST: ${{ secrets.HOST }}
         USER: ${{ secrets.USER }}
       with:
-        args: "cd /root/ && docker pull docker.pkg.github.com/arkavidia-hmif/arkavidia-backend/builds && docker-compose up -d"
+        args: "cd /root/ && docker-compose pull && docker-compose up -d"
