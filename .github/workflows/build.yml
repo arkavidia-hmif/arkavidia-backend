@@ -37,7 +37,7 @@ jobs:
           pipenv run python manage.py test -v 3
 
   build-staging:
-    if: ${{ github.event_name == 'push' && github.base_ref == 'develop' }}
+    if: ${{ github.event_name == 'push' && github.ref == '/refs/heads/develop' }}
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -54,7 +54,7 @@ jobs:
           tags: "latest,staging"
 
   build-production:
-    if: ${{ github.event_name == 'push' && github.base_ref == 'master' }}
+    if: ${{ github.event_name == 'push' && github.ref == '/refs/heads/master' }}
     runs-on: ubuntu-latest
     needs: test
     steps:
