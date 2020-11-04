@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
             model_name='competition',
             name='education_level',
             field=models.CharField(choices=[('SMA', 'SMA'), ('Kuliah', 'Kuliah')],
-                default=None, max_length=30, null=True),
+                                   default=None, max_length=30, null=True),
         ),
     ]
