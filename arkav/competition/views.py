@@ -1,6 +1,9 @@
+from arkav.competition.constants import K_TEAM_NAME_TAKEN
+from arkav.competition.constants import K_TEAM_NAME_TAKEN_DETAIL
 from arkav.competition.models import Competition
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
+from arkav.competition.openapi import register_team_responses
 from arkav.competition.serializers import AddTeamMemberRequestSerializer
 from arkav.competition.serializers import CompetitionSerializer
 from arkav.competition.serializers import RegisterTeamRequestSerializer
@@ -37,7 +40,7 @@ class RegisterTeamView(views.APIView):
 
     @swagger_auto_schema(operation_summary='Team Registration',
                          request_body=RegisterTeamRequestSerializer,
-                         responses={200: TeamSerializer()})
+                         responses=register_team_responses)
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = RegisterTeamRequestSerializer(data=request.data)
         try:
@@ -50,8 +53,8 @@ class RegisterTeamView(views.APIView):
         except ValidationError as e:
             if 'name' in e.detail and e.detail['name'][0].code == 'unique':
                 return Response({
-                    'code': 'team_name_is_used',
-                    'detail': 'Team name is already taken',
+                    'code': K_TEAM_NAME_TAKEN,
+                    'detail': K_TEAM_NAME_TAKEN_DETAIL,
                 }, status=status.HTTP_400_BAD_REQUEST)
             raise e
 
