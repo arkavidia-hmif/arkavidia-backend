@@ -31,6 +31,9 @@ class ListCompetitionsView(generics.ListAPIView):
     serializer_class = CompetitionSerializer
     permission_classes = (IsAuthenticated,)
 
+    def get_queryset(self):
+        return Competition.objects.filter(education_level=self.request.user.current_education)
+
     @swagger_auto_schema(operation_summary='Competition List')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)

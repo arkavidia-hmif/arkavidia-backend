@@ -1,3 +1,4 @@
+from arkav.arkavauth.constants import CURRENT_EDUCATION_CHOICES
 from arkav.arkavauth.models import User
 from arkav.uploader.models import UploadedFile
 from django.db import models
@@ -28,6 +29,7 @@ def handle_user_post_save(sender, instance, created, **kwargs):
 class Competition(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
+    education_level = models.CharField(max_length=30, null=True, default=None, choices=CURRENT_EDUCATION_CHOICES)
     max_team_members = models.IntegerField(default=1)
     min_team_members = models.IntegerField(default=1)
     is_registration_open = models.BooleanField(default=True)

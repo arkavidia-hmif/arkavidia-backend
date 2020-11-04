@@ -1,5 +1,6 @@
 from arkav.arkavauth.managers import UserManager
 from arkav.arkavauth.utils import generate_random_token
+from arkav.arkavauth.constants import CURRENT_EDUCATION_CHOICES
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -23,7 +24,7 @@ class User(AbstractUser):
     confirmation_token = models.CharField(max_length=30, default=generate_random_token, unique=True)
     confirmation_email_last_sent_time = models.DateTimeField(null=True, blank=True)
 
-    current_education = models.CharField(max_length=30, null=True, default=None)
+    current_education = models.CharField(max_length=30, null=True, default=None, choices=CURRENT_EDUCATION_CHOICES)
     institution = models.CharField(max_length=100, null=True, blank=True, default=None)
     phone_number = models.CharField(max_length=20, null=True, default=None)
     birth_date = models.DateField(null=True, default=None)
