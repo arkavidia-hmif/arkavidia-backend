@@ -1,3 +1,4 @@
+
 from arkav.eventcheckin.models import CheckInAttendance
 from arkav.eventcheckin.models import CheckInAttendee
 from arkav.announcement.services import AnnouncementService
@@ -16,6 +17,15 @@ from django.template.loader import get_template
 from django.utils import timezone
 from rest_framework import status
 import django_rq
+
+from arkav.competition.constants import K_COMPETITION_REGISTRATION_CLOSED
+from arkav.competition.constants import K_COMPETITION_REGISTRATION_CLOSED_DETAIL
+from arkav.competition.constants import K_TEAM_NOT_PARTICIPATING
+from arkav.competition.constants import K_TEAM_NOT_PARTICIPATING_DETAIL
+from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER
+from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER_DETAIL
+from arkav.competition.constants import K_TEAM_FULL
+from arkav.competition.constants import K_TEAM_FULL_DETAIL
 
 
 class TeamService:
@@ -78,8 +88,8 @@ class TeamService:
         # Only register if registration is open for this competition
         if not competition.is_registration_open:
             raise ArkavAPIException(
-                detail='The competition you are trying to register to is not open for registration.',
-                code='competition_registration_closed',
+                detail=K_COMPETITION_REGISTRATION_CLOSED_DETAIL,
+                code=K_COMPETITION_REGISTRATION_CLOSED,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -168,24 +178,24 @@ class TeamMemberService:
         # Check whether registration is open for this competition
         if not team.competition.is_registration_open:
             raise ArkavAPIException(
-                detail='The competition you are trying to register to is not open for registration.',
-                code='competition_registration_closed',
+                detail=K_COMPETITION_REGISTRATION_CLOSED_DETAIL,
+                code=K_COMPETITION_REGISTRATION_CLOSED,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check whether team is still participating in the competition
         if not team.is_participating:
             raise ArkavAPIException(
-                detail='Your team is no longer participating in this competition.',
-                code='team_not_participating',
+                detail=K_TEAM_NOT_PARTICIPATING_DETAIL,
+                code=K_TEAM_NOT_PARTICIPATING,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
         # Check whether this team is full
         if team.team_members.count() >= team.competition.max_team_members:
             raise ArkavAPIException(
-                detail='You have exceeded the maximum team members limit.',
-                code='team_full',
+                detail=K_TEAM_FULL_DETAIL,
+                code=K_TEAM_FULL,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -194,8 +204,8 @@ class TeamMemberService:
             team_has_selected_member = team.team_members.filter(user=member_user).count()
             if team_has_selected_member:
                 raise ArkavAPIException(
-                    detail='Selected team member is already on your team.',
-                    code='team_has_selected_member',
+                    detail=K_TEAM_HAS_SELECTED_MEMBER_DETAIL,
+                    code=K_TEAM_HAS_SELECTED_MEMBER,
                     status_code=status.HTTP_400_BAD_REQUEST,
                 )
             # The user specified by the email is present, directly add to team
@@ -235,8 +245,8 @@ class TaskResponseService:
 
         if not team.is_participating:
             raise ArkavAPIException(
-                detail='Your team is no longer participating in this competition.',
-                code='team_not_participating',
+                detail=K_TEAM_NOT_PARTICIPATING_DETAIL,
+                code=K_TEAM_NOT_PARTICIPATING,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 

@@ -3,6 +3,7 @@ from arkav.competition.constants import K_TEAM_NAME_TAKEN_DETAIL
 from arkav.competition.models import Competition
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
+from arkav.competition.openapi import add_team_member_responses
 from arkav.competition.openapi import register_team_responses
 from arkav.competition.serializers import AddTeamMemberRequestSerializer
 from arkav.competition.serializers import CompetitionSerializer
@@ -64,7 +65,7 @@ class AddTeamMemberView(views.APIView):
 
     @swagger_auto_schema(operation_summary='Add Team Member',
                          request_body=AddTeamMemberRequestSerializer,
-                         responses={200: TeamMemberSerializer()})
+                         responses=add_team_member_responses)
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = AddTeamMemberRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
