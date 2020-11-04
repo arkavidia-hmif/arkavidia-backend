@@ -191,6 +191,13 @@ class TeamMemberService:
 
         try:
             member_user = User.objects.get(email=email)
+            team_has_selected_member = team.team_members.filter(user=member_user).count()
+            if team_has_selected_member:
+                raise ArkavAPIException(
+                    detail='Selected team member is already on your team.',
+                    code='team_has_selected_member',
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                )
             # The user specified by the email is present, directly add to team
             new_team_member = TeamMember.objects.create(
                 team=team,
