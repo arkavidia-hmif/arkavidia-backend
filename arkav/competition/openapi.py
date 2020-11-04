@@ -14,6 +14,8 @@ from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER
 from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER_DETAIL
 from arkav.competition.constants import K_TEAM_FULL
 from arkav.competition.constants import K_TEAM_FULL_DETAIL
+from arkav.competition.constants import K_COMPETITION_ALREADY_REGISTERED
+from arkav.competition.constants import K_COMPETITION_ALREADY_REGISTERED_DETAIL
 
 
 register_team_responses = {
@@ -61,6 +63,12 @@ add_team_member_responses = {
                     'value': {
                         'code': K_TEAM_HAS_SELECTED_MEMBER,
                         'detail': K_TEAM_HAS_SELECTED_MEMBER_DETAIL,
+                    }
+                },
+                'Selected member has registered to competition': {
+                    'value': {
+                        'code': K_COMPETITION_ALREADY_REGISTERED,
+                        'detail': K_COMPETITION_ALREADY_REGISTERED_DETAIL,
                     }
                 },
             }

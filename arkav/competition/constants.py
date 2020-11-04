@@ -14,3 +14,6 @@ K_TEAM_HAS_SELECTED_MEMBER_DETAIL = 'Selected team member is already on your tea
 
 K_TEAM_FULL = 'team_full'
 K_TEAM_FULL_DETAIL = 'You have exceeded the maximum team members limit.'
+
+K_COMPETITION_ALREADY_REGISTERED = 'competition_already_registered'
+K_COMPETITION_ALREADY_REGISTERED_DETAIL = 'One user can only participate in one team per competition.'

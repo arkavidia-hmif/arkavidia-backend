@@ -26,6 +26,8 @@ from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER
 from arkav.competition.constants import K_TEAM_HAS_SELECTED_MEMBER_DETAIL
 from arkav.competition.constants import K_TEAM_FULL
 from arkav.competition.constants import K_TEAM_FULL_DETAIL
+from arkav.competition.constants import K_COMPETITION_ALREADY_REGISTERED
+from arkav.competition.constants import K_COMPETITION_ALREADY_REGISTERED_DETAIL
 
 
 class TeamService:
@@ -96,8 +98,8 @@ class TeamService:
         # A user can't register in a competition if he/she already participated in the same competition
         if TeamMember.objects.filter(team__competition=competition, user=user).exists():
             raise ArkavAPIException(
-                detail='One user can only participate in one team per competition.',
-                code='competition_already_registered',
+                detail=K_COMPETITION_ALREADY_REGISTERED_DETAIL,
+                code=K_COMPETITION_ALREADY_REGISTERED,
                 status_code=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -201,11 +203,16 @@ class TeamMemberService:
 
         try:
             member_user = User.objects.get(email=email)
-            team_has_selected_member = team.team_members.filter(user=member_user).count()
-            if team_has_selected_member:
+            if team.team_members.filter(user=member_user).exists():
                 raise ArkavAPIException(
                     detail=K_TEAM_HAS_SELECTED_MEMBER_DETAIL,
                     code=K_TEAM_HAS_SELECTED_MEMBER,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                )
+            if member_user.teams.filter(competition=team.competition).exists():
+                raise ArkavAPIException(
+                    detail=K_COMPETITION_ALREADY_REGISTERED_DETAIL,
+                    code=K_COMPETITION_ALREADY_REGISTERED,
                     status_code=status.HTTP_400_BAD_REQUEST,
                 )
             # The user specified by the email is present, directly add to team
