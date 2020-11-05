@@ -32,7 +32,9 @@ class ListCompetitionsView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
-        return Competition.objects.filter(education_level=self.request.user.current_education)
+        if self.request.user.current_education is None:
+            return Competition.objects.none()
+        return Competition.objects.filter(education_level__contains=self.request.user.current_education)
 
     @swagger_auto_schema(operation_summary='Competition List')
     def get(self, request, *args, **kwargs):

@@ -1,3 +1,6 @@
+from arkav.arkavauth.constants import SMA
+from arkav.arkavauth.constants import KULIAH
+
 # team registration
 K_TEAM_NAME_TAKEN = 'team_name_is_used'
 K_TEAM_NAME_TAKEN_DETAIL = 'Team name is already taken'
@@ -17,3 +20,10 @@ K_TEAM_FULL_DETAIL = 'You have exceeded the maximum team members limit.'
 
 K_COMPETITION_ALREADY_REGISTERED = 'competition_already_registered'
 K_COMPETITION_ALREADY_REGISTERED_DETAIL = 'One user can only participate in one team per competition.'
+
+SMA_KULIAH = '{}/{}'.format(SMA, KULIAH)
+EDUCATION_LEVEL_CHOICES = (
+    (SMA, SMA),
+    (KULIAH, KULIAH),
+    (SMA_KULIAH, SMA_KULIAH)
+)
