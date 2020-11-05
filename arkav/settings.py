@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY', '(uc8i&7l81878%b6-x5%$n=0fvfb=rxfkw_+l!od^u#q#=+5_3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', False)
+DEBUG = os.getenv('DEBUG', 'False')
 
 ALLOWED_HOSTS = [
     'dashboard.arkavidia.id',
@@ -149,7 +149,7 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 AWS_DEFAULT_ACL = 'public-read-write'
-AWS_LOCATION = os.getenv('AWS_LOCATION', 'uploaded-files')
+AWS_LOCATION = 'uploaded-files'
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Rest Framework Settings
