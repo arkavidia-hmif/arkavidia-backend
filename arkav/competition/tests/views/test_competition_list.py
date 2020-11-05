@@ -12,8 +12,10 @@ class CompetitionListTestCase(APITestCase):
         self.user2 = User.objects.create_user(email='user2', current_education='Mahasiswa')
 
         self.competition_cp = Competition.objects.create(name='Competitive Programming', education_level='SMA')
-        self.competition_cp_mhs = Competition.objects.create(name='Competitive Programming', education_level='Mahasiswa')
-        self.competition_ctf = Competition.objects.create(name='Capture the Flag', education_level='SMA', max_team_members=3)
+        self.competition_cp_mhs = Competition.objects.create(name='Competitive Programming',
+                                                             education_level='Mahasiswa')
+        self.competition_ctf = Competition.objects.create(name='Capture the Flag', education_level='SMA',
+                                                          max_team_members=3)
         self.competition_without_stages = Competition.objects.create(name='Empty', education_level='SMA')
 
     def test_list_competitions(self):

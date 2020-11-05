@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='competition',
             name='education_level',
-            field=models.CharField(choices=[('SMA', 'SMA'), ('Kuliah', 'Kuliah'), ('SMA/Kuliah', 'SMA/Kuliah')], default=None, max_length=30, null=True),
+            field=models.CharField(choices=[('SMA', 'SMA'), ('Kuliah', 'Kuliah'), ('SMA/Kuliah', 'SMA/Kuliah')],
+                                   default=None, max_length=30, null=True),
         ),
     ]
