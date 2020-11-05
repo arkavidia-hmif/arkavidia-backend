@@ -1,8 +1,8 @@
 Halo, {{ full_name }}!
-Teman Anda telah mendaftarkan Anda untuk ikut berpartisipasi dalam Arkavidia 6.0 bersama tim {{ team.name }}.
-Arkavidia 6.0 Informatics &amp; IT Festival adalah serangkaian acara IT berskala nasional yang diselenggarakan oleh Himpunan Mahasiswa Teknik Informatika Institut Teknologi Bandung, berkolaborasi dengan Teknik Informatika ITB.
+Teman Anda telah mendaftarkan Anda untuk ikut berpartisipasi dalam Arkavidia 7.0 bersama tim {{ team.name }}.
+Arkavidia 7.0 Informatics &amp; IT Festival adalah serangkaian acara IT berskala nasional yang diselenggarakan oleh Himpunan Mahasiswa Teknik Informatika Institut Teknologi Bandung, berkolaborasi dengan Teknik Informatika ITB.
 
 Untuk melihat tim Anda, akses link ini: https://arkavidia.id/dashboard/
 
 --
-Arkavidia 6.0
+Arkavidia 7.0

@@ -149,7 +149,7 @@ AWS_S3_OBJECT_PARAMETERS = {
     'CacheControl': 'max-age=86400',
 }
 AWS_DEFAULT_ACL = 'public-read-write'
-AWS_LOCATION = 'uploaded-files'
+AWS_LOCATION = os.getenv('AWS_LOCATION', 'uploaded-files')
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Rest Framework Settings
@@ -203,7 +203,7 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)
 EMAIL_PORT = os.getenv('EMAIL_PORT', '587')
 EMAIL_USE_TLS = strtobool(os.getenv('EMAIL_USE_TLS', 'True'))
 
-DEFAULT_FROM_EMAIL = 'Arkavidia 6.0 <noreply@arkavidia.id>'
+DEFAULT_FROM_EMAIL = 'Arkavidia 7.0 <noreply@arkavidia.id>'
 COMPETITION_REGISTRATION_OPEN = strtobool(os.getenv('COMPETITION_REGISTRATION_OPEN', 'False'))
 CODING_CLASS_REGISTRATION_OPEN = strtobool(os.getenv('CODING_CLASS_REGISTRATION_OPEN', 'False'))
 

@@ -16,3 +16,11 @@ K_REGISTRATION_CONFIRMATION_SUCCESSFUL = 'registration_confirmation_successful'
 # user
 K_PASSWORD_CHANGE_FAILED = 'password_change_failed'
 K_PASSWORD_CHANGE_SUCCESSFUL = 'password_change_successful'
+
+# current education
+SMA = 'SMA'
+KULIAH = 'Kuliah'
+CURRENT_EDUCATION_CHOICES = (
+    (SMA, SMA),
+    (KULIAH, KULIAH),
+)

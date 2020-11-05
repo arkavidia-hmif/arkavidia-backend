@@ -1,6 +1,10 @@
+from arkav.competition.constants import K_TEAM_NAME_TAKEN
+from arkav.competition.constants import K_TEAM_NAME_TAKEN_DETAIL
 from arkav.competition.models import Competition
 from arkav.competition.models import Team
 from arkav.competition.models import TeamMember
+from arkav.competition.openapi import add_team_member_responses
+from arkav.competition.openapi import register_team_responses
 from arkav.competition.serializers import AddTeamMemberRequestSerializer
 from arkav.competition.serializers import CompetitionSerializer
 from arkav.competition.serializers import RegisterTeamRequestSerializer
@@ -27,6 +31,11 @@ class ListCompetitionsView(generics.ListAPIView):
     serializer_class = CompetitionSerializer
     permission_classes = (IsAuthenticated,)
 
+    def get_queryset(self):
+        if self.request.user.current_education is None:
+            return Competition.objects.none()
+        return Competition.objects.filter(education_level__contains=self.request.user.current_education)
+
     @swagger_auto_schema(operation_summary='Competition List')
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
@@ -37,7 +46,7 @@ class RegisterTeamView(views.APIView):
 
     @swagger_auto_schema(operation_summary='Team Registration',
                          request_body=RegisterTeamRequestSerializer,
-                         responses={200: TeamSerializer()})
+                         responses=register_team_responses)
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = RegisterTeamRequestSerializer(data=request.data)
         try:
@@ -50,8 +59,8 @@ class RegisterTeamView(views.APIView):
         except ValidationError as e:
             if 'name' in e.detail and e.detail['name'][0].code == 'unique':
                 return Response({
-                    'code': 'team_name_is_used',
-                    'detail': 'Team name is already taken',
+                    'code': K_TEAM_NAME_TAKEN,
+                    'detail': K_TEAM_NAME_TAKEN_DETAIL,
                 }, status=status.HTTP_400_BAD_REQUEST)
             raise e
 
@@ -61,7 +70,7 @@ class AddTeamMemberView(views.APIView):
 
     @swagger_auto_schema(operation_summary='Add Team Member',
                          request_body=AddTeamMemberRequestSerializer,
-                         responses={200: TeamMemberSerializer()})
+                         responses=add_team_member_responses)
     def post(self, request, format=None, *args, **kwargs):
         request_serializer = AddTeamMemberRequestSerializer(data=request.data)
         request_serializer.is_valid(raise_exception=True)
