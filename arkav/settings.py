@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('SECRET_KEY', '(uc8i&7l81878%b6-x5%$n=0fvfb=rxfkw_+l!od^u#q#=+5_3')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') == 'False'
+DEBUG = os.getenv('DEBUG', 'False') != 'False'
 
 ALLOWED_HOSTS = [
     'dashboard.arkavidia.id',
