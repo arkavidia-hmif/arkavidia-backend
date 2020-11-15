@@ -30,6 +30,9 @@ class QuestionImage(models.Model):
     question = models.ForeignKey(to=Question, related_name='question_images', on_delete=models.CASCADE)
     url = models.CharField(max_length=255)
 
+    def __str__(self):
+        return '%s' % self.url
+
 
 class Choice(models.Model):
     content = models.TextField()
@@ -43,6 +46,9 @@ class Choice(models.Model):
 class ChoiceImage(models.Model):
     choice = models.ForeignKey(to=Choice, related_name='choice_images', on_delete=models.CASCADE)
     url = models.CharField(max_length=255)
+
+    def __str__(self):
+        return '%s' % self.url
 
 
 class Answer(models.Model):

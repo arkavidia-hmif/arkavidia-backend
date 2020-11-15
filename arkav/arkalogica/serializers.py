@@ -1,21 +1,13 @@
 from rest_framework import serializers
 from django.template import engines
 from arkav.arkalogica.models import Session, Question, Answer
-from arkav.arkalogica.models import Submission, Choice, ChoiceImage, QuestionImage
+from arkav.arkalogica.models import Submission, Choice
 
 django_engine = engines['django']
 
 
-class ChoiceImageSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ChoiceImage
-        fields = ('url',)
-        read_only_fields = ('url',)
-
-
 class ChoiceSerializer(serializers.ModelSerializer):
-    images = ChoiceImageSerializer(source='choice_image', many=True, read_only=True)
+    choice_images = serializers.StringRelatedField(many=True)
     tag = serializers.SerializerMethodField()
 
     def get_tag(self, obj):
@@ -23,26 +15,18 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Choice
-        fields = ('tag', 'content', 'images',)
-        read_only_fields = ('content', 'images',)
-
-
-class QuestionImageSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = QuestionImage
-        fields = ('url',)
-        read_only_fields = ('url',)
+        fields = ('tag', 'content', 'choice_images',)
+        read_only_fields = ('content', 'choice_images',)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    images = QuestionImageSerializer(source='question_image', many=True, read_only=True)
     choices = ChoiceSerializer(many=True, read_only=True)
+    question_images = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Question
-        fields = ('id', 'title', 'content', 'images', 'choices')
-        read_only_fields = ('id', 'title', 'content', 'images', 'choices')
+        fields = ('id', 'title', 'content', 'question_images', 'choices')
+        read_only_fields = ('id', 'title', 'content', 'question_images', 'choices')
 
 
 class SessionSerializer(serializers.ModelSerializer):
