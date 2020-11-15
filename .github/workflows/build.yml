@@ -34,7 +34,7 @@ jobs:
           pipenv run pycodestyle . --count --max-line-length=120 --statistics
       - name: Test django
         run: |
-          pipenv run python manage.py test -v 3
+          DEBUG=TRUE pipenv run python manage.py test -v 3
 
   build-staging:
     runs-on: ubuntu-latest

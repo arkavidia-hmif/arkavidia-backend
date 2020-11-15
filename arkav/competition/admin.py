@@ -75,7 +75,7 @@ class TaskAdmin(admin.ModelAdmin):
 class AbstractTaskResponseAdmin(admin.ModelAdmin):
     list_display = ['team_link', 'task', 'status', 'open_response', 'accept_reject']
     list_display_links = ['task']
-    list_filter = ['status', 'task__category']
+    list_filter = ['status', 'task__category', 'team__competition']
     search_fields = ['team__name', 'team__id', 'task__name']
     autocomplete_fields = ['team', 'task']
 
@@ -184,13 +184,16 @@ class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     actions = [move_to_next_stage, 'send_custom_email', 'migrate_checkinevent', send_reminder]
-    list_display = ['id', 'name', 'competition', 'institution', 'team_leader',
+    list_display = ['id', 'name', 'competition', 'institution', 'team_leader', 'member_count',
                     'active_stage', 'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'name']
     list_filter = ['is_participating', 'institution', 'competition', 'active_stage']
     search_fields = ['name']
     autocomplete_fields = ['team_leader']
     inlines = [TeamMemberInline, TaskResponseInline, UserTaskResponseInline]
+
+    def member_count(self, instance):
+        return instance.team_members.count()
 
     def has_completed_active_stage(self, instance):
         return instance.has_completed_active_stage
