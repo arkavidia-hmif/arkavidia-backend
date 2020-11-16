@@ -2,12 +2,13 @@ name: Build and Deploy
 on:
   push:
     branches:
-      - develop
       - master
   pull_request:
     branches:
-      - develop
       - master
+  create:
+    tags:
+      - '**'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -41,10 +42,8 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@master
-        with:
-          ref: develop
       - name: Publish Staging to Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: arkavidia-hmif/arkavidia-backend/builds
@@ -58,15 +57,19 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@master
+      - name: Get tag name
+        id: get_tag_name
+        if: github.event_name == 'create'
+        run: echo ::set-output name=TAG_NAME::"${GITHUB_REF/refs\/tags\//}"
       - name: Publish Production to Registry
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        if: github.event_name == 'create'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: arkavidia-hmif/arkavidia-backend/builds
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           registry: docker.pkg.github.com
-          tags: "production"
+          tags: "production,${{ steps.get_tag_name.outputs.TAG_NAME }}"
 
   deploy:
     runs-on: ubuntu-latest
