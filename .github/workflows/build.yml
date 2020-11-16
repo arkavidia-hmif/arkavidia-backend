@@ -8,7 +8,7 @@ on:
       - master
   create:
     tags:
-      - '*'
+      - '**'
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -59,10 +59,10 @@ jobs:
       - uses: actions/checkout@master
       - name: Get tag name
         id: get_tag_name
-        if: github.event_name == 'create' && startsWith(github.ref, 'ref/tags/')
+        if: github.event_name == 'create'
         run: echo ::set-output name=TAG_NAME::"${GITHUB_REF/refs\/tags\//}"
       - name: Publish Production to Registry
-        if: github.event_name == 'create' && startsWith(github.ref, 'ref/tags/')
+        if: github.event_name == 'create'
         uses: elgohr/Publish-Docker-Github-Action@master
         with:
           name: arkavidia-hmif/arkavidia-backend/builds
