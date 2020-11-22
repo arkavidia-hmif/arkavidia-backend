@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from arkav.arkavauth.models import User
 import uuid
 
@@ -15,12 +16,11 @@ class Question(models.Model):
 class Session(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
-    start_time = models.DateTimeField(auto_now_add=True)
-    end_time = models.DateTimeField(auto_now=True)
+    start_time = models.DateTimeField(default=timezone.now)
+    end_time = models.DateTimeField(default=timezone.now)
 
 
 class Submission(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     start = models.DateTimeField(auto_now_add=True, editable=False)
     end = models.DateTimeField(auto_now=True)
     user = models.OneToOneField(to=User, related_name='submission', on_delete=models.CASCADE, unique=True)
@@ -28,24 +28,25 @@ class Submission(models.Model):
 
 class QuestionImage(models.Model):
     question = models.ForeignKey(to=Question, related_name='question_images', on_delete=models.CASCADE)
-    url = models.CharField(max_length=255)
+    url = models.URLField()
 
     def __str__(self):
         return '%s' % self.url
 
 
 class Choice(models.Model):
+    tag = models.CharField(max_length=1)
     content = models.TextField()
     is_correct = models.BooleanField(default=False)
     question = models.ForeignKey(to=Question, related_name='choices', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.tag + " " + self.content
+        return self.question.title + ": " + self.tag + ". " + self.content
 
 
 class ChoiceImage(models.Model):
     choice = models.ForeignKey(to=Choice, related_name='choice_images', on_delete=models.CASCADE)
-    url = models.CharField(max_length=255)
+    url = models.URLField()
 
     def __str__(self):
         return '%s' % self.url

@@ -8,10 +8,6 @@ django_engine = engines['django']
 
 class ChoiceSerializer(serializers.ModelSerializer):
     choice_images = serializers.StringRelatedField(many=True)
-    tag = serializers.SerializerMethodField()
-
-    def get_tag(self, obj):
-        return obj.tag()
 
     class Meta:
         model = Choice
@@ -20,8 +16,12 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 
 class QuestionSerializer(serializers.ModelSerializer):
-    choices = ChoiceSerializer(many=True, read_only=True)
     question_images = serializers.StringRelatedField(many=True)
+    choices = serializers.SerializerMethodField()
+
+    def get_choices(self, obj):
+        data = ChoiceSerializer(obj.choices.all(), many=True).data
+        return data
 
     class Meta:
         model = Question
@@ -30,38 +30,46 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
-    question = QuestionSerializer(many=True, read_only=True)
+    questions = serializers.SerializerMethodField()
+
+    def get_questions(self, obj):
+        data = QuestionSerializer(Question.objects.all(), many=True).data
+        return data
 
     class Meta:
         model = Session
-        fields = ('id', 'title', 'description', 'start_time', 'end_time', 'question',)
-        read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time', 'question',)
+        fields = ('id', 'title', 'description', 'start_time', 'end_time', 'questions',)
+        read_only_fields = ('id', 'title', 'description', 'start_time', 'end_time', 'questions',)
 
 
 class AnswerRespSerializer(serializers.ModelSerializer):
     tag = serializers.SerializerMethodField()
 
     def get_tag(self, obj):
-        return obj.tag()
+        return obj.choice.tag
 
     class Meta:
         model = Answer
-        fields = ('question', 'tag',)
-        read_only_fields = ('question', 'tag',)
+        fields = ('question', 'tag')
+        read_only_fields = ('question', 'tag')
 
 
-class AnswerReqSerializer(serializers.ModelSerializer):
+class AnswerReqSerializer(serializers.Serializer):
     tag = serializers.CharField(min_length=1, max_length=1)
+    question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
 
     class Meta:
-        model = Answer
         fields = ('question', 'tag',)
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
-    answer = AnswerRespSerializer(many=True, read_only=True)
+    answers = serializers.SerializerMethodField()
+
+    def get_answers(self, obj):
+        data = AnswerRespSerializer(obj.answer.all(), many=True).data
+        return data
 
     class Meta:
         model = Submission
-        fields = ('id', 'start', 'end', 'answer',)
-        read_only_fields = ('id', 'start', 'end', 'answer',)
+        fields = ('id', 'start', 'end', 'answers',)
+        read_only_fields = ('id', 'start', 'end', 'answers',)

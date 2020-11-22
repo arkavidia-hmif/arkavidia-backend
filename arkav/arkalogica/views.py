@@ -2,24 +2,27 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from arkav.arkalogica.serializers import QuestionSerializer, SubmissionSerializer
+from arkav.arkalogica.serializers import SubmissionSerializer
 from arkav.arkalogica.serializers import AnswerReqSerializer
 from arkav.arkalogica.serializers import SessionSerializer
-from arkav.arkalogica.models import Submission
 from arkav.utils.exceptions import ArkavAPIException
 from arkav.arkalogica.services import ArkalogicaService
 
 
-class SubmissionView(generics.ListAPIView):
+class SubmissionView(generics.GenericAPIView):
     serializer_class = SubmissionSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_queryset(self):
-        return Submission.objects.filter(user=self.request.user)
-
-    @swagger_auto_schema(operation_summary='User Submission''s Answer List')
+    @swagger_auto_schema(operation_summary='User''s Submission')
     def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+        try:
+            sub = ArkalogicaService().get_submission(
+                request.user
+            )
+            response_serializer = SubmissionSerializer(sub)
+            return Response(data=response_serializer.data)
+        except ArkavAPIException as e:
+            return e.as_response()
 
 
 class StartView(generics.GenericAPIView):
@@ -29,17 +32,11 @@ class StartView(generics.GenericAPIView):
     @swagger_auto_schema(operation_summary='Start & Get Questions')
     def get(self, request, *args, **kwargs):
         try:
-            questions = ArkalogicaService().get_questions(
+            session = ArkalogicaService().get_session(
                 self.kwargs['session_id'],
                 request.user
             )
-            question_serializers = []
-            for q in questions:
-                choices = ArkalogicaService().get_choices(q.id)
-                q_serializer = QuestionSerializer(choices, many=True)
-                question_serializers.append(q_serializer)
-
-            response_serializer = SessionSerializer(question_serializers, many=True)
+            response_serializer = SessionSerializer(session)
             return Response(data=response_serializer.data)
         except ArkavAPIException as e:
             return e.as_response()
@@ -52,4 +49,14 @@ class SubmitView(generics.GenericAPIView):
     @swagger_auto_schema(operation_summary='Submit Answer',
                          responses={200: SubmissionSerializer()})
     def post(self, request, *args, **kwargs):
-        pass
+        request_serializer = AnswerReqSerializer(data=request.data)
+        try:
+            request_serializer.is_valid(raise_exception=True)
+            submission = ArkalogicaService().submit_answer(
+                request_serializer.validated_data,
+                request.user
+            )
+            response_serializer = SubmissionSerializer(submission)
+            return Response(data=response_serializer.data)
+        except ArkavAPIException as e:
+            return e.as_response()
