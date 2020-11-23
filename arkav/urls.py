@@ -8,7 +8,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title='Arkavidia Backend API',
         default_version='v1',
-        description='Arkavidia 6.0 Backend API Documentation',
+        description='Arkavidia 7.0 Backend API Documentation',
         terms_of_service='https://www.google.com/policies/terms/',
         contact=openapi.Contact(email='contact@snippets.local'),
         license=openapi.License(name='BSD License'),

@@ -1,4 +1,6 @@
+
 from arkav.arkavauth.models import User
+from arkav.competition.constants import EDUCATION_LEVEL_CHOICES
 from arkav.uploader.models import UploadedFile
 from django.db import models
 from django.db.models.signals import post_save
@@ -28,6 +30,7 @@ def handle_user_post_save(sender, instance, created, **kwargs):
 class Competition(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
+    education_level = models.CharField(max_length=30, null=True, default=None, choices=EDUCATION_LEVEL_CHOICES)
     max_team_members = models.IntegerField(default=1)
     min_team_members = models.IntegerField(default=1)
     is_registration_open = models.BooleanField(default=True)
