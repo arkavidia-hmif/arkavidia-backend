@@ -17,11 +17,7 @@ class ChoiceSerializer(serializers.ModelSerializer):
 
 class QuestionSerializer(serializers.ModelSerializer):
     question_images = serializers.StringRelatedField(many=True)
-    choices = serializers.SerializerMethodField()
-
-    def get_choices(self, obj):
-        data = ChoiceSerializer(obj.choices.all(), many=True).data
-        return data
+    choices = ChoiceSerializer(many=True, read_only=True)
 
     class Meta:
         model = Question
@@ -30,11 +26,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 
 
 class SessionSerializer(serializers.ModelSerializer):
-    questions = serializers.SerializerMethodField()
-
-    def get_questions(self, obj):
-        data = QuestionSerializer(Question.objects.all(), many=True).data
-        return data
+    questions = QuestionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Session
@@ -63,11 +55,7 @@ class AnswerReqSerializer(serializers.Serializer):
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
-    answers = serializers.SerializerMethodField()
-
-    def get_answers(self, obj):
-        data = AnswerRespSerializer(obj.answer.all(), many=True).data
-        return data
+    answers = AnswerRespSerializer(many=True, read_only=True)
 
     class Meta:
         model = Submission

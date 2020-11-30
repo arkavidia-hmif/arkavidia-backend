@@ -4,26 +4,33 @@ from arkav.arkavauth.models import User
 import uuid
 
 
-class Question(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    title = models.CharField(max_length=255)
-    content = models.TextField()
-
-    def __str__(self):
-        return self.content
-
-
 class Session(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, default='')
     start_time = models.DateTimeField(default=timezone.now)
     end_time = models.DateTimeField(default=timezone.now)
 
+    def __str__(self):
+        return self.title
+
+
+class Question(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    session = models.ForeignKey(to=Session, related_name='questions', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title + ": " + self.content
+
 
 class Submission(models.Model):
     start = models.DateTimeField(auto_now_add=True, editable=False)
     end = models.DateTimeField(auto_now=True)
     user = models.OneToOneField(to=User, related_name='submission', on_delete=models.CASCADE, unique=True)
+
+    def __str__(self):
+        return self.user.email + "'s Submission"
 
 
 class QuestionImage(models.Model):
