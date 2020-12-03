@@ -1,3 +1,4 @@
+from arkav.arkavauth.constants import EDUCATION_LEVEL_CHOICES
 from arkav.arkavauth.models import User
 from arkav.uploader.models import UploadedFile
 from django.db import models
@@ -9,6 +10,7 @@ import uuid
 class Preevent(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
+    education_level = models.CharField(max_length=30, null=True, default=None, choices=EDUCATION_LEVEL_CHOICES)
     subtitle = models.CharField(max_length=100, blank=True)
     is_registration_open = models.BooleanField(default=True)
 

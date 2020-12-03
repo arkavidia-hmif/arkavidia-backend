@@ -9,8 +9,11 @@ from rest_framework.test import APITestCase
 
 class RegisterRegistrantTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(email='user1')
-        self.user2 = User.objects.create_user(email='user2')
+        self.user1 = User.objects.create_user(email='user1', full_name='a', phone_number='1', \
+            address='a', institution='a', birth_date='2000-02-02', current_education='SMA')
+        self.user2 = User.objects.create_user(email='user2', full_name='a', phone_number='1', \
+            address='a', institution='a', birth_date='2000-02-02', current_education='SMA')
+        self.user_incomplete = User.objects.create_user(email='user3')
 
         self.preevent_open = Preevent.objects.create(name='Open Preevent')
         self.preevent_closed = Preevent.objects.create(name='Closed Preevent', is_registration_open=False)
@@ -77,6 +80,20 @@ class RegisterRegistrantTestCase(APITestCase):
 
         data = {
             'preevent_id': self.preevent_closed.pk,
+        }
+
+        res = self.client.post(url, data=data, format='json')
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_register_registrant_profile_incomplete(self):
+        '''
+        If user's profile is still incomplete, returns 401
+        '''
+        url = reverse('mainevent-registrant-register')
+        self.client.force_authenticate(self.user_incomplete)
+
+        data = {
+            'mainevent_id': self.preevent_open.pk,
         }
 
         res = self.client.post(url, data=data, format='json')

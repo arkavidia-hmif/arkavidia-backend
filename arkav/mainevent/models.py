@@ -1,3 +1,4 @@
+from arkav.arkavauth.constants import EDUCATION_LEVEL_CHOICES
 from arkav.arkavauth.models import User
 from arkav.uploader.models import UploadedFile
 from django.db import models
@@ -19,6 +20,7 @@ class MaineventCategory(models.Model):
 class Mainevent(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField(max_length=50)
+    education_level = models.CharField(max_length=30, null=True, default=None, choices=EDUCATION_LEVEL_CHOICES)
     category = models.ForeignKey(to=MaineventCategory, related_name='mainevents', on_delete=models.PROTECT)
     is_registration_open = models.BooleanField(default=True)
     short_desc = models.TextField(blank=True)

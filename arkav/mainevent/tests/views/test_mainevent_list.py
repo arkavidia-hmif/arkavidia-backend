@@ -9,10 +9,10 @@ from rest_framework.test import APITestCase
 
 class MaineventListTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(email='user1')
+        self.user1 = User.objects.create_user(email='user1', full_name='a', current_education='SMA')
 
         category_seminar = MaineventCategory.objects.create(name='Seminar')
-        Mainevent.objects.create(name='Advance Seminar', category=category_seminar)
+        Mainevent.objects.create(name='Advance Seminar', category=category_seminar, education_level='SMA')
 
     def test_list_mainevents(self):
         '''

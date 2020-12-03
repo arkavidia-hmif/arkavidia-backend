@@ -1,6 +1,5 @@
-
+from arkav.arkavauth.constants import EDUCATION_LEVEL_CHOICES
 from arkav.arkavauth.models import User
-from arkav.competition.constants import EDUCATION_LEVEL_CHOICES
 from arkav.uploader.models import UploadedFile
 from django.db import models
 from django.db.models.signals import post_save

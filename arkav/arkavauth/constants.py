@@ -7,6 +7,7 @@ K_PASSWORD_RESET_EMAIL_SENT = 'password_reset_email_sent'
 K_PASSWORD_RESET_SUCCESSFUL = 'password_reset_successful'
 K_INVALID_TOKEN = 'invalid_token'
 K_TOKEN_USED = 'token_used'
+K_PROFILE_INCOMPLETE = 'profile_incomplete'
 
 # registration
 K_REGISTRATION_SUCCESSFUL = 'registration_successful'
@@ -23,4 +24,10 @@ KULIAH = 'Kuliah'
 CURRENT_EDUCATION_CHOICES = (
     (SMA, SMA),
     (KULIAH, KULIAH),
+)
+SMA_KULIAH = '{}/{}'.format(SMA, KULIAH)
+EDUCATION_LEVEL_CHOICES = (
+    (SMA, SMA),
+    (KULIAH, KULIAH),
+    (SMA_KULIAH, SMA_KULIAH)
 )

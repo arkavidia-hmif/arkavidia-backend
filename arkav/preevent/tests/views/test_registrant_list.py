@@ -8,7 +8,7 @@ from rest_framework.test import APITestCase
 
 class RegistrantListTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(email='user')
+        self.user1 = User.objects.create_user(email='user1', full_name='a', current_education='SMA')
 
     def test_list_registrants(self):
         '''

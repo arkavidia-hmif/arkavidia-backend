@@ -1,3 +1,4 @@
+from arkav.arkavauth.constants import K_PROFILE_INCOMPLETE
 from arkav.mainevent.models import Mainevent
 from arkav.mainevent.models import Registrant
 from arkav.mainevent.serializers import MaineventSerializer
@@ -11,6 +12,7 @@ from arkav.mainevent.services import RegistrantService
 from arkav.utils.exceptions import ArkavAPIException
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +22,11 @@ class ListMaineventsView(generics.ListAPIView):
     queryset = Mainevent.objects.all()
     serializer_class = MaineventSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.request.user.current_education is None:
+            return Mainevent.objects.none()
+        return Mainevent.objects.filter(education_level__contains=self.request.user.current_education)
 
     @swagger_auto_schema(operation_summary='Mainevent List')
     def get(self, request, *args, **kwargs):
@@ -47,9 +54,16 @@ class RegisterRegistrantView(views.APIView):
         request_serializer = RegisterRegistrantRequestSerializer(data=request.data)
         try:
             request_serializer.is_valid(raise_exception=True)
-            new_registrant = RegistrantService().create_registrant(request_serializer.validated_data, request.user)
-            response_serializer = RegistrantSerializer(new_registrant)
-            return Response(data=response_serializer.data)
+            if request.user.has_completed_profile:
+                new_registrant = RegistrantService().create_registrant(request_serializer.validated_data, request.user)
+                response_serializer = RegistrantSerializer(new_registrant)
+                return Response(data=response_serializer.data)
+            else:
+                raise ArkavAPIException(
+                    detail='User profile details are incomplete.',
+                    code=K_PROFILE_INCOMPLETE,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                )
         except ArkavAPIException as e:
             return e.as_response()
 

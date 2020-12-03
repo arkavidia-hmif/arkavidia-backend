@@ -35,6 +35,11 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    @property
+    def has_completed_profile(self):
+        return bool(self.full_name and self.phone_number and self.address and
+                    self.institution and self.email and self.birth_date and self.current_education)
+
 
 class PasswordResetAttempt(models.Model):
     '''

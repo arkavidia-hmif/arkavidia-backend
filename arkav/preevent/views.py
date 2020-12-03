@@ -1,3 +1,4 @@
+from arkav.arkavauth.constants import K_PROFILE_INCOMPLETE
 from arkav.preevent.models import Preevent
 from arkav.preevent.models import Registrant
 from arkav.preevent.serializers import PreeventSerializer
@@ -10,6 +11,7 @@ from arkav.preevent.services import RegistrantService
 from arkav.utils.exceptions import ArkavAPIException
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics
+from rest_framework import status
 from rest_framework import views
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -19,6 +21,11 @@ class ListPreeventsView(generics.ListAPIView):
     queryset = Preevent.objects.all()
     serializer_class = PreeventSerializer
     permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.request.user.current_education is None:
+            return Preevent.objects.none()
+        return Preevent.objects.filter(education_level__contains=self.request.user.current_education)
 
     @swagger_auto_schema(operation_summary='Preevent List')
     def get(self, request, *args, **kwargs):
@@ -35,9 +42,16 @@ class RegisterRegistrantView(views.APIView):
         request_serializer = RegisterRegistrantRequestSerializer(data=request.data)
         try:
             request_serializer.is_valid(raise_exception=True)
-            new_registrant = RegistrantService().create_registrant(request_serializer.validated_data, request.user)
-            response_serializer = RegistrantSerializer(new_registrant)
-            return Response(data=response_serializer.data)
+            if request.user.has_completed_profile:
+                new_registrant = RegistrantService().create_registrant(request_serializer.validated_data, request.user)
+                response_serializer = RegistrantSerializer(new_registrant)
+                return Response(data=response_serializer.data)
+            else:
+                raise ArkavAPIException(
+                    detail='User profile details are incomplete.',
+                    code=K_PROFILE_INCOMPLETE,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                )
         except ArkavAPIException as e:
             return e.as_response()
 
