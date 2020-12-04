@@ -10,10 +10,12 @@ from rest_framework.test import APITestCase
 
 class RegisterRegistrantTestCase(APITestCase):
     def setUp(self):
-        self.user1 = User.objects.create_user(email='user1', full_name='a', phone_number='1', \
-            address='a', institution='a', birth_date='2000-02-02', current_education='SMA')
-        self.user2 = User.objects.create_user(email='user2', full_name='a', phone_number='1', \
-            address='a', institution='a', birth_date='2000-02-02', current_education='SMA')
+        self.user1 = User.objects.create_user(email='user1', full_name='a', phone_number='1',
+                                              address='a', institution='a', birth_date='2000-02-02',
+                                              current_education='SMA')
+        self.user2 = User.objects.create_user(email='user2', full_name='a', phone_number='1',
+                                              address='a', institution='a', birth_date='2000-02-02',
+                                              current_education='SMA')
         self.user_incomplete = User.objects.create_user(email='user3')
 
         self.category_seminar = MaineventCategory.objects.create(name='Seminar')
