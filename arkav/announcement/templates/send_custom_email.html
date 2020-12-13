@@ -1,7 +1,7 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
-<form action="." method="POST">
+<form action="." method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <p>Email akan dikirim ke (dipisahkan oleh newline):</p>
     <p><textarea name="to" rows="5" cols="50" placeholder="example1@gmail.com&#10;contoh2@yahoo.com"></textarea></p>

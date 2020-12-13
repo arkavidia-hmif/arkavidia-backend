@@ -1,6 +1,7 @@
 {% extends "admin/index.html" %}
 
-{% block content %}
+{% block sidebar %}
+{{block.super}}
 <div>
     <h3>Utilities</h3>
     <ul>
@@ -12,5 +13,4 @@
         </li>
     </ul>
 </div>
-{{block.super}}
 {% endblock %}
