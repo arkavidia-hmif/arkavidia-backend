@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form action="." method="POST">
+    {% csrf_token %}
+    <p>Email akan dikirim ke (dipisahkan oleh newline):</p>
+    <p><textarea name="to" rows="5" cols="50" placeholder="example1@gmail.com&#10;contoh2@yahoo.com"></textarea></p>
+
+    <p><input type="text" name="subject" placeholder="Email Subject" /></p>
+    <p><textarea name="mail_text_message" rows="10" cols="50">Email dalam teks, karena beberapa mail server ga bisa nerima html</textarea></p>
+    <p><textarea name="mail_html_message" rows="10" cols="50">&lt;p&gt;Email dalam html, bisa pake &lt;strong&gt;bold&lt;/strong&gt; atau lainnya&lt;/p&gt;</textarea></p>
+
+    <p><input name="attachments" type="file" multiple></p>
+
+    <input type="hidden" name="action" value="send_custom_email" />
+    <input type="submit" name="apply" value="Send!"/>
+</form>
+{% endblock %}
