@@ -1,9 +1,16 @@
 {% extends "admin/index.html" %}
 
-{% block sidebar %}
-    {{block.super}}
-    <div>
-        <h1>Utilities</h1>
-        <a href="/administration-panel/send-email">Send customized email</a>
-    </div>
+{% block content %}
+<div>
+    <h3>Utilities</h3>
+    <ul>
+        <li>
+            <a href="/administration-panel/send-email">Send customized email</a>
+        </li>
+        <li>
+            <a href="/django-rq">Django RQ queues</a>
+        </li>
+    </ul>
+</div>
+{{block.super}}
 {% endblock %}
