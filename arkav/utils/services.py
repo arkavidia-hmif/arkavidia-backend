@@ -12,5 +12,5 @@ class UtilityService():
         )
         mail.attach_alternative(mail_html_message, 'text/html')
         for attachment in attachments:
-            mail.attach_file(attachment)
+            mail.attach(attachment.name, attachment.read(), attachment.content_type)
         django_rq.enqueue(mail.send)

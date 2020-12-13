@@ -1,5 +1,13 @@
 {% extends "admin/base_site.html" %}
 
 {% block content %}
-<p>Sukses mengirim email ke {{ addresses }} penerima!</p>
+<p>Sukses meng-enqueue pengiriman email ke {{ addresses }} penerima!</p>
+<ul>
+    <li>
+        <a href="/administration-panel/send-email">Kirim email lagi!</a>
+    </li>
+    <li>
+        <a href="/django-rq">Django RQ queues</a>
+    </li>
+</ul>
 {% endblock %}
