@@ -1,18 +1,19 @@
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
-from arkav.announcement.services import AnnouncementService
+from arkav.utils.services import UtilityService
 import django_rq
 
 
 _admin_site_get_urls = admin.site.get_urls
+
 
 def send_custom_email_view(request):
     if 'apply' in request.POST:
         addresses = request.POST['to'].splitlines()
 
         django_rq.enqueue(
-            AnnouncementService().send_custom_email,
+            UtilityService().send_custom_email,
             addresses,
             request.POST['subject'],
             request.POST['mail_text_message'],
