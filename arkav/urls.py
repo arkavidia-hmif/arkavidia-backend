@@ -1,3 +1,4 @@
+from arkav.admin import get_urls
 from django.contrib import admin
 from django.urls import include, path
 from drf_yasg.views import get_schema_view
@@ -17,6 +18,8 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+admin.site.get_urls = get_urls
+admin.site.index_template = 'admin_home.html'
 urlpatterns = [
     # Django admin site
     path('administration-panel/', admin.site.urls),
