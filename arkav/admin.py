@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from arkav.utils.services import UtilityService
 import django_rq

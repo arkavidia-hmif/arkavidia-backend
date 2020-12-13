@@ -2,6 +2,7 @@
 from django.core.mail import EmailMultiAlternatives
 import django_rq
 
+
 class UtilityService():
     def send_custom_email(self, addresses, subject, mail_text_message, mail_html_message, attachments):
         mail = EmailMultiAlternatives(
