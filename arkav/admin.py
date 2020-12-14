@@ -10,16 +10,15 @@ _admin_site_get_urls = admin.site.get_urls
 def send_custom_email_view(request):
     if 'apply' in request.POST:
         addresses = request.POST['to'].splitlines()
-
-        django_rq.enqueue(
-            UtilityService().send_custom_email,
-            addresses,
-            request.POST['subject'],
-            request.POST['mail_text_message'],
-            request.POST['mail_html_message'],
-            request.FILES.getlist('attachments')
-        )
-
+        for address in addresses:
+            django_rq.enqueue(
+                UtilityService().send_custom_email,
+                [address],
+                request.POST['subject'],
+                request.POST['mail_text_message'],
+                request.POST['mail_html_message'],
+                request.FILES.getlist('attachments')
+            )
         context = {
             'addresses': len(addresses)
         }
