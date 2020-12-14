@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
 from arkav.eventcheckin.models import CheckInEvent
 from arkav.competition.admin_forms import AcceptTaskResponseActionForm
 from arkav.competition.admin_forms import RejectTaskResponseActionForm
@@ -181,13 +182,35 @@ class UserTaskResponseAdmin(AbstractTaskResponseAdmin):
     team_member_name.short_description = 'Team Member'
 
 
+class HasCompletedActiveStageFilter(admin.SimpleListFilter):
+    title = _('active stage completion')
+
+    parameter_name = 'has_completed_active_stage'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('complete', _('Complete')),
+            ('incomplete', _('Incomplete')),
+        )
+
+    def queryset(self, request, queryset):
+        includes = []
+        for team in queryset:
+            if team.has_completed_active_stage:
+                includes.append(team.pk)
+        if self.value() == 'complete':
+            return queryset.filter(pk__in=includes)
+        if self.value() == 'incomplete':
+            return queryset.exclude(pk__in=includes)
+
+
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
     actions = [move_to_next_stage, 'send_custom_email', 'migrate_checkinevent', send_reminder]
     list_display = ['id', 'name', 'competition', 'institution', 'team_leader', 'member_count',
                     'active_stage', 'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'name']
-    list_filter = ['is_participating', 'institution', 'competition', 'active_stage']
+    list_filter = ['is_participating', HasCompletedActiveStageFilter, 'competition', 'active_stage']
     search_fields = ['name']
     autocomplete_fields = ['team_leader']
     inlines = [TeamMemberInline, TaskResponseInline, UserTaskResponseInline]
