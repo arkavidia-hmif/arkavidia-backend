@@ -82,9 +82,9 @@ class AbstractTaskResponseAdmin(admin.ModelAdmin):
 
     def team_link(self, obj):
         return format_html(
-            '<a href="{}">{}</a>'.format(reverse('admin:competition_team_change',
-                                                 args=(obj.team.id,)),
-                                         escape(obj.team))
+            '<a href="{}">{}</a>',
+            reverse('admin:competition_team_change', args=(obj.team.id,)),
+            escape(obj.team)
         )
 
     team_link.short_description = 'Team'
