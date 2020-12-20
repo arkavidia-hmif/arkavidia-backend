@@ -124,10 +124,11 @@ class Team(models.Model):
         Whether the team has already complete all the task in the active stage or not
         '''
         active_stage_task_count = self.active_stage.tasks.count()
+
         active_stage_completed_task_count = (
             self.task_responses.filter(task__stage=self.active_stage, status=TaskResponse.COMPLETED).count() +
-            self.user_task_responses.filter(task__stage=self.active_stage,
-                                            status=TaskResponse.COMPLETED).order_by().values('task').distinct().count()
+            self.user_task_responses.filter(task__stage=self.active_stage, status=TaskResponse.COMPLETED)
+                                    .count() // self.members.count()
         )
         return active_stage_task_count == active_stage_completed_task_count
 
