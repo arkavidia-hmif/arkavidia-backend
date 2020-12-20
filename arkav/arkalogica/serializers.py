@@ -55,7 +55,7 @@ class AnswerReqSerializer(serializers.Serializer):
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
-    answers = AnswerRespSerializer(many=True, read_only=True)
+    answers = AnswerRespSerializer(source='answer', many=True, read_only=True)
 
     class Meta:
         model = Submission
