@@ -47,7 +47,7 @@ class AnswerRespSerializer(serializers.ModelSerializer):
 
 
 class AnswerReqSerializer(serializers.Serializer):
-    tag = serializers.CharField(min_length=1, max_length=1)
+    tag = serializers.CharField(allow_blank=True, max_length=1)
     question = serializers.PrimaryKeyRelatedField(queryset=Question.objects.all())
 
     class Meta:
@@ -55,7 +55,7 @@ class AnswerReqSerializer(serializers.Serializer):
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
-    answers = AnswerRespSerializer(many=True, read_only=True)
+    answers = AnswerRespSerializer(source='answer', many=True, read_only=True)
 
     class Meta:
         model = Submission

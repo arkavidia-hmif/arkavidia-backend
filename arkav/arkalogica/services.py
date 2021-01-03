@@ -51,10 +51,13 @@ class ArkalogicaService:
             )
         sub, state = Submission.objects.get_or_create(user=requested_user)
         qt = answer_data['question']
-        choice = get_object_or_404(Choice.objects.all(), question=qt, tag=(answer_data['tag']))
-        answer, state = Answer.objects.update_or_create(
-            submission=sub, question=qt,
-            defaults={"choice": choice}
-        )
+        if (len(answer_data['tag']) == 1):
+            choice = get_object_or_404(Choice.objects.all(), question=qt, tag=(answer_data['tag']))
+            answer, state = Answer.objects.update_or_create(
+                submission=sub, question=qt,
+                defaults={"choice": choice}
+            )
+        elif (Answer.objects.filter(submission=sub, question=qt).exists()):
+            Answer.objects.filter(submission=sub, question=qt).delete()
         sub.save()  # Untuk update waktu terakhir kali ngerjain (end_time)
         return sub
