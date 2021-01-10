@@ -18,3 +18,9 @@ class AcceptTaskResponseActionForm(forms.Form):
         task_response.reason = ''
         task_response.status = TaskResponse.COMPLETED
         task_response.save()
+
+        registrant = task_response.registrant
+        if registrant.has_completed_active_stage:
+            registrant.is_participating = True
+            registrant.save()
+            registrant.mainevent.update_seats_remaining()

@@ -28,12 +28,18 @@ SECRET_KEY = os.getenv('SECRET_KEY', '(uc8i&7l81878%b6-x5%$n=0fvfb=rxfkw_+l!od^u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') != 'False'
 
+CRON = os.getenv('CRON', 'False') != 'False'
+
 ALLOWED_HOSTS = [
     'dashboard.arkavidia.id',
     'api.arkavidia.id',
     'arkavidia.id',
     'localhost',
 ] if not DEBUG else ['*']
+
+CRONJOBS = [
+    ('0 0 * * *', 'arkav.cron.delete_inactive_registrants')
+] if CRON else []
 
 # Application definition
 INSTALLED_APPS = [
@@ -50,6 +56,7 @@ INSTALLED_APPS = [
     'nested_admin',
     'storages',
     'corsheaders',
+    'django_crontab',
     'django_rq',
 
     'arkav.arkavauth',
