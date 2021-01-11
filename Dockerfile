@@ -4,6 +4,8 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 EXPOSE 8000
+
+RUN apt-get install -y cron
 RUN pip install pipenv
 
 WORKDIR /code
