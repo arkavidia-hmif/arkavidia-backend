@@ -6,6 +6,7 @@ ENV PYTHONUNBUFFERED 1
 EXPOSE 8000
 
 RUN apt-get update && apt-get -y install cron
+RUN service cron start
 RUN pip install pipenv
 
 WORKDIR /code
