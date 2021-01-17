@@ -1,6 +1,8 @@
 #!/bin/sh
 
+export > /opt/env
 service cron start
+
 /code/manage.py migrate
 /code/manage.py collectstatic --noinput
 /code/manage.py crontab add

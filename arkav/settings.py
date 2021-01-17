@@ -38,7 +38,7 @@ ALLOWED_HOSTS = [
 ] if not DEBUG else ['*']
 
 CRONJOBS = [
-    ('0 0 * * *', 'arkav.cron.delete_inactive_registrants')
+    ('0 0 * * * (source /opt/env || true) &&', 'arkav.cron.delete_inactive_registrants')
 ] if CRON else []
 
 # Application definition
