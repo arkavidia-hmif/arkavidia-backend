@@ -5,7 +5,7 @@ from django.db.models import Count
 from django.utils import timezone
 
 class Command(BaseCommand):
-    help = 'Delete registrants that are created before 1 day ago'
+    help = 'Delete inactive (no task response) registrants that are created before 1 day ago'
 
     def handle(self, *args, **kwargs):
         yesterday = timezone.now() - timedelta(days=1)
