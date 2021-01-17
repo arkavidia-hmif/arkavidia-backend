@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db.models import Count
 from django.utils import timezone
 
+
 class Command(BaseCommand):
     help = 'Delete inactive (no task response) registrants that are created before 1 day ago'
 
