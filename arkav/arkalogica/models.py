@@ -68,5 +68,8 @@ class Answer(models.Model):
     def tag(self):
         return self.choice.tag
 
+    def __str__(self):
+        return '%s' % self.question.title
+
     class Meta:
         unique_together = (('submission', 'question'))
