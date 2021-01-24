@@ -9,7 +9,10 @@ class ExportCsvMixin:
     def export_as_csv(self, request, queryset):
 
         meta = self.model._meta
-        field_names = self.csv_fields if hasattr(self, 'csv_fields') else self.list_display
+        if hasattr(self, 'csv_fields'):
+            field_names = [x.replace(DEEP_SEPARATOR, '.') for x in self.csv_fields]
+        else:
+            field_names = self.list_display
 
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
