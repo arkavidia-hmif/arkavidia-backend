@@ -6,6 +6,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
 from arkav.eventcheckin.models import CheckInEvent
 from arkav.preevent.admin_forms import AcceptTaskResponseActionForm
 from arkav.preevent.admin_forms import RejectTaskResponseActionForm
@@ -151,6 +152,28 @@ class TaskResponseAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'admin_task_response.html', context)
 
 
+class HasCompletedActiveStageFilter(admin.SimpleListFilter):
+    title = _('active stage completion')
+
+    parameter_name = 'has_completed_active_stage'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('complete', _('Complete')),
+            ('incomplete', _('Incomplete')),
+        )
+
+    def queryset(self, request, queryset):
+        includes = []
+        for registrant in queryset:
+            if registrant.has_completed_active_stage:
+                includes.append(registrant.pk)
+        if self.value() == 'complete':
+            return queryset.filter(pk__in=includes)
+        if self.value() == 'incomplete':
+            return queryset.exclude(pk__in=includes)
+
+
 @admin.register(Registrant)
 class RegistrantAdmin(admin.ModelAdmin):
     fieldsets = (
@@ -162,8 +185,8 @@ class RegistrantAdmin(admin.ModelAdmin):
     list_display = ['id', 'preevent', 'user', 'active_stage', 'has_completed_active_stage',
                     'is_participating', 'created_at']
     list_display_links = ['id', 'user']
-    list_filter = ['is_participating', 'preevent', 'active_stage']
-    search_fields = ['user']
+    list_filter = ['is_participating', HasCompletedActiveStageFilter, 'preevent', 'active_stage']
+    search_fields = ['user__full_name', 'user__email']
     readonly_fields = ['full_name', 'current_education', 'institution', 'phone_number', 'address', 'birth_date']
     inlines = [TaskResponseInline]
 
