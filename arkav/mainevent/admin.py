@@ -7,6 +7,7 @@ from django.template.response import TemplateResponse
 from django.urls import path
 from django.urls import reverse
 from django.utils.html import format_html
+from django.utils.translation import gettext as _
 from arkav.eventcheckin.models import CheckInEvent
 from arkav.mainevent.admin_forms import AcceptTaskResponseActionForm
 from arkav.mainevent.admin_forms import RejectTaskResponseActionForm
@@ -22,6 +23,7 @@ from arkav.mainevent.models import TaskResponse
 from arkav.mainevent.models import TaskWidget
 from arkav.mainevent.models import Registrant
 from arkav.mainevent.services import RegistrantService
+from arkav.utils.mixins import ExportCsvMixin
 import django_rq
 
 
@@ -159,19 +161,41 @@ class TaskResponseAdmin(admin.ModelAdmin):
         return TemplateResponse(request, 'admin_task_response.html', context)
 
 
+class HasCompletedActiveStageFilter(admin.SimpleListFilter):
+    title = _('active stage completion')
+
+    parameter_name = 'has_completed_active_stage'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('complete', _('Complete')),
+            ('incomplete', _('Incomplete')),
+        )
+
+    def queryset(self, request, queryset):
+        includes = []
+        for registrant in queryset:
+            if registrant.has_completed_active_stage:
+                includes.append(registrant.pk)
+        if self.value() == 'complete':
+            return queryset.filter(pk__in=includes)
+        if self.value() == 'incomplete':
+            return queryset.exclude(pk__in=includes)
+
+
 @admin.register(Registrant)
-class RegistrantAdmin(admin.ModelAdmin):
+class RegistrantAdmin(admin.ModelAdmin, ExportCsvMixin):
     fieldsets = (
         (
             None, {"fields": ['user', 'mainevent', 'active_stage']}
         ),
     )
-    actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent', 'set_participating']
+    actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent', 'set_participating', 'export_as_csv']
     list_display = ['id', 'mainevent', 'user', 'active_stage',
                     'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'user']
-    list_filter = ['is_participating', 'mainevent', 'active_stage']
-    search_fields = ['user']
+    list_filter = ['is_participating', HasCompletedActiveStageFilter, 'mainevent', 'active_stage']
+    search_fields = ['user__full_name', 'user__email']
     readonly_fields = ['full_name', 'current_education', 'institution', 'phone_number', 'address', 'birth_date']
     inlines = [TaskResponseInline]
 

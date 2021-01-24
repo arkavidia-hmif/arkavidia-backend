@@ -6,7 +6,7 @@
     <p>Email akan dikirim ke:</p>
     <ul>
     {% for registrant in registrants %}
-        <li>{{ registrant.user.name }} ({{ registrant.user.email }})</li>
+        <li>{{ registrant.user.full_name }} ({{ registrant.user.email }})</li>
         <input type="hidden" name="_selected_action" value="{{ registrant.pk }}" />
     {% endfor %}
     </ul>
