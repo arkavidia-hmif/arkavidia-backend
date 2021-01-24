@@ -23,6 +23,7 @@ from arkav.mainevent.models import TaskResponse
 from arkav.mainevent.models import TaskWidget
 from arkav.mainevent.models import Registrant
 from arkav.mainevent.services import RegistrantService
+from arkav.utils.mixins import ExportCsvMixin
 import django_rq
 
 
@@ -183,13 +184,13 @@ class HasCompletedActiveStageFilter(admin.SimpleListFilter):
 
 
 @admin.register(Registrant)
-class RegistrantAdmin(admin.ModelAdmin):
+class RegistrantAdmin(admin.ModelAdmin, ExportCsvMixin):
     fieldsets = (
         (
             None, {"fields": ['user', 'mainevent', 'active_stage']}
         ),
     )
-    actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent', 'set_participating']
+    actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent', 'set_participating', 'export_as_csv']
     list_display = ['id', 'mainevent', 'user', 'active_stage',
                     'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'user']
