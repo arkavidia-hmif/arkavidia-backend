@@ -28,9 +28,10 @@ class Submission(models.Model):
     start = models.DateTimeField(auto_now_add=True, editable=False)
     end = models.DateTimeField(auto_now=True)
     user = models.OneToOneField(to=User, related_name='submission', on_delete=models.CASCADE, unique=True)
+    session = models.OneToOneField(to=Session, related_name='submission', on_delete=models.CASCADE, unique=True)
 
     def __str__(self):
-        return self.user.email + "'s Submission"
+        return self.user.full_name + "'s Submission"
 
 
 class QuestionImage(models.Model):
@@ -67,9 +68,6 @@ class Answer(models.Model):
     @property
     def tag(self):
         return self.choice.tag
-
-    def __str__(self):
-        return '%s' % self.question.title
 
     class Meta:
         unique_together = (('submission', 'question'))

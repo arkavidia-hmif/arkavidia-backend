@@ -38,12 +38,9 @@ class ChoiceImageAdmin(admin.ModelAdmin):
 
 class AnswerInline(admin.StackedInline):
     model = Answer
-    fields = ['info', 'iscorrect']
-    readonly_fields = ['info', 'iscorrect']
+    fields = ['choice', 'question', 'iscorrect']
+    readonly_fields = ['choice', 'question', 'iscorrect']
     extra = 0
-
-    def info(self, obj):
-        return obj.tag + '. ' + obj.choice.content
 
     def iscorrect(self, obj):
         return obj.choice.is_correct
@@ -58,23 +55,15 @@ class SubmissionAdmin(admin.ModelAdmin):
     inlines = [AnswerInline]
 
     def correct_answer(self, obj):
-        correct = 0
-        for x in obj.answer.all():
-            if x.choice.is_correct:
-                correct += 1
-        return correct
+        return obj.answer.filter(choice__is_correct=True).count()
     correct_answer.short_description = 'Correct Answer'
 
     def wrong_answer(self, obj):
-        wrong = 0
-        for x in obj.answer.all():
-            if not x.choice.is_correct:
-                wrong += 1
-        return wrong
+        return obj.answer.filter(choice__is_correct=False).count()
     wrong_answer.short_description = 'Wrong Answer'
 
     def not_answered(self, obj):
         answered = obj.answer.count()
-        total_questions = Question.objects.count()
+        total_questions = obj.session.questions.count()
         return total_questions-answered
     not_answered.short_description = 'Empty Answer'
