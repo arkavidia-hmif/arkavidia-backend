@@ -28,7 +28,7 @@ class Submission(models.Model):
     start = models.DateTimeField(auto_now_add=True, editable=False)
     end = models.DateTimeField(auto_now=True)
     user = models.OneToOneField(to=User, related_name='submission', on_delete=models.CASCADE, unique=True)
-    session = models.OneToOneField(to=Session, related_name='submission', on_delete=models.CASCADE, unique=True)
+    session = models.ForeignKey(to=Session, related_name='submission', on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.user.full_name + "'s Submission"

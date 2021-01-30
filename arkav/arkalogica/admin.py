@@ -3,11 +3,20 @@ from arkav.arkalogica.models import Session, Question
 from arkav.arkalogica.models import Choice, ChoiceImage
 from arkav.arkalogica.models import Answer, Submission
 from arkav.arkalogica.models import QuestionImage
+from arkav.arkalogica.services import ArkalogicaService
 
 
 @admin.register(Session)
 class SessionAdmin(admin.ModelAdmin):
     list_display = ['title', 'description', 'start_time', 'end_time']
+    actions = ['create_csv']
+
+    def create_csv(self, request, queryset):
+        q = queryset[0]
+        container = ArkalogicaService().get_submissions(q)
+        return ArkalogicaService().create_csv(container, 'Submissions-%s' % q)
+
+    create_csv.short_description = 'Export Submissions to CSV'
 
 
 class ChoiceInline(admin.TabularInline):
