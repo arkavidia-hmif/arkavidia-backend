@@ -14,7 +14,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='submission',
             name='session',
-            field=models.OneToOneField(default=1, on_delete=django.db.models.deletion.CASCADE, related_name='submission', to='arkalogica.Session'),
+            field=models.OneToOneField(
+                default=1, on_delete=django.db.models.deletion.CASCADE,
+                related_name='submission', to='arkalogica.Session'
+            ),
             preserve_default=False,
         ),
     ]
