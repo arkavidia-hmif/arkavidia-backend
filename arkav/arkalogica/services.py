@@ -7,6 +7,8 @@ from django.utils import timezone
 from rest_framework import status
 from django.db import transaction
 from arkav.utils.exceptions import ArkavAPIException
+import csv
+from django.http import HttpResponse
 
 
 class ArkalogicaService:
@@ -33,6 +35,46 @@ class ArkalogicaService:
     def get_submission(self, requested_user):
         submission, state = Submission.objects.get_or_create(user=requested_user)
         return submission
+
+    @transaction.atomic
+    def get_submissions(self, session):
+        content = []
+
+        questions_id = []
+        # Create header (line 1)
+        header = []
+        header.append("user")
+        if session.questions.count() > 0:
+            for q in session.questions.all():
+                questions_id.append(q.id)
+                header.append('%s' % q)
+
+        content.append(header)
+
+        # Create content (line 2-...)
+        all_submissions = session.submission.all()
+        for sub in all_submissions:
+            user_submission = []
+            user_submission.append(sub.user.full_name)
+            for q in questions_id:
+                ans = Answer.objects.filter(submission__user__id=sub.user.id, question=q).first()
+                if ans:
+                    user_submission.append(ans.tag)
+                else:
+                    user_submission.append('-')
+            content.append(user_submission)
+
+        return content
+
+    def create_csv(self, content, fileName):
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s.csv"' % fileName
+
+        writer = csv.writer(response)
+        for c in content:
+            writer.writerow(c)
+
+        return response
 
     @transaction.atomic
     def submit_answer(self, answer_data, requested_user):
