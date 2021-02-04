@@ -49,6 +49,7 @@ class TaskResponseInline(admin.TabularInline):
 class UserTaskResponseInline(admin.TabularInline):
     model = UserTaskResponse
     fields = ['team', 'task', 'team_member', 'status', 'file_link', 'last_submitted_at']
+    raw_id_fields = ['team_member']
     readonly_fields = ['file_link', 'last_submitted_at']
     autocomplete_fields = ['team', 'task']
     extra = 1
@@ -68,6 +69,7 @@ class TeamMemberInline(admin.TabularInline):
         'user', 'has_user_account', 'is_leader',
         'invitation_full_name', 'invitation_email', 'created_at'
     ]
+    raw_id_fields = ['user']
     readonly_fields = ['has_user_account', 'is_leader', 'created_at']
     actions = [resend_invitation_email]
     extra = 1
