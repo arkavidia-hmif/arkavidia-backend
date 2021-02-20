@@ -191,7 +191,7 @@ class RegistrantAdmin(admin.ModelAdmin, ExportCsvMixin):
         ),
     )
     actions = [send_reminder, 'send_custom_email', 'migrate_checkinevent', 'set_participating', 'export_as_csv']
-    list_display = ['id', 'mainevent', 'user', 'phone_number', 'active_stage',
+    list_display = ['id', 'mainevent', 'full_name', 'user', 'phone_number', 'active_stage',
                     'has_completed_active_stage', 'is_participating', 'created_at']
     list_display_links = ['id', 'user']
     list_filter = ['is_participating', HasCompletedActiveStageFilter, 'mainevent', 'active_stage']
@@ -206,6 +206,10 @@ class RegistrantAdmin(admin.ModelAdmin, ExportCsvMixin):
     def phone_number(self, instance):
         return instance.user.phone_number
     phone_number.short_description = 'Phone Number'
+
+    def full_name(self, instance):
+        return instance.user.full_name
+    full_name.short_description = 'Full Name'
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(RegistrantAdmin, self).get_fieldsets(request, obj)
